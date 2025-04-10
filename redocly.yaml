@@ -1,0 +1,29 @@
+apis:
+  main:
+    root: ./docs/swagger.yaml
+
+theme:
+  colors:
+    primary:
+      main: '#32329f'
+      light: '#6666c3'
+      dark: '#00006f'
+  typography:
+    fontFamily: 'Roboto, sans-serif'
+    headings:
+      fontFamily: 'Roboto, sans-serif'
+  sidebar:
+    backgroundColor: '#fafafa'
+    textColor: '#333333'
+  rightPanel:
+    backgroundColor: '#fafafa'
+
+features:
+  security:
+    enabled: true
+  search:
+    enabled: true
+  codegen:
+    enabled: true
+  tryItOut:
+    enabled: true 
