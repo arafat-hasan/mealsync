@@ -1,15 +1,15 @@
 -- Insert test users
--- Password for all users is 'password123' (hashed)
+-- Password for all users is 'your_new_password' (hashed)
 INSERT INTO users (email, password, first_name, last_name, role, department, employee_id, is_active)
-SELECT 'admin@mealsync.com', '$2a$10$ZjXzGXkNTL5u.rcKGYC9N.cQoVYfV.kX4.nFEj0EONvK3O9F5YgYi', 'Admin', 'User', 'admin', 'Administration', 'ADMIN001', true
+SELECT 'admin@mealsync.com', '$2a$10$TdFO5yl0tUgVA7UuIlKNmubSnXPey22Qw/BXOgFJWXCcJetrdul3W', 'Admin', 'User', 'admin', 'Administration', 'ADMIN001', true
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@mealsync.com');
 
 INSERT INTO users (email, password, first_name, last_name, role, department, employee_id, is_active)
-SELECT 'employee1@mealsync.com', '$2a$10$ZjXzGXkNTL5u.rcKGYC9N.cQoVYfV.kX4.nFEj0EONvK3O9F5YgYi', 'John', 'Doe', 'employee', 'Engineering', 'EMP001', true
+SELECT 'employee1@mealsync.com', '$2a$10$TdFO5yl0tUgVA7UuIlKNmubSnXPey22Qw/BXOgFJWXCcJetrdul3W', 'John', 'Doe', 'employee', 'Engineering', 'EMP001', true
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'employee1@mealsync.com');
 
 INSERT INTO users (email, password, first_name, last_name, role, department, employee_id, is_active)
-SELECT 'employee2@mealsync.com', '$2a$10$ZjXzGXkNTL5u.rcKGYC9N.cQoVYfV.kX4.nFEj0EONvK3O9F5YgYi', 'Jane', 'Smith', 'employee', 'Marketing', 'EMP002', true
+SELECT 'employee2@mealsync.com', '$2a$10$TdFO5yl0tUgVA7UuIlKNmubSnXPey22Qw/BXOgFJWXCcJetrdul3W', 'Jane', 'Smith', 'employee', 'Marketing', 'EMP002', true
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'employee2@mealsync.com');
 
 -- Insert test menu items

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     profiles: ["prod"]  # This service will only run when explicitly included
