@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/arafat-hasan/mealsync/internal/models"
+	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -19,10 +19,11 @@ func NewMenuHandler(menuService *service.MenuService) *MenuHandler {
 }
 
 type CreateMenuItemRequest struct {
-	Name        string              `json:"name" binding:"required"`
-	Description string              `json:"description"`
-	Type        models.MenuItemType `json:"type" binding:"required"`
-	Date        string              `json:"date" binding:"required"` // Format: YYYY-MM-DD
+	Name        string  `json:"name" binding:"required"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price" binding:"required"`
+	Category    string  `json:"category" binding:"required"`
+	Image       string  `json:"image"`
 }
 
 type CreateMealRequestRequest struct {
@@ -37,18 +38,13 @@ func (h *MenuHandler) CreateMenuItem(c *gin.Context) {
 		return
 	}
 
-	date, err := time.Parse("2006-01-02", req.Date)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
-		return
-	}
-
-	item := &models.MenuItem{
+	item := &model.MenuItem{
 		Name:        req.Name,
 		Description: req.Description,
-		Type:        req.Type,
-		Date:        date,
-		IsActive:    true,
+		Price:       req.Price,
+		Category:    req.Category,
+		Image:       req.Image,
+		IsAvailable: true,
 	}
 
 	if err := h.menuService.CreateMenuItem(item); err != nil {
@@ -93,17 +89,12 @@ func (h *MenuHandler) UpdateMenuItem(c *gin.Context) {
 		return
 	}
 
-	date, err := time.Parse("2006-01-02", req.Date)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
-		return
-	}
-
-	item := &models.MenuItem{
+	item := &model.MenuItem{
 		Name:        req.Name,
 		Description: req.Description,
-		Type:        req.Type,
-		Date:        date,
+		Price:       req.Price,
+		Category:    req.Category,
+		Image:       req.Image,
 	}
 
 	if err := h.menuService.UpdateMenuItem(uint(id), item); err != nil {
@@ -143,11 +134,12 @@ func (h *MenuHandler) CreateMealRequest(c *gin.Context) {
 	}
 
 	userID, _ := c.Get("user_id")
-	request := &models.MealRequest{
-		UserID:     userID.(uint),
-		MenuItemID: req.MenuItemID,
-		Date:       date,
-		Status:     "requested",
+	request := &model.MealRequest{
+		UserID:       userID.(uint),
+		MenuItemID:   req.MenuItemID,
+		RequestedFor: date,
+		Status:       "pending",
+		Quantity:     1,
 	}
 
 	if err := h.menuService.CreateMealRequest(request); err != nil {

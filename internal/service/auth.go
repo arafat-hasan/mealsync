@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/arafat-hasan/mealsync/internal/models"
+	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -19,7 +19,7 @@ func NewAuthService(db *gorm.DB) *AuthService {
 	return &AuthService{db: db}
 }
 
-func (s *AuthService) Register(user *models.User) error {
+func (s *AuthService) Register(user *model.User) error {
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -32,7 +32,7 @@ func (s *AuthService) Register(user *models.User) error {
 }
 
 func (s *AuthService) Login(email, password string) (string, error) {
-	var user models.User
+	var user model.User
 	if err := s.db.Where("email = ?", email).First(&user).Error; err != nil {
 		return "", errors.New("invalid credentials")
 	}

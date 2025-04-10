@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/arafat-hasan/mealsync/internal/models"
+	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -47,14 +47,14 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	user := &models.User{
+	user := &model.User{
 		Email:      req.Email,
 		Password:   req.Password,
 		FirstName:  req.FirstName,
 		LastName:   req.LastName,
 		Department: req.Department,
 		EmployeeID: req.EmployeeID,
-		Role:       models.RoleEmployee, // Default role
+		Role:       model.UserRoleEmployee, // Default role
 	}
 
 	if err := h.authService.Register(user); err != nil {
