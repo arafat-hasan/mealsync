@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/arafat-hasan/mealsync/internal/model"
+	"github.com/arafat-hasan/mealsync/internal/repository"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -12,19 +13,21 @@ import (
 
 // AuthService handles authentication-related operations
 type AuthService struct {
-	db *gorm.DB
+	userRepo repository.UserRepository
 }
 
 // NewAuthService creates a new AuthService
 func NewAuthService(db *gorm.DB) *AuthService {
-	return &AuthService{db: db}
+	return &AuthService{
+		userRepo: repository.NewUserRepository(db),
+	}
 }
 
 // Register creates a new user
 func (s *AuthService) Register(user *model.User) error {
 	// Check if user already exists
-	var existingUser model.User
-	if err := s.db.Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
+	existingUser, err := s.userRepo.FindByEmail(nil, user.Email)
+	if err == nil && existingUser != nil {
 		return errors.New("user already exists")
 	}
 
@@ -36,13 +39,13 @@ func (s *AuthService) Register(user *model.User) error {
 	user.Password = string(hashedPassword)
 
 	// Create user
-	return s.db.Create(user).Error
+	return s.userRepo.Create(nil, user)
 }
 
 // Authenticate verifies user credentials and returns the user if valid
 func (s *AuthService) Authenticate(email, password string) (*model.User, error) {
-	var user model.User
-	if err := s.db.Where("email = ?", email).First(&user).Error; err != nil {
+	user, err := s.userRepo.FindByEmail(nil, email)
+	if err != nil {
 		return nil, errors.New("invalid credentials")
 	}
 
@@ -51,7 +54,7 @@ func (s *AuthService) Authenticate(email, password string) (*model.User, error) 
 		return nil, errors.New("invalid credentials")
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 // GenerateTokens creates a new pair of JWT tokens for a user
@@ -113,13 +116,13 @@ func (s *AuthService) RefreshToken(refreshTokenString string) (*TokenPair, error
 	}
 
 	// Get user from database
-	var user model.User
-	if err := s.db.First(&user, uint(userID)).Error; err != nil {
+	user, err := s.userRepo.FindByID(nil, uint(userID))
+	if err != nil {
 		return nil, errors.New("user not found")
 	}
 
 	// Generate new tokens
-	return s.GenerateTokens(&user)
+	return s.GenerateTokens(user)
 }
 
 // TokenPair represents a pair of JWT tokens
