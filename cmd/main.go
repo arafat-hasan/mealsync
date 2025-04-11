@@ -54,10 +54,12 @@ func main() {
 	// Initialize services
 	authService := service.NewAuthService(db)
 	mealService := service.NewMealService(db)
+	menuService := service.NewMenuService(db)
 
 	// Initialize handlers
 	authHandler := api.NewAuthHandler(authService)
 	mealHandler := api.NewMealHandler(mealService)
+	menuHandler := api.NewMenuHandler(menuService)
 
 	// Initialize router
 	router := gin.Default()
@@ -66,7 +68,7 @@ func main() {
 	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
 
 	// API routes
-	api.SetupRoutes(router, authHandler, mealHandler)
+	api.SetupRoutes(router, authHandler, mealHandler, menuHandler)
 
 	// Documentation routes with custom configuration
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,

@@ -103,6 +103,334 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.MealComment:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.MealMenu:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      cutoff_time:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      meal_requests:
+        items:
+          $ref: '#/definitions/model.MealRequest'
+        type: array
+      meal_type:
+        $ref: '#/definitions/model.MealType'
+      menu_items:
+        items:
+          $ref: '#/definitions/model.MealMenuItem'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  model.MealMenuItem:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      meal_menu:
+        $ref: '#/definitions/model.MealMenu'
+      meal_menu_id:
+        type: integer
+      menu_item:
+        $ref: '#/definitions/model.MenuItem'
+      menu_item_id:
+        type: integer
+      set_name:
+        description: Set A, Set B, etc. (for lunch only)
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.MealRequest:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      menu:
+        $ref: '#/definitions/model.MealMenu'
+      menu_id:
+        type: integer
+      menu_item:
+        $ref: '#/definitions/model.MenuItem'
+      menu_item_id:
+        type: integer
+      notes:
+        type: string
+      quantity:
+        type: integer
+      requested_for:
+        type: string
+      status:
+        $ref: '#/definitions/model.RequestStatus'
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.MealType:
+    enum:
+    - breakfast
+    - lunch
+    - snacks
+    type: string
+    x-enum-varnames:
+    - MealTypeBreakfast
+    - MealTypeLunch
+    - MealTypeSnacks
+  model.MenuItem:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      is_available:
+        type: boolean
+      meal_requests:
+        items:
+          $ref: '#/definitions/model.MealRequest'
+        type: array
+      meal_type:
+        allOf:
+        - $ref: '#/definitions/model.MealType'
+        description: breakfast, lunch, snacks
+      name:
+        type: string
+      order_items:
+        items:
+          $ref: '#/definitions/model.OrderItem'
+        type: array
+      price:
+        type: number
+      restaurant:
+        $ref: '#/definitions/model.Restaurant'
+      restaurant_id:
+        type: integer
+      set_name:
+        description: Set A, Set B, etc. (for lunch only)
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.Notification:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      read:
+        type: boolean
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/model.NotificationType'
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.NotificationType:
+    enum:
+    - meal_request
+    - meal_confirmation
+    - meal_reminder
+    - system
+    type: string
+    x-enum-varnames:
+    - NotificationTypeMealRequest
+    - NotificationTypeMealConfirmation
+    - NotificationTypeMealReminder
+    - NotificationTypeSystem
+  model.Order:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      order_items:
+        items:
+          $ref: '#/definitions/model.OrderItem'
+        type: array
+      restaurant:
+        $ref: '#/definitions/model.Restaurant'
+      restaurant_id:
+        type: integer
+      status:
+        $ref: '#/definitions/model.OrderStatus'
+      total_amount:
+        type: number
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.OrderItem:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      menu_item:
+        $ref: '#/definitions/model.MenuItem'
+      menu_item_id:
+        type: integer
+      order:
+        $ref: '#/definitions/model.Order'
+      order_id:
+        type: integer
+      price:
+        type: number
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.OrderStatus:
+    enum:
+    - pending
+    - accepted
+    - rejected
+    - completed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - OrderStatusPending
+    - OrderStatusAccepted
+    - OrderStatusRejected
+    - OrderStatusCompleted
+    - OrderStatusCancelled
+  model.RequestStatus:
+    enum:
+    - pending
+    - approved
+    - rejected
+    - completed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - RequestStatusPending
+    - RequestStatusApproved
+    - RequestStatusRejected
+    - RequestStatusCompleted
+    - RequestStatusCancelled
+  model.Restaurant:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      menu_items:
+        items:
+          $ref: '#/definitions/model.MenuItem'
+        type: array
+      name:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      created_meal_menus:
+        items:
+          $ref: '#/definitions/model.MealMenu'
+        type: array
+      department:
+        type: string
+      email:
+        type: string
+      employee_id:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      last_login_at:
+        type: string
+      last_name:
+        type: string
+      meal_comments:
+        items:
+          $ref: '#/definitions/model.MealComment'
+        type: array
+      meal_requests:
+        items:
+          $ref: '#/definitions/model.MealRequest'
+        type: array
+      notification_enabled:
+        type: boolean
+      notifications:
+        items:
+          $ref: '#/definitions/model.Notification'
+        type: array
+      orders:
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
+      role:
+        $ref: '#/definitions/model.UserRole'
+      updated_at:
+        type: string
+    type: object
   model.UserRole:
     enum:
     - admin
@@ -303,6 +631,280 @@ paths:
       summary: Update a meal
       tags:
       - meals
+  /menus:
+    get:
+      consumes:
+      - application/json
+      description: Get all menus, optionally filtered by date
+      parameters:
+      - description: Filter by date (YYYY-MM-DD)
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MealMenu'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get all menus
+      tags:
+      - menus
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu
+      parameters:
+      - description: Menu to create
+        in: body
+        name: menu
+        required: true
+        schema:
+          $ref: '#/definitions/model.MealMenu'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MealMenu'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new menu
+      tags:
+      - menus
+  /menus/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a menu by its ID
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a menu
+      tags:
+      - menus
+    get:
+      consumes:
+      - application/json
+      description: Get a menu by its ID
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealMenu'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a menu by ID
+      tags:
+      - menus
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Menu to update
+        in: body
+        name: menu
+        required: true
+        schema:
+          $ref: '#/definitions/model.MealMenu'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealMenu'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a menu
+      tags:
+      - menus
+  /menus/{id}/items:
+    get:
+      consumes:
+      - application/json
+      description: Get all menu items for a specific menu
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Filter by date (YYYY-MM-DD)
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get menu items
+      tags:
+      - menus
+    post:
+      consumes:
+      - application/json
+      description: Add a menu item to a menu
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Menu item to add
+        in: body
+        name: item
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MealMenuItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add a menu item to a menu
+      tags:
+      - menus
+  /menus/{id}/items/{item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a menu item from a menu
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Menu Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Remove a menu item from a menu
+      tags:
+      - menus
   /refresh:
     post:
       consumes:

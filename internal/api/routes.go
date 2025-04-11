@@ -6,7 +6,7 @@ import (
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealHandler) {
+func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealHandler, menuHandler *MenuHandler) {
 	// Public routes (no auth required)
 	public := r.Group("/api")
 	{
@@ -25,5 +25,15 @@ func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealHandl
 		protected.POST("/meals", mealHandler.CreateMeal)
 		protected.PUT("/meals/:id", mealHandler.UpdateMeal)
 		protected.DELETE("/meals/:id", mealHandler.DeleteMeal)
+
+		// Menu routes
+		protected.GET("/menus", menuHandler.GetMenus)
+		protected.GET("/menus/:id", menuHandler.GetMenuByID)
+		protected.POST("/menus", menuHandler.CreateMenu)
+		protected.PUT("/menus/:id", menuHandler.UpdateMenu)
+		protected.DELETE("/menus/:id", menuHandler.DeleteMenu)
+		protected.GET("/menus/:id/items", menuHandler.GetMenuItems)
+		protected.POST("/menus/:id/items", menuHandler.AddMenuItem)
+		protected.DELETE("/menus/:id/items/:item_id", menuHandler.RemoveMenuItem)
 	}
 }
