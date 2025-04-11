@@ -8,6 +8,7 @@ import (
 	_ "github.com/arafat-hasan/mealsync/docs"
 	"github.com/arafat-hasan/mealsync/internal/api"
 	"github.com/arafat-hasan/mealsync/internal/config"
+	"github.com/arafat-hasan/mealsync/internal/middleware"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -61,8 +62,14 @@ func main() {
 	mealHandler := api.NewMealHandler(mealService)
 	menuHandler := api.NewMenuHandler(menuService)
 
-	// Initialize router
-	router := gin.Default()
+	// Initialize router with custom middleware
+	router := gin.New() // Use gin.New() instead of gin.Default() to avoid default middleware
+
+	// Add middleware
+	router.Use(gin.Logger())              // Add logging
+	router.Use(middleware.Recovery())     // Add custom recovery middleware
+	router.Use(middleware.ErrorHandler()) // Add custom error handling middleware
+	router.Use(gin.Recovery())            // Add gin's recovery as a fallback
 
 	// Load HTML templates from docs directory
 	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
