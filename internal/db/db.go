@@ -41,8 +41,16 @@ func InitDB() error {
 		&model.User{},
 		&model.Restaurant{},
 		&model.MenuItem{},
+		&model.MealMenu{},
+		&model.MealMenuItem{},
+		&model.MealRequest{},
+		&model.MealComment{},
+		&model.Notification{},
 		&model.Order{},
 		&model.OrderItem{},
+		&model.MealPlan{},
+		&model.MealPlanItem{},
+		&model.Meal{},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)

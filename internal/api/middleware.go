@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/arafat-hasan/mealsync/internal/models"
+	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,7 +38,7 @@ func AuthMiddleware() gin.HandlerFunc {
 func AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// TODO: Get user from context after authentication
-		user := &models.User{
+		user := &model.User{
 			Role: "admin", // This should come from the authenticated user
 		}
 
