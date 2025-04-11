@@ -1,3 +1,10 @@
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS meal_comments;
 DROP TABLE IF EXISTS meal_requests;
+DROP TABLE IF EXISTS meal_menu_items;
+DROP TABLE IF EXISTS meal_menus;
 DROP TABLE IF EXISTS menu_items;
+DROP TABLE IF EXISTS restaurants;
 DROP TABLE IF EXISTS users; 

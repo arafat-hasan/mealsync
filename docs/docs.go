@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/login": {
             "post": {
-                "description": "Authenticate user and return JWT token",
+                "description": "Authenticate user and return JWT tokens",
                 "consumes": [
                     "application/json"
                 ],
@@ -317,9 +317,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/register": {
+        "/refresh": {
             "post": {
-                "description": "Register a new user with the provided details",
+                "description": "Get a new access token using a refresh token",
                 "consumes": [
                     "application/json"
                 ],
@@ -329,10 +329,56 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Register a new user",
+                "summary": "Refresh access token",
                 "parameters": [
                     {
-                        "description": "User registration details",
+                        "description": "Refresh token",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.RefreshTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.TokenPair"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Create a new user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register new user",
+                "parameters": [
+                    {
+                        "description": "User registration data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -345,7 +391,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/api.SuccessResponse"
+                            "$ref": "#/definitions/api.UserResponse"
                         }
                     },
                     "400": {
@@ -354,8 +400,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
@@ -409,59 +455,59 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string",
-                    "example": "john.doe@example.com"
+                    "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "example": "password123"
+                    "type": "string"
                 }
             }
         },
         "api.LoginResponse": {
             "type": "object",
             "properties": {
-                "token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/api.UserResponse"
+                }
+            }
+        },
+        "api.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
                 }
             }
         },
         "api.RegisterRequest": {
             "type": "object",
             "required": [
-                "department",
                 "email",
-                "employee_id",
                 "first_name",
                 "last_name",
                 "password"
             ],
             "properties": {
-                "department": {
-                    "type": "string",
-                    "example": "Engineering"
-                },
                 "email": {
-                    "type": "string",
-                    "example": "john.doe@example.com"
-                },
-                "employee_id": {
-                    "type": "string",
-                    "example": "EMP001"
+                    "type": "string"
                 },
                 "first_name": {
-                    "type": "string",
-                    "example": "John"
+                    "type": "string"
                 },
                 "last_name": {
-                    "type": "string",
-                    "example": "Doe"
+                    "type": "string"
                 },
                 "password": {
                     "type": "string",
-                    "minLength": 6,
-                    "example": "password123"
+                    "minLength": 6
                 }
             }
         },
@@ -470,6 +516,26 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "api.UserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/model.UserRole"
                 }
             }
         },
@@ -498,6 +564,30 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.UserRole": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "employee",
+                "manager"
+            ],
+            "x-enum-varnames": [
+                "UserRoleAdmin",
+                "UserRoleEmployee",
+                "UserRoleManager"
+            ]
+        },
+        "service.TokenPair": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -507,7 +597,12 @@ const docTemplate = `{
             "name": "Authorization",
             "in": "header"
         }
-    }
+    },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ]
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

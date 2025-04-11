@@ -12,6 +12,7 @@ func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealHandl
 	{
 		public.POST("/register", authHandler.Register)
 		public.POST("/login", authHandler.Login)
+		public.POST("/refresh", authHandler.RefreshToken)
 	}
 
 	// Protected routes

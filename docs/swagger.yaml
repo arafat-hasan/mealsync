@@ -28,10 +28,8 @@ definitions:
   api.LoginRequest:
     properties:
       email:
-        example: john.doe@example.com
         type: string
       password:
-        example: password123
         type: string
     required:
     - email
@@ -39,35 +37,33 @@ definitions:
     type: object
   api.LoginResponse:
     properties:
-      token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      access_token:
         type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/api.UserResponse'
+    type: object
+  api.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
     type: object
   api.RegisterRequest:
     properties:
-      department:
-        example: Engineering
-        type: string
       email:
-        example: john.doe@example.com
-        type: string
-      employee_id:
-        example: EMP001
         type: string
       first_name:
-        example: John
         type: string
       last_name:
-        example: Doe
         type: string
       password:
-        example: password123
         minLength: 6
         type: string
     required:
-    - department
     - email
-    - employee_id
     - first_name
     - last_name
     - password
@@ -76,6 +72,19 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  api.UserResponse:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      role:
+        $ref: '#/definitions/model.UserRole'
     type: object
   model.Meal:
     properties:
@@ -92,6 +101,23 @@ definitions:
           type: string
         type: array
       updated_at:
+        type: string
+    type: object
+  model.UserRole:
+    enum:
+    - admin
+    - employee
+    - manager
+    type: string
+    x-enum-varnames:
+    - UserRoleAdmin
+    - UserRoleEmployee
+    - UserRoleManager
+  service.TokenPair:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
         type: string
     type: object
 host: localhost:8080
@@ -112,7 +138,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Authenticate user and return JWT token
+      description: Authenticate user and return JWT tokens
       parameters:
       - description: Login credentials
         in: body
@@ -303,13 +329,43 @@ paths:
       summary: Update a meal
       tags:
       - meals
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Get a new access token using a refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Refresh access token
+      tags:
+      - auth
   /register:
     post:
       consumes:
       - application/json
-      description: Register a new user with the provided details
+      description: Create a new user account
       parameters:
-      - description: User registration details
+      - description: User registration data
         in: body
         name: request
         required: true
@@ -321,18 +377,20 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/api.SuccessResponse'
+            $ref: '#/definitions/api.UserResponse'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-        "500":
-          description: Internal Server Error
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-      summary: Register a new user
+      summary: Register new user
       tags:
       - auth
+security:
+- BearerAuth: []
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 
 	_ "github.com/arafat-hasan/mealsync/docs"
 	"github.com/arafat-hasan/mealsync/internal/api"
@@ -34,6 +35,8 @@ import (
 // @in header
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
+
+// @security BearerAuth
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -59,12 +62,17 @@ func main() {
 	// Initialize router
 	router := gin.Default()
 
+	// Load HTML templates from docs directory
+	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
+
 	// API routes
 	api.SetupRoutes(router, authHandler, mealHandler)
 
-	// Documentation routes
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.Static("/redoc", "./docs/redoc")
+	// Documentation routes with custom configuration
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.PersistAuthorization(true),
+		ginSwagger.DeepLinking(true),
+	))
 
 	// Start server
 	if err := router.Run(":8080"); err != nil {
