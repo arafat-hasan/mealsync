@@ -72,6 +72,8 @@ func main() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
 		ginSwagger.PersistAuthorization(true),
 		ginSwagger.DeepLinking(true),
+		ginSwagger.DefaultModelsExpandDepth(-1), // Hide models section
+		ginSwagger.DocExpansion("none"),         // Collapse all endpoints by default
 	))
 
 	// Start server

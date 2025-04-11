@@ -31,7 +31,6 @@ type CreateMealRequest struct {
 // @Tags meals
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer {token}"
 // @Param meal body CreateMealRequest true "Meal details"
 // @Success 201 {object} model.Meal
 // @Failure 400 {object} ErrorResponse
@@ -62,7 +61,6 @@ func (h *MealHandler) CreateMeal(c *gin.Context) {
 // @Description Get a list of all meals
 // @Tags meals
 // @Produce json
-// @Param Authorization header string true "Bearer {token}"
 // @Success 200 {array} model.Meal
 // @Failure 401 {object} ErrorResponse
 // @Router /meals [get]
@@ -80,7 +78,6 @@ func (h *MealHandler) GetMeals(c *gin.Context) {
 // @Description Get a specific meal by its ID
 // @Tags meals
 // @Produce json
-// @Param Authorization header string true "Bearer {token}"
 // @Param id path int true "Meal ID"
 // @Success 200 {object} model.Meal
 // @Failure 401 {object} ErrorResponse
@@ -107,7 +104,6 @@ func (h *MealHandler) GetMealByID(c *gin.Context) {
 // @Tags meals
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "Bearer {token}"
 // @Param id path int true "Meal ID"
 // @Param meal body CreateMealRequest true "Updated meal details"
 // @Success 200 {object} model.Meal
@@ -147,7 +143,6 @@ func (h *MealHandler) UpdateMeal(c *gin.Context) {
 // @Description Delete a meal by its ID
 // @Tags meals
 // @Produce json
-// @Param Authorization header string true "Bearer {token}"
 // @Param id path int true "Meal ID"
 // @Success 200 {object} SuccessResponse
 // @Failure 401 {object} ErrorResponse

@@ -46,6 +46,16 @@
                     if (token) {
                         ui.preauthorizeApiKey("BearerAuth", "Bearer " + token);
                     }
+                },
+                requestInterceptor: function(request) {
+                    // Ensure Authorization header has Bearer prefix
+                    if (request.headers.Authorization) {
+                        const token = request.headers.Authorization;
+                        if (!token.startsWith('Bearer ')) {
+                            request.headers.Authorization = 'Bearer ' + token;
+                        }
+                    }
+                    return request;
                 }
             });
             window.ui = ui;

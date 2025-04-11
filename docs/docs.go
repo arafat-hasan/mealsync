@@ -80,15 +80,6 @@ const docTemplate = `{
                     "meals"
                 ],
                 "summary": "Get all meals",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -120,13 +111,6 @@ const docTemplate = `{
                 ],
                 "summary": "Create a new meal",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Meal details",
                         "name": "meal",
@@ -171,13 +155,6 @@ const docTemplate = `{
                 "summary": "Get meal by ID",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Meal ID",
                         "name": "id",
@@ -219,13 +196,6 @@ const docTemplate = `{
                 ],
                 "summary": "Update a meal",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Meal ID",
@@ -280,13 +250,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a meal",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Meal ID",

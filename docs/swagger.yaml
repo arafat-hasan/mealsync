@@ -167,12 +167,6 @@ paths:
   /meals:
     get:
       description: Get a list of all meals
-      parameters:
-      - description: Bearer {token}
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -194,11 +188,6 @@ paths:
       - application/json
       description: Create a new meal with menu items
       parameters:
-      - description: Bearer {token}
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Meal details
         in: body
         name: meal
@@ -227,11 +216,6 @@ paths:
     delete:
       description: Delete a meal by its ID
       parameters:
-      - description: Bearer {token}
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Meal ID
         in: path
         name: id
@@ -258,11 +242,6 @@ paths:
     get:
       description: Get a specific meal by its ID
       parameters:
-      - description: Bearer {token}
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Meal ID
         in: path
         name: id
@@ -291,11 +270,6 @@ paths:
       - application/json
       description: Update an existing meal's details
       parameters:
-      - description: Bearer {token}
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: Meal ID
         in: path
         name: id

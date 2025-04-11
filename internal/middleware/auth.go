@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -46,9 +46,25 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Get user ID from 'sub' claim
+		userID, ok := claims["sub"].(float64)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID in token"})
+			c.Abort()
+			return
+		}
+
+		// Get role from 'role' claim
+		role, ok := claims["role"].(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid role in token"})
+			c.Abort()
+			return
+		}
+
 		// Set user information in context
-		c.Set("user_id", claims["user_id"])
-		c.Set("role", claims["role"])
+		c.Set("user_id", uint(userID))
+		c.Set("role", role)
 
 		c.Next()
 	}

@@ -74,15 +74,6 @@
                     "meals"
                 ],
                 "summary": "Get all meals",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -114,13 +105,6 @@
                 ],
                 "summary": "Create a new meal",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Meal details",
                         "name": "meal",
@@ -165,13 +149,6 @@
                 "summary": "Get meal by ID",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Meal ID",
                         "name": "id",
@@ -213,13 +190,6 @@
                 ],
                 "summary": "Update a meal",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Meal ID",
@@ -274,13 +244,6 @@
                 ],
                 "summary": "Delete a meal",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Meal ID",
