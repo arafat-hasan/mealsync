@@ -1,6 +1,7 @@
 # MealSync - Software Requirements Specification (SRS)
 
 ## 1. Overview
+
 **Project Name:** MealSync  
 **Purpose:** MealSync is a RESTful API service designed to streamline meal planning, employee meal preferences, and final meal estimations for organizations. It aims to reduce food wastage and eliminate manual errors in meal planning by providing a structured and automated system for meal management.
 
@@ -8,12 +9,14 @@
 MealSync enables employees to confirm their participation in scheduled meals (e.g., breakfast, lunch, snacks) and allows administrators to efficiently plan, track, and report meal requests. The system integrates with attendance systems to ensure accurate meal estimations and reduce food wastage. By automating meal planning and providing real-time insights, MealSync helps organizations save costs and improve employee satisfaction.
 
 **Key Features:**
+
 - Employees can view upcoming meal events and submit meal requests.
 - Administrators can create meal events, add menu sets, and track meal preferences.
 - Real-time integration with attendance systems to exclude employees on leave.
 - Detailed reporting and analytics for meal planning and wastage reduction.
 
 **Technology Stack:**
+
 - Language: Go
 - Web Framework: Gin
 - ORM: GORM
@@ -24,7 +27,9 @@ MealSync enables employees to confirm their participation in scheduled meals (e.
 ## 2. User Roles
 
 ### 2.1 Admin
+
 Admins are responsible for managing meal events and overseeing the entire meal planning process. Their key responsibilities include:
+
 - Setting up meal events up to 30 days in advance.
 - Creating and managing menu sets and menu items.
 - Assigning multiple locations to meal events.
@@ -36,7 +41,9 @@ Admins are responsible for managing meal events and overseeing the entire meal p
 - Integrating with external attendance/leave systems via API to exclude employees on leave.
 
 ### 2.2 Employee (User)
+
 Employees are the end-users who interact with the system to manage their meal preferences. Their key responsibilities include:
+
 - Logging in and registering using JWT-based authentication.
 - Viewing upcoming meal events created by the admin.
 - Submitting meal requests for available meal events.
@@ -51,11 +58,13 @@ Employees are the end-users who interact with the system to manage their meal pr
 ## 3. Functional Requirements
 
 ### 3.1 Meal Planning (Admin)
+
 - Create/edit/delete meal events for future dates (max 30 days).
 - Add multiple menu sets sets per event.
 - Set cutoff times
 
 ### 3.2 Meal Requesting (Employee)
+
 - Submit meal requests for available meal events.
 - Choose preferred set
 - Withdraw request before cutoff time.
@@ -64,11 +73,13 @@ Employees are the end-users who interact with the system to manage their meal pr
 - Receive reminders to submit meal requests.
 
 ### 3.3 Meal Comments (Employee)
+
 - Post public comments on meal item of a meal event.
 - View all employee comments.
 - Comments are visible to all; meal requests are private.
 
 ### 3.4 Estimation (Admin)
+
 - View requested meal sets by day.
 - Breakdown of meal choices by department, item, date.
 - Only confirmed meals (post-cutoff) count toward final estimation.
@@ -79,6 +90,7 @@ Employees are the end-users who interact with the system to manage their meal pr
 ## 4. Non-Functional Requirements
 
 ### 4.1 Architecture
+
 - Follow clean MVC architecture with isolated concerns:
   - DTO layer
   - Controller/API layer
@@ -95,6 +107,7 @@ Employees are the end-users who interact with the system to manage their meal pr
 - Add circuit breakers (e.g., Resilience4j) and retry mechanisms with exponential backoff for resilience.
 
 ### 4.2 API Design
+
 - Fully RESTful JSON APIs.
 - No frontend logic in this project.
 - Swagger documentation for all endpoints.
@@ -111,6 +124,7 @@ Employees are the end-users who interact with the system to manage their meal pr
 - Define a consistent error response format (e.g., HTTP status codes, error codes, and messages).
 
 ### 4.3 Security
+
 - JWT-based auth with access and refresh tokens.
 - Role-based middleware access control.
 - Secure password storage (bcrypt).
@@ -121,27 +135,33 @@ Employees are the end-users who interact with the system to manage their meal pr
 - Add optional Multi-Factor Authentication (MFA) for admin accounts to enhance security.
 
 ### 4.4 Performance
+
 - Define specific performance metrics (e.g., API response time < 200ms for 95% of requests).
 - Conduct load testing to ensure the system can handle peak traffic.
 
 ### 4.5 Disaster Recovery
+
 - Implement automated backups and a disaster recovery plan with defined RPO (Recovery Point Objective) and RTO (Recovery Time Objective).
 
 ### 4.6 Internationalization (i18n)
+
 - Add support for multiple languages and time zones to make the system globally usable.
 
 ### 4.7 Compliance
+
 - Ensure compliance with relevant regulations (e.g., GDPR for data privacy).
 
 ## 5. Integration
 
 ### 5.1 Attendance API Integration
+
 - MealSync will call an external service to determine employee presence or leave status.
 - On final meal confirmation (post-cutoff), any user on leave will have their request auto-cancelled.
 
 ## 6. Database Schema Design
 
 ### Core Tables
+
 ```sql
 
 CREATE TABLE users (
@@ -390,9 +410,10 @@ GROUP BY
 
 ---
 
-
 ## 7. Success Metrics
+
 Define measurable success criteria to evaluate the system's effectiveness:
+
 - Reduction in food wastage by 20% within the first 6 months.
 - Average API response time under 200ms for 95% of requests.
 - User adoption rate: 80% of employees actively using the system within 3 months of deployment.
@@ -401,12 +422,14 @@ Define measurable success criteria to evaluate the system's effectiveness:
 ## 8. Assumptions and Constraints
 
 ### 8.1 Assumptions
+
 - Employees will have access to the internet to use the system.
 - Admins will provide accurate meal event details and cutoff times.
 - The system will primarily be used during business hours.
 - Employees will use modern browsers that support the latest web standards.
 
 ### 8.2 Constraints
+
 - The system must support up to 10,000 users concurrently.
 - Deployment is limited to PostgreSQL as the database.
 - The system must comply with GDPR for data privacy.
@@ -415,27 +438,34 @@ Define measurable success criteria to evaluate the system's effectiveness:
 ## 9. Testing Requirements
 
 ### 9.1 Unit Testing
+
 - Ensure coverage for all critical business logic, including meal requests, menu set selection, and reporting.
 
 ### 9.2 Integration Testing
+
 - Validate seamless interaction between modules (e.g., meal requests and reporting).
 
 ### 9.3 Load Testing
+
 - Simulate peak traffic to ensure the system can handle up to 10,000 concurrent users.
 
 ### 9.4 Security Testing
+
 - Validate against OWASP Top 10 vulnerabilities, including SQL injection, XSS, and CSRF.
 
 ### 9.5 User Acceptance Testing (UAT)
+
 - Conduct UAT with a sample group of employees and admins to ensure the system meets business requirements.
 
 ## 10. Deployment and Maintenance
 
 ### 10.1 Deployment
+
 - Use a CI/CD pipeline for automated builds, testing, and deployment.
 - Use containerization (e.g., Docker) and orchestration (e.g., Kubernetes) for scalability.
 
 ### 10.2 Maintenance
+
 - Schedule regular maintenance windows for updates and patches.
 - Implement automated backups with a retention period of 30 days.
 - Monitor system health using tools like Prometheus and Grafana.
@@ -443,16 +473,19 @@ Define measurable success criteria to evaluate the system's effectiveness:
 ## 11. User Stories
 
 ### 11.1 Employee User Stories
+
 - **As an employee**, I want to select a menu set and location for a meal event so that I can confirm my participation.
 - **As an employee**, I want to deselect items within a menu set so that I can customize my meal.
 - **As an employee**, I want to withdraw my meal request before the cutoff time so that I can update my plans.
 
 ### 11.2 Admin User Stories
+
 - **As an admin**, I want to create meal events with multiple menu sets and locations so that employees can make their selections.
 - **As an admin**, I want to view reports on meal requests by location so that I can plan food quantities accurately.
 - **As an admin**, I want to export meal request data to Excel so that I can share it with catering services.
 
 ## 12. Future Enhancements
+
 - Connect with google chat for employees to manage meal requests on the go.
 - Add AI-based meal quantity prediction to further reduce wastage.
 - Integrate with payment systems for paid meal events.
