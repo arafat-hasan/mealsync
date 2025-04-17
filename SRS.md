@@ -184,6 +184,7 @@ CREATE INDEX idx_users_deleted_at ON users(deleted_at);
 CREATE TABLE event_addresses (
   id SERIAL PRIMARY KEY,
   address TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT TRUE,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
@@ -212,7 +213,7 @@ CREATE TABLE menu_sets (
   id SERIAL PRIMARY KEY,
   menu_set_name TEXT NOT NULL,
   menu_set_description TEXT,
-  menu_set_is_active BOOLEAN DEFAULT TRUE,
+  is_active BOOLEAN DEFAULT TRUE,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
@@ -244,7 +245,7 @@ CREATE TABLE meal_events (
   event_duration INT NOT NULL, -- in minutes
   cutoff_time TIMESTAMP NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
-  is_confirmed BOOLEAN DEFAULT FALSE,
+  confirmed_at TIMESTAMP DEFAULT NULL,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
@@ -293,10 +294,9 @@ CREATE TABLE meal_requests (
   employee_id INT REFERENCES users(id) ON DELETE CASCADE,
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
   event_menu_set_id INT,
-  address_id INT,
+  meal_event_address_id INT,
+  confirmed_at TIMESTAMP DEFAULT NULL,
   deleted_at TIMESTAMP DEFAULT NULL,
-  is_confirmed BOOLEAN DEFAULT FALSE,
-  confirmed_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   created_by INT REFERENCES users(id),
@@ -305,8 +305,8 @@ CREATE TABLE meal_requests (
   CONSTRAINT fk_event_menu_set FOREIGN KEY (meal_event_id, event_menu_set_id) 
     REFERENCES meal_event_menu_sets(meal_event_id, id),
   -- Composite foreign key for event address
-  CONSTRAINT fk_event_address FOREIGN KEY (meal_event_id, address_id) 
-    REFERENCES meal_event_addresses(meal_event_id, address_id),
+  CONSTRAINT fk_event_address FOREIGN KEY (meal_event_id, meal_event_address_id) 
+    REFERENCES meal_event_addresses(meal_event_id, id),
   CONSTRAINT uq_employee_event UNIQUE(employee_id, meal_event_id)
 );
 
@@ -340,18 +340,19 @@ CREATE TABLE meal_comments (
   id SERIAL PRIMARY KEY,
   employee_id INT REFERENCES users(id) ON DELETE CASCADE, 
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
-  menu_set_id INT,
+  event_menu_set_id INT,
   menu_item_id INT,
   comment TEXT NOT NULL,
+  rating INT CHECK (rating >= 1 AND rating <= 5),
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   created_by INT REFERENCES users(id),
   updated_by INT REFERENCES users(id),
-  CONSTRAINT fk_menu_set_event FOREIGN KEY (meal_event_id, menu_set_id) 
+  CONSTRAINT fk_menu_set_event FOREIGN KEY (meal_event_id, event_menu_set_id) 
     REFERENCES meal_event_menu_sets(meal_event_id, id),
-  CONSTRAINT fk_menu_item_set FOREIGN KEY (menu_set_id, menu_item_id) 
-    REFERENCES menu_set_items(menu_set_id, menu_item_id)
+  -- Add a composite foreign key constraint to enforce the relationship between menu_item_id, menu_set_id, and meal_event_menu_set_item_id
+  CONSTRAINT fk_menu_item_event_set FOREIGN KEY (menu_item_id, event_menu_set_id) REFERENCES menu_set_items(menu_item_id, id) ON DELETE CASCADE;
 );
 
 CREATE INDEX idx_meal_comments_deleted_at ON meal_comments(deleted_at);
