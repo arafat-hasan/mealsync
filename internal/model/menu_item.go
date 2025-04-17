@@ -1,20 +1,19 @@
 package model
 
-// MenuItem represents a menu item in a restaurant
+// MenuItem represents a menu item in the system
 type MenuItem struct {
 	Base
-	RestaurantID uint          `json:"restaurant_id" gorm:"not null"`
-	Name         string        `json:"name" gorm:"not null"`
-	Description  string        `json:"description"`
-	Price        float64       `json:"price" gorm:"not null"`
-	Image        string        `json:"image"`
-	Category     string        `json:"category" gorm:"not null"`
-	MealType     MealType      `json:"meal_type" gorm:"not null"` // breakfast, lunch, snacks
-	SetName      string        `json:"set_name"`                  // Set A, Set B, etc. (for lunch only)
-	IsAvailable  bool          `json:"is_available" gorm:"not null;default:true"`
-	Restaurant   Restaurant    `json:"restaurant" gorm:"foreignKey:RestaurantID"`
-	OrderItems   []OrderItem   `json:"order_items" gorm:"foreignKey:MenuItemID"`
-	MealRequests []MealRequest `json:"meal_requests" gorm:"foreignKey:MenuItemID"`
+	Name             string            `json:"name" gorm:"not null;unique"`
+	Description      string            `json:"description"`
+	ImageURL         string            `json:"image_url"`
+	IsActive         bool              `json:"is_active" gorm:"default:true"`
+	CreatedBy        uint              `json:"created_by"`
+	UpdatedBy        uint              `json:"updated_by"`
+	CreatedByUser    User              `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
+	UpdatedByUser    User              `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
+	MenuSetItems     []MenuSetItem     `json:"menu_set_items" gorm:"foreignKey:MenuItemID"`
+	MealRequestItems []MealRequestItem `json:"meal_request_items" gorm:"foreignKey:MenuItemID"`
+	MealComments     []MealComment     `json:"meal_comments" gorm:"foreignKey:MenuItemID"`
 }
 
 // MealType represents the type of meal

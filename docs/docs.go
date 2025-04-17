@@ -70,23 +70,31 @@ const docTemplate = `{
                 }
             }
         },
-        "/meals": {
+        "/meal-requests": {
             "get": {
-                "description": "Get a list of all meals",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all meal requests for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "meals"
+                    "meal-requests"
                 ],
-                "summary": "Get all meals",
+                "summary": "List meal requests",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Meal"
+                                "$ref": "#/definitions/model.MealRequest"
                             }
                         }
                     },
@@ -95,11 +103,22 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
                     }
                 }
             },
             "post": {
-                "description": "Create a new meal with menu items",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new meal request",
                 "consumes": [
                     "application/json"
                 ],
@@ -107,17 +126,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meals"
+                    "meal-requests"
                 ],
-                "summary": "Create a new meal",
+                "summary": "Create meal request",
                 "parameters": [
                     {
-                        "description": "Meal details",
-                        "name": "meal",
+                        "description": "Meal Request Data",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.CreateMealRequest"
+                            "$ref": "#/definitions/model.MealRequest"
                         }
                     }
                 ],
@@ -125,7 +144,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.Meal"
+                            "$ref": "#/definitions/model.MealRequest"
                         }
                     },
                     "400": {
@@ -136,6 +155,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
@@ -143,48 +168,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/meals/{id}": {
+        "/meal-requests/{id}": {
             "get": {
-                "description": "Get a specific meal by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "meals"
-                ],
-                "summary": "Get meal by ID",
-                "parameters": [
+                "security": [
                     {
-                        "type": "integer",
-                        "description": "Meal ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "BearerAuth": []
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Meal"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update an existing meal's details",
+                "description": "Get a specific meal request by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -192,32 +183,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meals"
+                    "meal-requests"
                 ],
-                "summary": "Update a meal",
+                "summary": "Get meal request by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Meal ID",
+                        "description": "Meal Request ID",
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Updated meal details",
-                        "name": "meal",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.CreateMealRequest"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Meal"
+                            "$ref": "#/definitions/model.MealRequest"
                         }
                     },
                     "400": {
@@ -237,22 +219,110 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
                     }
                 }
             },
-            "delete": {
-                "description": "Delete a meal by its ID",
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing meal request",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "meals"
+                    "meal-requests"
                 ],
-                "summary": "Delete a meal",
+                "summary": "Update meal request",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Meal ID",
+                        "description": "Meal Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Meal Request Data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MealRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete an existing meal request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-requests"
+                ],
+                "summary": "Delete meal request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Request ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -265,6 +335,82 @@ const docTemplate = `{
                             "$ref": "#/definitions/api.SuccessResponse"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/meal-requests/{id}/items": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all items in a specific meal request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-requests"
+                ],
+                "summary": "List meal request items",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MealRequestItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
@@ -276,44 +422,11 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
-                    }
-                }
-            }
-        },
-        "/menus": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all menus, optionally filtered by date",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "menus"
-                ],
-                "summary": "Get all menus",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Filter by date (YYYY-MM-DD)",
-                        "name": "date",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.MealMenu"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -324,7 +437,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new menu",
+                "description": "Add a new item to an existing meal request",
                 "consumes": [
                     "application/json"
                 ],
@@ -332,17 +445,284 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "meal-requests"
                 ],
-                "summary": "Create a new menu",
+                "summary": "Add item to meal request",
                 "parameters": [
                     {
-                        "description": "Menu to create",
-                        "name": "menu",
+                        "type": "integer",
+                        "description": "Meal Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Meal Request Item Data",
+                        "name": "item",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.MealMenu"
+                            "$ref": "#/definitions/model.MealRequestItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealRequestItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/meal-requests/{id}/items/{item_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove an item from an existing meal request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-requests"
+                ],
+                "summary": "Remove item from meal request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "item_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/meal-requests/{id}/status": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update the status of a specific meal request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-requests"
+                ],
+                "summary": "Update meal request status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New Status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "accepted",
+                                "rejected",
+                                "completed"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/meals": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all meal events for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meals"
+                ],
+                "summary": "List meal events",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MealEvent"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new meal event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meals"
+                ],
+                "summary": "Create meal event",
+                "parameters": [
+                    {
+                        "description": "Meal Event Data",
+                        "name": "meal",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MealEvent"
                         }
                     }
                 ],
@@ -350,29 +730,38 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.MealMenu"
+                            "$ref": "#/definitions/model.MealEvent"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/menus/{id}": {
+        "/meals/{id}": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a menu by its ID",
+                "description": "Get a specific meal event by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -380,13 +769,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "meals"
                 ],
-                "summary": "Get a menu by ID",
+                "summary": "Get meal event by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Menu ID",
+                        "description": "Meal Event ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -396,16 +785,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.MealMenu"
+                            "$ref": "#/definitions/model.MealEvent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -416,7 +820,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update an existing menu",
+                "description": "Update an existing meal event",
                 "consumes": [
                     "application/json"
                 ],
@@ -424,24 +828,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "meals"
                 ],
-                "summary": "Update a menu",
+                "summary": "Update meal event",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Menu ID",
+                        "description": "Meal Event ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Menu to update",
-                        "name": "menu",
+                        "description": "Meal Event Data",
+                        "name": "meal",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.MealMenu"
+                            "$ref": "#/definitions/model.MealEvent"
                         }
                     }
                 ],
@@ -449,25 +853,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.MealMenu"
+                            "$ref": "#/definitions/model.MealEvent"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -478,7 +894,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete a menu by its ID",
+                "description": "Delete an existing meal event",
                 "consumes": [
                     "application/json"
                 ],
@@ -486,51 +902,66 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "meals"
                 ],
-                "summary": "Delete a menu",
+                "summary": "Delete meal event",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Menu ID",
+                        "description": "Meal Event ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SuccessResponse"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/menus/{id}/items": {
+        "/meals/{meal_event_id}/comments": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get all menu items for a specific menu",
+                "description": "Get all comments for a specific meal event",
                 "consumes": [
                     "application/json"
                 ],
@@ -538,22 +969,533 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "meal-comments"
                 ],
-                "summary": "Get menu items",
+                "summary": "List meal comments",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Menu ID",
+                        "description": "Meal Event ID",
+                        "name": "meal_event_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MealComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new comment for a meal event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-comments"
+                ],
+                "summary": "Create comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Event ID",
+                        "name": "meal_event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Comment Data",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MealComment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealComment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/meals/{meal_event_id}/comments/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a specific comment by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-comments"
+                ],
+                "summary": "Get comment by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Event ID",
+                        "name": "meal_event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealComment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing comment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-comments"
+                ],
+                "summary": "Update comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Event ID",
+                        "name": "meal_event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "description": "Comment Data",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MealComment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealComment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete an existing comment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-comments"
+                ],
+                "summary": "Delete comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Event ID",
+                        "name": "meal_event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/meals/{meal_event_id}/comments/{id}/replies": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all replies to a specific comment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-comments"
+                ],
+                "summary": "List comment replies",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Meal Event ID",
+                        "name": "meal_event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MealComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-items": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all menu items for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "List menu items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MenuItem"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new menu item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "Create menu item",
+                "parameters": [
+                    {
+                        "description": "Menu Item Data",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-items/category/{category}": {
+            "get": {
+                "description": "Retrieves all menu items belonging to a specific category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "Get menu items by category",
+                "parameters": [
+                    {
                         "type": "string",
-                        "description": "Filter by date (YYYY-MM-DD)",
-                        "name": "date",
-                        "in": "query"
+                        "description": "Category name",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -569,19 +1511,309 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-items/menu-set/{menu_set_id}": {
+            "get": {
+                "description": "Retrieves all menu items belonging to a specific menu set",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "Get menu items by menu set",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Menu Set ID",
+                        "name": "menu_set_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MenuItem"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-items/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a specific menu item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "Get menu item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing menu item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "Update menu item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Menu Item Data",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete an existing menu item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-items"
+                ],
+                "summary": "Delete menu item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-sets": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all menu sets for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-sets"
+                ],
+                "summary": "List menu sets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MenuSet"
                             }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -592,7 +1824,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Add a menu item to a menu",
+                "description": "Create a new menu set",
                 "consumes": [
                     "application/json"
                 ],
@@ -600,25 +1832,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "menu-sets"
                 ],
-                "summary": "Add a menu item to a menu",
+                "summary": "Create menu set",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Menu ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Menu item to add",
-                        "name": "item",
+                        "description": "Menu Set Data",
+                        "name": "menuSet",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.MenuSet"
                         }
                     }
                 ],
@@ -626,38 +1850,38 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.MealMenuItem"
+                            "$ref": "#/definitions/model.MenuSet"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/menus/{id}/items/{item_id}": {
-            "delete": {
+        "/menu-sets/{id}": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Remove a menu item from a menu",
+                "description": "Get a specific menu set by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -665,13 +1889,351 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "menus"
+                    "menu-sets"
                 ],
-                "summary": "Remove a menu item from a menu",
+                "summary": "Get menu set by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Menu ID",
+                        "description": "Menu Set ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuSet"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing menu set",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-sets"
+                ],
+                "summary": "Update menu set",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Set ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Menu Set Data",
+                        "name": "menuSet",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuSet"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuSet"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete an existing menu set",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-sets"
+                ],
+                "summary": "Delete menu set",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Set ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-sets/{id}/items": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all items in a specific menu set",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-sets"
+                ],
+                "summary": "List menu set items",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Set ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MenuItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add a menu item to an existing menu set",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-sets"
+                ],
+                "summary": "Add menu item to set",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Set ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Menu Item Data",
+                        "name": "menuItem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuSetItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.MenuSetItem"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-sets/{id}/items/{item_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove a menu item from an existing menu set",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-sets"
+                ],
+                "summary": "Remove menu item from set",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Set ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -685,25 +2247,40 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SuccessResponse"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -800,37 +2377,73 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{user_id}/comments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all comments made by a specific user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meal-comments"
+                ],
+                "summary": "List user comments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MealComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "api.CreateMealRequest": {
-            "type": "object",
-            "required": [
-                "date",
-                "menu_items"
-            ],
-            "properties": {
-                "date": {
-                    "type": "string",
-                    "example": "2024-03-20"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Special lunch menu for the week"
-                },
-                "menu_items": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "['Chicken Curry'",
-                        " 'Rice'",
-                        " 'Salad']"
-                    ]
-                }
-            }
-        },
         "api.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -883,18 +2496,14 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "first_name",
-                "last_name",
+                "name",
                 "password"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
+                "name": {
                     "type": "string"
                 },
                 "password": {
@@ -917,13 +2526,10 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "last_name": {
+                "name": {
                     "type": "string"
                 },
                 "role": {
@@ -931,29 +2537,38 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Meal": {
+        "model.EventAddress": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
-                "date": {
-                    "type": "string"
+                "created_by": {
+                    "type": "integer"
                 },
-                "description": {
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "menu_items": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "is_active": {
+                    "type": "boolean"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
@@ -966,14 +2581,47 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "date": {
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
                     "type": "string"
+                },
+                "event_menu_set": {
+                    "$ref": "#/definitions/model.MealEventMenuSet"
+                },
+                "event_menu_set_id": {
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
                 },
+                "meal_event": {
+                    "$ref": "#/definitions/model.MealEvent"
+                },
+                "meal_event_id": {
+                    "type": "integer"
+                },
+                "menu_item": {
+                    "$ref": "#/definitions/model.MenuItem"
+                },
+                "menu_item_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer"
+                },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "user": {
                     "$ref": "#/definitions/model.User"
@@ -983,9 +2631,18 @@ const docTemplate = `{
                 }
             }
         },
-        "model.MealMenu": {
+        "model.MealEvent": {
             "type": "object",
             "properties": {
+                "addresses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MealEventAddress"
+                    }
+                },
+                "confirmed_at": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -998,8 +2655,18 @@ const docTemplate = `{
                 "cutoff_time": {
                     "type": "string"
                 },
-                "date": {
+                "deleted_at": {
                     "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "event_date": {
+                    "type": "string"
+                },
+                "event_duration": {
+                    "description": "in minutes",
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
@@ -1007,75 +2674,225 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
+                "meal_comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MealComment"
+                    }
+                },
                 "meal_requests": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.MealRequest"
                     }
                 },
-                "meal_type": {
-                    "$ref": "#/definitions/model.MealType"
-                },
-                "menu_items": {
+                "menu_sets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealMenuItem"
+                        "$ref": "#/definitions/model.MealEventMenuSet"
                     }
+                },
+                "name": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "model.MealMenuItem": {
+        "model.MealEventAddress": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.EventAddress"
+                },
+                "address_id": {
+                    "type": "integer"
+                },
                 "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "meal_menu": {
-                    "$ref": "#/definitions/model.MealMenu"
+                "meal_event": {
+                    "$ref": "#/definitions/model.MealEvent"
                 },
-                "meal_menu_id": {
+                "meal_event_id": {
                     "type": "integer"
                 },
-                "menu_item": {
-                    "$ref": "#/definitions/model.MenuItem"
+                "updated_at": {
+                    "type": "string"
                 },
-                "menu_item_id": {
+                "updated_by": {
                     "type": "integer"
                 },
-                "set_name": {
-                    "description": "Set A, Set B, etc. (for lunch only)",
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.MealEventMenuSet": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "meal_event": {
+                    "$ref": "#/definitions/model.MealEvent"
+                },
+                "meal_event_id": {
+                    "type": "integer"
+                },
+                "menu_set": {
+                    "$ref": "#/definitions/model.MenuSet"
+                },
+                "menu_set_id": {
+                    "type": "integer"
+                },
+                "note": {
                     "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
         "model.MealRequest": {
             "type": "object",
             "properties": {
+                "confirmed_at": {
+                    "type": "string"
+                },
                 "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "event_address": {
+                    "$ref": "#/definitions/model.MealEventAddress"
+                },
+                "event_menu_set": {
+                    "$ref": "#/definitions/model.MealEventMenuSet"
+                },
+                "event_menu_set_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "meal_event": {
+                    "$ref": "#/definitions/model.MealEvent"
+                },
+                "meal_event_address_id": {
+                    "type": "integer"
+                },
+                "meal_event_id": {
+                    "type": "integer"
+                },
+                "request_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MealRequestItem"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.MealRequestItem": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "menu": {
-                    "$ref": "#/definitions/model.MealMenu"
+                "is_selected": {
+                    "type": "boolean"
                 },
-                "menu_id": {
+                "meal_request": {
+                    "$ref": "#/definitions/model.MealRequest"
+                },
+                "meal_request_id": {
                     "type": "integer"
                 },
                 "menu_item": {
                     "$ref": "#/definitions/model.MenuItem"
                 },
                 "menu_item_id": {
+                    "type": "integer"
+                },
+                "menu_set": {
+                    "$ref": "#/definitions/model.MenuSet"
+                },
+                "menu_set_id": {
                     "type": "integer"
                 },
                 "notes": {
@@ -1084,43 +2901,30 @@ const docTemplate = `{
                 "quantity": {
                     "type": "integer"
                 },
-                "requested_for": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/model.RequestStatus"
-                },
                 "updated_at": {
                     "type": "string"
                 },
-                "user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user_id": {
+                "updated_by": {
                     "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
-        },
-        "model.MealType": {
-            "type": "string",
-            "enum": [
-                "breakfast",
-                "lunch",
-                "snacks"
-            ],
-            "x-enum-varnames": [
-                "MealTypeBreakfast",
-                "MealTypeLunch",
-                "MealTypeSnacks"
-            ]
         },
         "model.MenuItem": {
             "type": "object",
             "properties": {
-                "category": {
+                "created_at": {
                     "type": "string"
                 },
-                "created_at": {
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "description": {
@@ -1129,142 +2933,107 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "image": {
+                "image_url": {
                     "type": "string"
                 },
-                "is_available": {
+                "is_active": {
                     "type": "boolean"
                 },
-                "meal_requests": {
+                "meal_comments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealRequest"
+                        "$ref": "#/definitions/model.MealComment"
                     }
                 },
-                "meal_type": {
-                    "description": "breakfast, lunch, snacks",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.MealType"
-                        }
-                    ]
+                "meal_request_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MealRequestItem"
+                    }
+                },
+                "menu_set_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MenuSetItem"
+                    }
                 },
                 "name": {
                     "type": "string"
                 },
-                "order_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OrderItem"
-                    }
-                },
-                "price": {
-                    "type": "number"
-                },
-                "restaurant": {
-                    "$ref": "#/definitions/model.Restaurant"
-                },
-                "restaurant_id": {
-                    "type": "integer"
-                },
-                "set_name": {
-                    "description": "Set A, Set B, etc. (for lunch only)",
-                    "type": "string"
-                },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "model.Notification": {
+        "model.MenuSet": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
                 },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "message": {
-                    "type": "string"
-                },
-                "read": {
+                "is_active": {
                     "type": "boolean"
                 },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/model.NotificationType"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.NotificationType": {
-            "type": "string",
-            "enum": [
-                "meal_request",
-                "meal_confirmation",
-                "meal_reminder",
-                "system"
-            ],
-            "x-enum-varnames": [
-                "NotificationTypeMealRequest",
-                "NotificationTypeMealConfirmation",
-                "NotificationTypeMealReminder",
-                "NotificationTypeSystem"
-            ]
-        },
-        "model.Order": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "order_items": {
+                "meal_event_menu_sets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OrderItem"
+                        "$ref": "#/definitions/model.MealEventMenuSet"
                     }
                 },
-                "restaurant": {
-                    "$ref": "#/definitions/model.Restaurant"
+                "menu_set_description": {
+                    "type": "string"
                 },
-                "restaurant_id": {
-                    "type": "integer"
+                "menu_set_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MenuSetItem"
+                    }
                 },
-                "status": {
-                    "$ref": "#/definitions/model.OrderStatus"
-                },
-                "total_amount": {
-                    "type": "number"
+                "menu_set_name": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
                 },
-                "user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user_id": {
+                "updated_by": {
                     "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "model.OrderItem": {
+        "model.MenuSetItem": {
             "type": "object",
             "properties": {
                 "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "id": {
@@ -1276,100 +3045,87 @@ const docTemplate = `{
                 "menu_item_id": {
                     "type": "integer"
                 },
-                "order": {
-                    "$ref": "#/definitions/model.Order"
+                "menu_set": {
+                    "$ref": "#/definitions/model.MenuSet"
                 },
-                "order_id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "quantity": {
+                "menu_set_id": {
                     "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "model.OrderStatus": {
-            "type": "string",
-            "enum": [
-                "pending",
-                "accepted",
-                "rejected",
-                "completed",
-                "cancelled"
-            ],
-            "x-enum-varnames": [
-                "OrderStatusPending",
-                "OrderStatusAccepted",
-                "OrderStatusRejected",
-                "OrderStatusCompleted",
-                "OrderStatusCancelled"
-            ]
-        },
-        "model.RequestStatus": {
-            "type": "string",
-            "enum": [
-                "pending",
-                "approved",
-                "rejected",
-                "completed",
-                "cancelled"
-            ],
-            "x-enum-varnames": [
-                "RequestStatusPending",
-                "RequestStatusApproved",
-                "RequestStatusRejected",
-                "RequestStatusCompleted",
-                "RequestStatusCancelled"
-            ]
-        },
-        "model.Restaurant": {
+        "model.Notification": {
+            "description": "Notification entity containing user notifications and their details",
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
                 "created_at": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string"
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
                 },
-                "email": {
+                "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "image": {
-                    "type": "string"
+                "payload": {
+                    "type": "string",
+                    "example": "{\"message\":\"Your meal request has been confirmed\"}"
                 },
-                "menu_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MenuItem"
-                    }
+                "read": {
+                    "type": "boolean",
+                    "example": false
                 },
-                "name": {
-                    "type": "string"
-                },
-                "orders": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Order"
-                    }
-                },
-                "phone": {
-                    "type": "string"
+                "type": {
+                    "enum": [
+                        "reminder",
+                        "confirmation",
+                        "admin-message"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.NotificationType"
+                        }
+                    ],
+                    "example": "reminder"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
+        },
+        "model.NotificationType": {
+            "description": "Type of notification (reminder, confirmation, or admin message)",
+            "type": "string",
+            "enum": [
+                "reminder",
+                "confirmation",
+                "admin-message"
+            ],
+            "x-enum-varnames": [
+                "NotificationTypeReminder",
+                "NotificationTypeConfirmation",
+                "NotificationTypeAdminMessage"
+            ]
         },
         "model.User": {
             "type": "object",
@@ -1377,11 +3133,20 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_meal_menus": {
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "created_meal_events": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealMenu"
+                        "$ref": "#/definitions/model.MealEvent"
                     }
+                },
+                "deleted_at": {
+                    "type": "string"
                 },
                 "department": {
                     "type": "string"
@@ -1392,9 +3157,6 @@ const docTemplate = `{
                 "employee_id": {
                     "type": "string"
                 },
-                "first_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -1402,9 +3164,6 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "last_login_at": {
-                    "type": "string"
-                },
-                "last_name": {
                     "type": "string"
                 },
                 "meal_comments": {
@@ -1419,6 +3178,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.MealRequest"
                     }
                 },
+                "name": {
+                    "type": "string"
+                },
                 "notification_enabled": {
                     "type": "boolean"
                 },
@@ -1428,16 +3190,25 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.Notification"
                     }
                 },
-                "orders": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Order"
-                    }
-                },
                 "role": {
                     "$ref": "#/definitions/model.UserRole"
                 },
                 "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "updated_meal_events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MealEvent"
+                    }
+                },
+                "username": {
                     "type": "string"
                 }
             }

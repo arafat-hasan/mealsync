@@ -36,21 +36,18 @@ func InitDB() error {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// Run migrations
+	// Run migrations for all defined models
 	err = db.AutoMigrate(
 		&model.User{},
-		&model.Restaurant{},
 		&model.MenuItem{},
-		&model.MealMenu{},
-		&model.MealMenuItem{},
+		&model.MenuSet{},
+		&model.MenuSetItem{},
+		&model.MealEvent{},
+		&model.MealEventAddress{},
 		&model.MealRequest{},
+		&model.MealRequestItem{},
 		&model.MealComment{},
 		&model.Notification{},
-		&model.Order{},
-		&model.OrderItem{},
-		&model.MealPlan{},
-		&model.MealPlanItem{},
-		&model.Meal{},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)

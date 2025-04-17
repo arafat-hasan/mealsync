@@ -1,25 +1,5 @@
 basePath: /api
 definitions:
-  api.CreateMealRequest:
-    properties:
-      date:
-        example: "2024-03-20"
-        type: string
-      description:
-        example: Special lunch menu for the week
-        type: string
-      menu_items:
-        example:
-        - '[''Chicken Curry'''
-        - ' ''Rice'''
-        - ' ''Salad'']'
-        items:
-          type: string
-        type: array
-    required:
-    - date
-    - menu_items
-    type: object
   api.ErrorResponse:
     properties:
       error:
@@ -55,17 +35,14 @@ definitions:
     properties:
       email:
         type: string
-      first_name:
-        type: string
-      last_name:
+      name:
         type: string
       password:
         minLength: 6
         type: string
     required:
     - email
-    - first_name
-    - last_name
+    - name
     - password
     type: object
   api.SuccessResponse:
@@ -77,31 +54,35 @@ definitions:
     properties:
       email:
         type: string
-      first_name:
-        type: string
       id:
         type: integer
-      last_name:
+      name:
         type: string
       role:
         $ref: '#/definitions/model.UserRole'
     type: object
-  model.Meal:
+  model.EventAddress:
     properties:
+      address:
+        type: string
       created_at:
         type: string
-      date:
-        type: string
-      description:
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
         type: string
       id:
         type: integer
-      menu_items:
-        items:
-          type: string
-        type: array
+      is_active:
+        type: boolean
       updated_at:
         type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
   model.MealComment:
     properties:
@@ -109,19 +90,47 @@ definitions:
         type: string
       created_at:
         type: string
-      date:
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
         type: string
+      event_menu_set:
+        $ref: '#/definitions/model.MealEventMenuSet'
+      event_menu_set_id:
+        type: integer
       id:
+        type: integer
+      meal_event:
+        $ref: '#/definitions/model.MealEvent'
+      meal_event_id:
+        type: integer
+      menu_item:
+        $ref: '#/definitions/model.MenuItem'
+      menu_item_id:
+        type: integer
+      rating:
         type: integer
       updated_at:
         type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
       user:
         $ref: '#/definitions/model.User'
       user_id:
         type: integer
     type: object
-  model.MealMenu:
+  model.MealEvent:
     properties:
+      addresses:
+        items:
+          $ref: '#/definitions/model.MealEventAddress'
+        type: array
+      confirmed_at:
+        type: string
       created_at:
         type: string
       created_by:
@@ -130,185 +139,257 @@ definitions:
         $ref: '#/definitions/model.User'
       cutoff_time:
         type: string
-      date:
+      deleted_at:
         type: string
+      description:
+        type: string
+      event_date:
+        type: string
+      event_duration:
+        description: in minutes
+        type: integer
       id:
         type: integer
       is_active:
         type: boolean
+      meal_comments:
+        items:
+          $ref: '#/definitions/model.MealComment'
+        type: array
       meal_requests:
         items:
           $ref: '#/definitions/model.MealRequest'
         type: array
-      meal_type:
-        $ref: '#/definitions/model.MealType'
-      menu_items:
+      menu_sets:
         items:
-          $ref: '#/definitions/model.MealMenuItem'
+          $ref: '#/definitions/model.MealEventMenuSet'
         type: array
+      name:
+        type: string
       updated_at:
         type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
-  model.MealMenuItem:
+  model.MealEventAddress:
     properties:
+      address:
+        $ref: '#/definitions/model.EventAddress'
+      address_id:
+        type: integer
       created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
         type: string
       id:
         type: integer
-      meal_menu:
-        $ref: '#/definitions/model.MealMenu'
-      meal_menu_id:
+      meal_event:
+        $ref: '#/definitions/model.MealEvent'
+      meal_event_id:
         type: integer
-      menu_item:
-        $ref: '#/definitions/model.MenuItem'
-      menu_item_id:
+      updated_at:
+        type: string
+      updated_by:
         type: integer
-      set_name:
-        description: Set A, Set B, etc. (for lunch only)
+      updated_by_user:
+        $ref: '#/definitions/model.User'
+    type: object
+  model.MealEventMenuSet:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      label:
+        type: string
+      meal_event:
+        $ref: '#/definitions/model.MealEvent'
+      meal_event_id:
+        type: integer
+      menu_set:
+        $ref: '#/definitions/model.MenuSet'
+      menu_set_id:
+        type: integer
+      note:
         type: string
       updated_at:
         type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
   model.MealRequest:
     properties:
+      confirmed_at:
+        type: string
       created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
+        type: string
+      event_address:
+        $ref: '#/definitions/model.MealEventAddress'
+      event_menu_set:
+        $ref: '#/definitions/model.MealEventMenuSet'
+      event_menu_set_id:
+        type: integer
+      id:
+        type: integer
+      meal_event:
+        $ref: '#/definitions/model.MealEvent'
+      meal_event_address_id:
+        type: integer
+      meal_event_id:
+        type: integer
+      request_items:
+        items:
+          $ref: '#/definitions/model.MealRequestItem'
+        type: array
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.MealRequestItem:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
         type: string
       id:
         type: integer
-      menu:
-        $ref: '#/definitions/model.MealMenu'
-      menu_id:
+      is_selected:
+        type: boolean
+      meal_request:
+        $ref: '#/definitions/model.MealRequest'
+      meal_request_id:
         type: integer
       menu_item:
         $ref: '#/definitions/model.MenuItem'
       menu_item_id:
+        type: integer
+      menu_set:
+        $ref: '#/definitions/model.MenuSet'
+      menu_set_id:
         type: integer
       notes:
         type: string
       quantity:
         type: integer
-      requested_for:
-        type: string
-      status:
-        $ref: '#/definitions/model.RequestStatus'
       updated_at:
         type: string
-      user:
-        $ref: '#/definitions/model.User'
-      user_id:
+      updated_by:
         type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
-  model.MealType:
-    enum:
-    - breakfast
-    - lunch
-    - snacks
-    type: string
-    x-enum-varnames:
-    - MealTypeBreakfast
-    - MealTypeLunch
-    - MealTypeSnacks
   model.MenuItem:
     properties:
-      category:
-        type: string
       created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
         type: string
       description:
         type: string
       id:
         type: integer
-      image:
+      image_url:
         type: string
-      is_available:
+      is_active:
         type: boolean
-      meal_requests:
+      meal_comments:
         items:
-          $ref: '#/definitions/model.MealRequest'
+          $ref: '#/definitions/model.MealComment'
         type: array
-      meal_type:
-        allOf:
-        - $ref: '#/definitions/model.MealType'
-        description: breakfast, lunch, snacks
+      meal_request_items:
+        items:
+          $ref: '#/definitions/model.MealRequestItem'
+        type: array
+      menu_set_items:
+        items:
+          $ref: '#/definitions/model.MenuSetItem'
+        type: array
       name:
         type: string
-      order_items:
-        items:
-          $ref: '#/definitions/model.OrderItem'
-        type: array
-      price:
-        type: number
-      restaurant:
-        $ref: '#/definitions/model.Restaurant'
-      restaurant_id:
-        type: integer
-      set_name:
-        description: Set A, Set B, etc. (for lunch only)
-        type: string
       updated_at:
         type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
-  model.Notification:
+  model.MenuSet:
     properties:
       created_at:
         type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
+        type: string
       id:
         type: integer
-      message:
-        type: string
-      read:
+      is_active:
         type: boolean
-      title:
-        type: string
-      type:
-        $ref: '#/definitions/model.NotificationType'
-      updated_at:
-        type: string
-      user:
-        $ref: '#/definitions/model.User'
-      user_id:
-        type: integer
-    type: object
-  model.NotificationType:
-    enum:
-    - meal_request
-    - meal_confirmation
-    - meal_reminder
-    - system
-    type: string
-    x-enum-varnames:
-    - NotificationTypeMealRequest
-    - NotificationTypeMealConfirmation
-    - NotificationTypeMealReminder
-    - NotificationTypeSystem
-  model.Order:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      order_items:
+      meal_event_menu_sets:
         items:
-          $ref: '#/definitions/model.OrderItem'
+          $ref: '#/definitions/model.MealEventMenuSet'
         type: array
-      restaurant:
-        $ref: '#/definitions/model.Restaurant'
-      restaurant_id:
-        type: integer
-      status:
-        $ref: '#/definitions/model.OrderStatus'
-      total_amount:
-        type: number
+      menu_set_description:
+        type: string
+      menu_set_items:
+        items:
+          $ref: '#/definitions/model.MenuSetItem'
+        type: array
+      menu_set_name:
+        type: string
       updated_at:
         type: string
-      user:
-        $ref: '#/definitions/model.User'
-      user_id:
+      updated_by:
         type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
-  model.OrderItem:
+  model.MenuSetItem:
     properties:
       created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
         type: string
       id:
         type: integer
@@ -316,97 +397,88 @@ definitions:
         $ref: '#/definitions/model.MenuItem'
       menu_item_id:
         type: integer
-      order:
-        $ref: '#/definitions/model.Order'
-      order_id:
-        type: integer
-      price:
-        type: number
-      quantity:
+      menu_set:
+        $ref: '#/definitions/model.MenuSet'
+      menu_set_id:
         type: integer
       updated_at:
         type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
     type: object
-  model.OrderStatus:
-    enum:
-    - pending
-    - accepted
-    - rejected
-    - completed
-    - cancelled
-    type: string
-    x-enum-varnames:
-    - OrderStatusPending
-    - OrderStatusAccepted
-    - OrderStatusRejected
-    - OrderStatusCompleted
-    - OrderStatusCancelled
-  model.RequestStatus:
-    enum:
-    - pending
-    - approved
-    - rejected
-    - completed
-    - cancelled
-    type: string
-    x-enum-varnames:
-    - RequestStatusPending
-    - RequestStatusApproved
-    - RequestStatusRejected
-    - RequestStatusCompleted
-    - RequestStatusCancelled
-  model.Restaurant:
+  model.Notification:
+    description: Notification entity containing user notifications and their details
     properties:
-      address:
-        type: string
       created_at:
         type: string
-      description:
-        type: string
-      email:
+      created_by:
+        example: 1
+        type: integer
+      deleted_at:
         type: string
       id:
         type: integer
-      image:
+      payload:
+        example: '{"message":"Your meal request has been confirmed"}'
         type: string
-      menu_items:
-        items:
-          $ref: '#/definitions/model.MenuItem'
-        type: array
-      name:
-        type: string
-      orders:
-        items:
-          $ref: '#/definitions/model.Order'
-        type: array
-      phone:
-        type: string
+      read:
+        example: false
+        type: boolean
+      type:
+        allOf:
+        - $ref: '#/definitions/model.NotificationType'
+        enum:
+        - reminder
+        - confirmation
+        - admin-message
+        example: reminder
       updated_at:
         type: string
+      updated_by:
+        example: 1
+        type: integer
+      user_id:
+        example: 1
+        type: integer
     type: object
+  model.NotificationType:
+    description: Type of notification (reminder, confirmation, or admin message)
+    enum:
+    - reminder
+    - confirmation
+    - admin-message
+    type: string
+    x-enum-varnames:
+    - NotificationTypeReminder
+    - NotificationTypeConfirmation
+    - NotificationTypeAdminMessage
   model.User:
     properties:
       created_at:
         type: string
-      created_meal_menus:
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      created_meal_events:
         items:
-          $ref: '#/definitions/model.MealMenu'
+          $ref: '#/definitions/model.MealEvent'
         type: array
+      deleted_at:
+        type: string
       department:
         type: string
       email:
         type: string
       employee_id:
         type: string
-      first_name:
-        type: string
       id:
         type: integer
       is_active:
         type: boolean
       last_login_at:
-        type: string
-      last_name:
         type: string
       meal_comments:
         items:
@@ -416,19 +488,27 @@ definitions:
         items:
           $ref: '#/definitions/model.MealRequest'
         type: array
+      name:
+        type: string
       notification_enabled:
         type: boolean
       notifications:
         items:
           $ref: '#/definitions/model.Notification'
         type: array
-      orders:
-        items:
-          $ref: '#/definitions/model.Order'
-        type: array
       role:
         $ref: '#/definitions/model.UserRole'
       updated_at:
+        type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
+      updated_meal_events:
+        items:
+          $ref: '#/definitions/model.MealEvent'
+        type: array
+      username:
         type: string
     type: object
   model.UserRole:
@@ -492,9 +572,11 @@ paths:
       summary: Login user
       tags:
       - auth
-  /meals:
+  /meal-requests:
     get:
-      description: Get a list of all meals
+      consumes:
+      - application/json
+      description: Get all meal requests for the authenticated user
       produces:
       - application/json
       responses:
@@ -502,33 +584,39 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Meal'
+              $ref: '#/definitions/model.MealRequest'
             type: array
         "401":
           description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-      summary: Get all meals
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List meal requests
       tags:
-      - meals
+      - meal-requests
     post:
       consumes:
       - application/json
-      description: Create a new meal with menu items
+      description: Create a new meal request
       parameters:
-      - description: Meal details
+      - description: Meal Request Data
         in: body
-        name: meal
+        name: request
         required: true
         schema:
-          $ref: '#/definitions/api.CreateMealRequest'
+          $ref: '#/definitions/model.MealRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.Meal'
+            $ref: '#/definitions/model.MealRequest'
         "400":
           description: Bad Request
           schema:
@@ -537,14 +625,22 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-      summary: Create a new meal
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create meal request
       tags:
-      - meals
-  /meals/{id}:
+      - meal-requests
+  /meal-requests/{id}:
     delete:
-      description: Delete a meal by its ID
+      consumes:
+      - application/json
+      description: Delete an existing meal request
       parameters:
-      - description: Meal ID
+      - description: Meal Request ID
         in: path
         name: id
         required: true
@@ -556,66 +652,48 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/api.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-      summary: Delete a meal
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete meal request
       tags:
-      - meals
+      - meal-requests
     get:
-      description: Get a specific meal by its ID
-      parameters:
-      - description: Meal ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Meal'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-      summary: Get meal by ID
-      tags:
-      - meals
-    put:
       consumes:
       - application/json
-      description: Update an existing meal's details
+      description: Get a specific meal request by its ID
       parameters:
-      - description: Meal ID
+      - description: Meal Request ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated meal details
-        in: body
-        name: meal
-        required: true
-        schema:
-          $ref: '#/definitions/api.CreateMealRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Meal'
+            $ref: '#/definitions/model.MealRequest'
         "400":
           description: Bad Request
           schema:
@@ -628,19 +706,74 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-      summary: Update a meal
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get meal request by ID
       tags:
-      - meals
-  /menus:
+      - meal-requests
+    put:
+      consumes:
+      - application/json
+      description: Update an existing meal request
+      parameters:
+      - description: Meal Request ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Meal Request Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.MealRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update meal request
+      tags:
+      - meal-requests
+  /meal-requests/{id}/items:
     get:
       consumes:
       - application/json
-      description: Get all menus, optionally filtered by date
+      description: Get all items in a specific meal request
       parameters:
-      - description: Filter by date (YYYY-MM-DD)
-        in: query
-        name: date
-        type: string
+      - description: Meal Request ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -648,81 +781,244 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.MealMenu'
+              $ref: '#/definitions/model.MealRequestItem'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get all menus
+      summary: List meal request items
       tags:
-      - menus
+      - meal-requests
     post:
       consumes:
       - application/json
-      description: Create a new menu
+      description: Add a new item to an existing meal request
       parameters:
-      - description: Menu to create
+      - description: Meal Request ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Meal Request Item Data
         in: body
-        name: menu
+        name: item
         required: true
         schema:
-          $ref: '#/definitions/model.MealMenu'
+          $ref: '#/definitions/model.MealRequestItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealRequestItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add item to meal request
+      tags:
+      - meal-requests
+  /meal-requests/{id}/items/{item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an item from an existing meal request
+      parameters:
+      - description: Meal Request ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Item ID
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remove item from meal request
+      tags:
+      - meal-requests
+  /meal-requests/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update the status of a specific meal request
+      parameters:
+      - description: Meal Request ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New Status
+        in: body
+        name: status
+        required: true
+        schema:
+          enum:
+          - pending
+          - accepted
+          - rejected
+          - completed
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update meal request status
+      tags:
+      - meal-requests
+  /meals:
+    get:
+      consumes:
+      - application/json
+      description: Get all meal events for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MealEvent'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List meal events
+      tags:
+      - meals
+    post:
+      consumes:
+      - application/json
+      description: Create a new meal event
+      parameters:
+      - description: Meal Event Data
+        in: body
+        name: meal
+        required: true
+        schema:
+          $ref: '#/definitions/model.MealEvent'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.MealMenu'
+            $ref: '#/definitions/model.MealEvent'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Create a new menu
+      summary: Create meal event
       tags:
-      - menus
-  /menus/{id}:
+      - meals
+  /meals/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete a menu by its ID
+      description: Delete an existing meal event
       parameters:
-      - description: Menu ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Delete a menu
-      tags:
-      - menus
-    get:
-      consumes:
-      - application/json
-      description: Get a menu by its ID
-      parameters:
-      - description: Menu ID
+      - description: Meal Event ID
         in: path
         name: id
         required: true
@@ -733,72 +1029,594 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.MealMenu'
+            $ref: '#/definitions/api.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get a menu by ID
+      summary: Delete meal event
       tags:
-      - menus
+      - meals
+    get:
+      consumes:
+      - application/json
+      description: Get a specific meal event by its ID
+      parameters:
+      - description: Meal Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get meal event by ID
+      tags:
+      - meals
     put:
       consumes:
       - application/json
-      description: Update an existing menu
+      description: Update an existing meal event
       parameters:
-      - description: Menu ID
+      - description: Meal Event ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Menu to update
+      - description: Meal Event Data
         in: body
-        name: menu
+        name: meal
         required: true
         schema:
-          $ref: '#/definitions/model.MealMenu'
+          $ref: '#/definitions/model.MealEvent'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.MealMenu'
+            $ref: '#/definitions/model.MealEvent'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Update a menu
+      summary: Update meal event
       tags:
-      - menus
-  /menus/{id}/items:
+      - meals
+  /meals/{meal_event_id}/comments:
     get:
       consumes:
       - application/json
-      description: Get all menu items for a specific menu
+      description: Get all comments for a specific meal event
       parameters:
-      - description: Menu ID
+      - description: Meal Event ID
+        in: path
+        name: meal_event_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MealComment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List meal comments
+      tags:
+      - meal-comments
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment for a meal event
+      parameters:
+      - description: Meal Event ID
+        in: path
+        name: meal_event_id
+        required: true
+        type: integer
+      - description: Comment Data
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/model.MealComment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MealComment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create comment
+      tags:
+      - meal-comments
+  /meals/{meal_event_id}/comments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing comment
+      parameters:
+      - description: Meal Event ID
+        in: path
+        name: meal_event_id
+        required: true
+        type: integer
+      - description: Comment ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Filter by date (YYYY-MM-DD)
-        in: query
-        name: date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete comment
+      tags:
+      - meal-comments
+    get:
+      consumes:
+      - application/json
+      description: Get a specific comment by its ID
+      parameters:
+      - description: Meal Event ID
+        in: path
+        name: meal_event_id
+        required: true
+        type: integer
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealComment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get comment by ID
+      tags:
+      - meal-comments
+    put:
+      consumes:
+      - application/json
+      description: Update an existing comment
+      parameters:
+      - description: Meal Event ID
+        in: path
+        name: meal_event_id
+        required: true
+        type: integer
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment Data
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/model.MealComment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MealComment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update comment
+      tags:
+      - meal-comments
+  /meals/{meal_event_id}/comments/{id}/replies:
+    get:
+      consumes:
+      - application/json
+      description: Get all replies to a specific comment
+      parameters:
+      - description: Meal Event ID
+        in: path
+        name: meal_event_id
+        required: true
+        type: integer
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MealComment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List comment replies
+      tags:
+      - meal-comments
+  /menu-items:
+    get:
+      consumes:
+      - application/json
+      description: Get all menu items for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuItem'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List menu items
+      tags:
+      - menu-items
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu item
+      parameters:
+      - description: Menu Item Data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/model.MenuItem'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MenuItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create menu item
+      tags:
+      - menu-items
+  /menu-items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing menu item
+      parameters:
+      - description: Menu Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete menu item
+      tags:
+      - menu-items
+    get:
+      consumes:
+      - application/json
+      description: Get a specific menu item by its ID
+      parameters:
+      - description: Menu Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MenuItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get menu item by ID
+      tags:
+      - menu-items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu item
+      parameters:
+      - description: Menu Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Menu Item Data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/model.MenuItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MenuItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update menu item
+      tags:
+      - menu-items
+  /menu-items/category/{category}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all menu items belonging to a specific category
+      parameters:
+      - description: Category name
+        in: path
+        name: category
+        required: true
         type: string
       produces:
       - application/json
@@ -812,68 +1630,336 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get menu items by category
+      tags:
+      - menu-items
+  /menu-items/menu-set/{menu_set_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all menu items belonging to a specific menu set
+      parameters:
+      - description: Menu Set ID
+        in: path
+        name: menu_set_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get menu items by menu set
+      tags:
+      - menu-items
+  /menu-sets:
+    get:
+      consumes:
+      - application/json
+      description: Get all menu sets for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuSet'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get menu items
+      summary: List menu sets
       tags:
-      - menus
+      - menu-sets
     post:
       consumes:
       - application/json
-      description: Add a menu item to a menu
+      description: Create a new menu set
       parameters:
-      - description: Menu ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Menu item to add
+      - description: Menu Set Data
         in: body
-        name: item
+        name: menuSet
         required: true
         schema:
-          additionalProperties: true
-          type: object
+          $ref: '#/definitions/model.MenuSet'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.MealMenuItem'
+            $ref: '#/definitions/model.MenuSet'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Add a menu item to a menu
+      summary: Create menu set
       tags:
-      - menus
-  /menus/{id}/items/{item_id}:
+      - menu-sets
+  /menu-sets/{id}:
     delete:
       consumes:
       - application/json
-      description: Remove a menu item from a menu
+      description: Delete an existing menu set
       parameters:
-      - description: Menu ID
+      - description: Menu Set ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete menu set
+      tags:
+      - menu-sets
+    get:
+      consumes:
+      - application/json
+      description: Get a specific menu set by its ID
+      parameters:
+      - description: Menu Set ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MenuSet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get menu set by ID
+      tags:
+      - menu-sets
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu set
+      parameters:
+      - description: Menu Set ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Menu Set Data
+        in: body
+        name: menuSet
+        required: true
+        schema:
+          $ref: '#/definitions/model.MenuSet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MenuSet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update menu set
+      tags:
+      - menu-sets
+  /menu-sets/{id}/items:
+    get:
+      consumes:
+      - application/json
+      description: Get all items in a specific menu set
+      parameters:
+      - description: Menu Set ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List menu set items
+      tags:
+      - menu-sets
+    post:
+      consumes:
+      - application/json
+      description: Add a menu item to an existing menu set
+      parameters:
+      - description: Menu Set ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Menu Item Data
+        in: body
+        name: menuItem
+        required: true
+        schema:
+          $ref: '#/definitions/model.MenuSetItem'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MenuSetItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add menu item to set
+      tags:
+      - menu-sets
+  /menu-sets/{id}/items/{item_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a menu item from an existing menu set
+      parameters:
+      - description: Menu Set ID
         in: path
         name: id
         required: true
@@ -886,25 +1972,35 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Remove a menu item from a menu
+      summary: Remove menu item from set
       tags:
-      - menus
+      - menu-sets
   /refresh:
     post:
       consumes:
@@ -965,6 +2061,47 @@ paths:
       summary: Register new user
       tags:
       - auth
+  /users/{user_id}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments made by a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MealComment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List user comments
+      tags:
+      - meal-comments
 security:
 - BearerAuth: []
 securityDefinitions:

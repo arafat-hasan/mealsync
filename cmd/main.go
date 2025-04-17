@@ -9,6 +9,7 @@ import (
 	"github.com/arafat-hasan/mealsync/internal/api"
 	"github.com/arafat-hasan/mealsync/internal/config"
 	"github.com/arafat-hasan/mealsync/internal/middleware"
+	"github.com/arafat-hasan/mealsync/internal/repository"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -52,18 +53,58 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(db)
+	mealEventRepo := repository.NewMealEventRepository(db)
+	menuSetRepo := repository.NewMenuSetRepository(db)
+	menuItemRepo := repository.NewMenuItemRepository(db)
+	mealRequestRepo := repository.NewMealRequestRepository(db)
+	mealCommentRepo := repository.NewMealCommentRepository(db)
+	eventAddressRepo := repository.NewEventAddressRepository(db)
+	notificationRepo := repository.NewNotificationRepository(db)
+
 	// Initialize services
 	authService := service.NewAuthService(db)
-	mealService := service.NewMealService(db)
-	menuService := service.NewMenuService(db)
+	notificationService := service.NewNotificationService(notificationRepo, userRepo)
+	mealEventService := service.NewMealEventService(
+		mealEventRepo,
+		userRepo,
+		menuSetRepo,
+		eventAddressRepo,
+		mealRequestRepo,
+		mealCommentRepo,
+		notificationService,
+	)
+	menuSetService := service.NewMenuSetService(
+		menuSetRepo,
+		menuItemRepo,
+		userRepo,
+	)
+	menuItemService := service.NewMenuItemService(
+		menuItemRepo,
+		userRepo,
+	)
+	mealRequestService := service.NewMealRequestService(
+		mealRequestRepo,
+		mealEventRepo,
+		userRepo,
+	)
+	mealCommentService := service.NewMealCommentService(
+		mealCommentRepo,
+		mealEventRepo,
+		userRepo,
+	)
 
 	// Initialize handlers
 	authHandler := api.NewAuthHandler(authService)
-	mealHandler := api.NewMealHandler(mealService)
-	menuHandler := api.NewMenuHandler(menuService)
+	mealEventHandler := api.NewMealEventHandler(mealEventService)
+	menuSetHandler := api.NewMenuSetHandler(menuSetService)
+	menuItemHandler := api.NewMenuItemHandler(menuItemService)
+	mealRequestHandler := api.NewMealRequestHandler(mealRequestService)
+	mealCommentHandler := api.NewMealCommentHandler(mealCommentService)
 
 	// Initialize router with custom middleware
-	router := gin.New() // Use gin.New() instead of gin.Default() to avoid default middleware
+	router := gin.Default()
 
 	// Add middleware
 	router.Use(gin.Logger())              // Add logging
@@ -75,7 +116,7 @@ func main() {
 	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
 
 	// API routes
-	api.SetupRoutes(router, authHandler, mealHandler, menuHandler)
+	api.SetupRoutes(router, authHandler, mealEventHandler, menuSetHandler, mealCommentHandler, menuItemHandler, mealRequestHandler)
 
 	// Documentation routes with custom configuration
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,

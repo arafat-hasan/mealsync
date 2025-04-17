@@ -6,7 +6,7 @@ import (
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealHandler, menuHandler *MenuHandler) {
+func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, mealCommentHandler *MealCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler) {
 	// Public routes (no auth required)
 	public := r.Group("/api")
 	{
@@ -19,21 +19,84 @@ func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealHandl
 	protected := r.Group("/api")
 	protected.Use(middleware.AuthMiddleware())
 	{
-		// Meal routes
-		protected.GET("/meals", mealHandler.GetMeals)
-		protected.GET("/meals/:id", mealHandler.GetMealByID)
-		protected.POST("/meals", mealHandler.CreateMeal)
-		protected.PUT("/meals/:id", mealHandler.UpdateMeal)
-		protected.DELETE("/meals/:id", mealHandler.DeleteMeal)
+		// Meal event routes
+		meals := protected.Group("/meals")
+		{
+			// List and create routes (no parameters)
+			meals.GET("", mealHandler.GetMealEvents)
+			meals.POST("", mealHandler.CreateMealEvent)
 
-		// Menu routes
-		protected.GET("/menus", menuHandler.GetMenus)
-		protected.GET("/menus/:id", menuHandler.GetMenuByID)
-		protected.POST("/menus", menuHandler.CreateMenu)
-		protected.PUT("/menus/:id", menuHandler.UpdateMenu)
-		protected.DELETE("/menus/:id", menuHandler.DeleteMenu)
-		protected.GET("/menus/:id/items", menuHandler.GetMenuItems)
-		protected.POST("/menus/:id/items", menuHandler.AddMenuItem)
-		protected.DELETE("/menus/:id/items/:item_id", menuHandler.RemoveMenuItem)
+			// Routes with meal event ID parameter
+			meal := meals.Group("/:meal_id")
+			{
+				// Meal event operations
+				meal.GET("", mealHandler.GetMealEventByID)
+				meal.PUT("", mealHandler.UpdateMealEvent)
+				meal.DELETE("", mealHandler.DeleteMealEvent)
+
+				// Comment routes under meal event
+				comments := meal.Group("/comments")
+				{
+					comments.GET("", mealCommentHandler.GetComments)
+					comments.POST("", mealCommentHandler.CreateComment)
+				}
+			}
+		}
+
+		// Menu set routes
+		menus := protected.Group("/menus")
+		{
+			menus.GET("", menuSetHandler.GetMenuSets)
+			menus.GET("/:id", menuSetHandler.GetMenuSetByID)
+			menus.POST("", menuSetHandler.CreateMenuSet)
+			menus.PUT("/:id", menuSetHandler.UpdateMenuSet)
+			menus.DELETE("/:id", menuSetHandler.DeleteMenuSet)
+			menus.GET("/:id/items", menuSetHandler.GetMenuSetItems)
+			menus.POST("/:id/items", menuSetHandler.AddMenuItemToMenuSet)
+			menus.DELETE("/:id/items/:item_id", menuSetHandler.RemoveMenuItemFromMenuSet)
+		}
+
+		// Menu item routes
+		menuItems := protected.Group("/menu-items")
+		{
+			menuItems.GET("", menuItemHandler.GetMenuItems)
+			menuItems.GET("/:id", menuItemHandler.GetMenuItemByID)
+			menuItems.POST("", menuItemHandler.CreateMenuItem)
+			menuItems.PUT("/:id", menuItemHandler.UpdateMenuItem)
+			menuItems.DELETE("/:id", menuItemHandler.DeleteMenuItem)
+			menuItems.GET("/category/:category", menuItemHandler.GetMenuItemsByCategory)
+			menuItems.GET("/menu-set/:menu_set_id", menuItemHandler.GetMenuItemsByMenuSet)
+		}
+
+		// Meal request routes
+		mealRequests := protected.Group("/meal-requests")
+		{
+			mealRequests.GET("", mealRequestHandler.GetMealRequests)
+			mealRequests.GET("/:id", mealRequestHandler.GetMealRequestByID)
+			mealRequests.POST("", mealRequestHandler.CreateMealRequest)
+			mealRequests.PUT("/:id", mealRequestHandler.UpdateMealRequest)
+			mealRequests.DELETE("/:id", mealRequestHandler.DeleteMealRequest)
+			mealRequests.PUT("/:id/status", mealRequestHandler.UpdateRequestStatus)
+
+			// Meal request items
+			mealRequests.GET("/:id/items", mealRequestHandler.GetRequestItems)
+			mealRequests.POST("/:id/items", mealRequestHandler.AddRequestItem)
+			mealRequests.DELETE("/:id/items/:item_id", mealRequestHandler.RemoveRequestItem)
+		}
+
+		// Comment routes
+		comments := protected.Group("/comments")
+		{
+			comments.GET("/:id", mealCommentHandler.GetCommentByID)
+			comments.PUT("/:id", mealCommentHandler.UpdateComment)
+			comments.DELETE("/:id", mealCommentHandler.DeleteComment)
+			comments.GET("/:id/replies", mealCommentHandler.GetReplies)
+		}
+
+		// User comment routes
+		users := protected.Group("/users")
+		{
+			users.GET("/:user_id/comments", mealCommentHandler.GetUserComments)
+		}
 	}
 }

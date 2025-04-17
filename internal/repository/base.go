@@ -8,46 +8,73 @@ import (
 
 // baseRepository implements common CRUD operations
 type baseRepository[T any] struct {
-	DB *gorm.DB
+	db *gorm.DB
 }
 
-// NewBaseRepository creates a new base repository
+// NewBaseRepository creates a new instance of baseRepository
 func NewBaseRepository[T any](db *gorm.DB) *baseRepository[T] {
-	return &baseRepository[T]{DB: db}
+	return &baseRepository[T]{db: db}
 }
 
-// Create implements the Create operation
+// Create creates a new entity
 func (r *baseRepository[T]) Create(ctx context.Context, entity *T) error {
-	return r.DB.WithContext(ctx).Create(entity).Error
+	return r.db.WithContext(ctx).Create(entity).Error
 }
 
-// FindByID implements the FindByID operation
+// FindByID finds an entity by ID
 func (r *baseRepository[T]) FindByID(ctx context.Context, id uint) (*T, error) {
 	var entity T
-	err := r.DB.WithContext(ctx).First(&entity, id).Error
+	err := r.db.WithContext(ctx).First(&entity, id).Error
 	if err != nil {
 		return nil, err
 	}
 	return &entity, nil
 }
 
-// FindAll implements the FindAll operation
+// FindAll finds all entities
 func (r *baseRepository[T]) FindAll(ctx context.Context) ([]T, error) {
 	var entities []T
-	err := r.DB.WithContext(ctx).Find(&entities).Error
+	err := r.db.WithContext(ctx).Find(&entities).Error
 	if err != nil {
 		return nil, err
 	}
 	return entities, nil
 }
 
-// Update implements the Update operation
-func (r *baseRepository[T]) Update(ctx context.Context, entity *T) error {
-	return r.DB.WithContext(ctx).Save(entity).Error
+// FindActive finds active entities based on conditions
+func (r *baseRepository[T]) FindActive(ctx context.Context, conditions map[string]interface{}) ([]T, error) {
+	var entities []T
+	query := r.db.WithContext(ctx).Where("is_active = ?", true)
+
+	for key, value := range conditions {
+		query = query.Where(key+" = ?", value)
+	}
+
+	err := query.Find(&entities).Error
+	if err != nil {
+		return nil, err
+	}
+	return entities, nil
 }
 
-// Delete implements the Delete operation
-func (r *baseRepository[T]) Delete(ctx context.Context, id uint) error {
-	var entity T
-	return r.DB.WithContext(ctx).Delete(&entity, id).Error
+// Update updates an entity
+func (r *baseRepository[T]) Update(ctx context.Context, entity *T) error {
+	return r.db.WithContext(ctx).Save(entity).Error
+}
+
+// Delete soft deletes an entity
+func (r *baseRepository[T]) Delete(ctx context.Context, entity *T) error {
+	return r.db.WithContext(ctx).Delete(entity).Error
+}
+
+// HardDelete permanently deletes an entity
+func (r *baseRepository[T]) HardDelete(ctx context.Context, entity *T) error {
+	return r.db.WithContext(ctx).Unscoped().Delete(entity).Error
+}
+
+// WithTransaction executes a function within a transaction
+func (r *baseRepository[T]) WithTransaction(ctx context.Context, fn func(tx *gorm.DB) error) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		return fn(tx)
+	})
 }

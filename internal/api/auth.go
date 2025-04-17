@@ -20,10 +20,9 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 
 // RegisterRequest represents the request body for user registration
 type RegisterRequest struct {
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password" binding:"required,min=6"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+	Name     string `json:"name" binding:"required"`
 }
 
 // LoginRequest represents the request body for user login
@@ -46,11 +45,10 @@ type LoginResponse struct {
 
 // UserResponse represents the user data in the response
 type UserResponse struct {
-	ID        uint           `json:"id"`
-	Email     string         `json:"email"`
-	FirstName string         `json:"first_name"`
-	LastName  string         `json:"last_name"`
-	Role      model.UserRole `json:"role"`
+	ID    uint           `json:"id"`
+	Email string         `json:"email"`
+	Name  string         `json:"name"`
+	Role  model.UserRole `json:"role"`
 }
 
 // Register handles user registration
@@ -72,11 +70,10 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	user := &model.User{
-		Email:     req.Email,
-		Password:  req.Password,
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		Role:      model.UserRoleEmployee, // Default role
+		Email:    req.Email,
+		Password: req.Password,
+		Name:     req.Name,
+		Role:     model.UserRoleEmployee, // Default role
 	}
 
 	if err := h.authService.Register(user); err != nil {
@@ -89,11 +86,10 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, UserResponse{
-		ID:        user.ID,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Role:      user.Role,
+		ID:    user.ID,
+		Email: user.Email,
+		Name:  user.Name,
+		Role:  user.Role,
 	})
 }
 
@@ -137,11 +133,10 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		AccessToken:  tokens.AccessToken,
 		RefreshToken: tokens.RefreshToken,
 		User: UserResponse{
-			ID:        user.ID,
-			Email:     user.Email,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Role:      user.Role,
+			ID:    user.ID,
+			Email: user.Email,
+			Name:  user.Name,
+			Role:  user.Role,
 		},
 	})
 }
