@@ -183,10 +183,10 @@ BEGIN
         SELECT 1
         FROM meal_event_addresses
         WHERE meal_event_id = NEW.meal_event_id
-          AND address_id = NEW.address_id
+          AND address_id = NEW.event_address_id
     ) THEN
         RAISE EXCEPTION 'Invalid selection: Event address % is not available for event %',
-            NEW.address_id, NEW.meal_event_id;
+            NEW.event_address_id, NEW.meal_event_id;
     END IF;
 
     RETURN NEW;
@@ -199,7 +199,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM meal_request mr
+        FROM meal_requests mr
         JOIN menu_set_items msi ON mr.menu_set_id = msi.menu_set_id
         WHERE mr.user_id = NEW.user_id
           AND mr.meal_event_id = NEW.meal_event_id
@@ -386,7 +386,7 @@ CREATE TABLE meal_requests (
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
   PRIMARY KEY (user_id, meal_event_id),
   menu_set_id INT REFERENCES menu_sets(id),
-  meal_event_address INT REFERENCES event_addresses(id),
+  event_address_id INT REFERENCES event_addresses(id),
   confirmed_at TIMESTAMP DEFAULT NULL,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
