@@ -255,8 +255,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-
-
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   employee_id INT UNIQUE NOT NULL,
@@ -362,9 +360,9 @@ CREATE TABLE meal_event_sets (
   updated_by INT REFERENCES users(id)
 );
 
-CREATE INDEX idx_meal_event_menu_sets_deleted_at ON meal_event_sets(deleted_at);
-CREATE INDEX idx_meal_event_menu_sets_meal_event_id ON meal_event_sets(meal_event_id);
-CREATE INDEX idx_meal_event_menu_sets_menu_set_id ON meal_event_sets(menu_set_id);
+CREATE INDEX idx_meal_event_sets_deleted_at ON meal_event_sets(deleted_at);
+CREATE INDEX idx_meal_event_sets_meal_event_id ON meal_event_sets(meal_event_id);
+CREATE INDEX idx_meal_event_sets_menu_set_id ON meal_event_sets(menu_set_id);
 
 CREATE TABLE meal_event_addresses (
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,

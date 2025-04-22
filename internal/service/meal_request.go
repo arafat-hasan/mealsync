@@ -124,8 +124,8 @@ func (s *mealRequestService) UpdateMealRequest(ctx context.Context, id uint, req
 	}
 
 	// Update fields
-	existingRequest.EventMenuSetID = request.EventMenuSetID
-	existingRequest.MealEventAddressID = request.MealEventAddressID
+	existingRequest.MenuSetID = request.MenuSetID
+	existingRequest.EventAddressID = request.EventAddressID
 	existingRequest.UpdatedBy = userID
 
 	return s.requestRepo.Update(ctx, existingRequest)

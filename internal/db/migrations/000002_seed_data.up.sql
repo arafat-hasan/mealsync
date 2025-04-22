@@ -134,179 +134,158 @@ INSERT INTO meal_events (name, description, event_date, event_duration, cutoff_t
 SELECT 
     'Breakfast Event', 
     'Daily breakfast service', 
-    CURRENT_DATE, 
+    (CURRENT_DATE + INTERVAL '0 day')::timestamp + INTERVAL '8 hours', -- 8:00 AM today
     60, 
-    CURRENT_DATE + INTERVAL '1 day' - INTERVAL '2 hours', 
+    (CURRENT_DATE + INTERVAL '0 day')::timestamp + INTERVAL '7 hours', -- 7:00 AM today (cutoff 1 hour before)
     true, 
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
     SELECT 1 FROM meal_events 
-    WHERE name = 'Breakfast Event' AND event_date = CURRENT_DATE
+    WHERE name = 'Breakfast Event' AND event_date::date = CURRENT_DATE
 );
 
 INSERT INTO meal_events (name, description, event_date, event_duration, cutoff_time, is_active, created_by, updated_by)
 SELECT 
     'Lunch Event', 
     'Daily lunch service', 
-    CURRENT_DATE, 
+    (CURRENT_DATE + INTERVAL '0 day')::timestamp + INTERVAL '12 hours', -- 12:00 PM today
     90, 
-    CURRENT_DATE + INTERVAL '1 day' - INTERVAL '2 hours', 
+    (CURRENT_DATE + INTERVAL '0 day')::timestamp + INTERVAL '10 hours 30 minutes', -- 10:30 AM today (cutoff 1.5 hours before)
     true, 
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
     SELECT 1 FROM meal_events 
-    WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE
+    WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE
 );
 
 -- Insert test meal event menu sets
-INSERT INTO meal_event_menu_sets (meal_event_id, menu_set_id, label, note, created_by, updated_by)
+INSERT INTO meal_event_sets (meal_event_id, menu_set_id, label, note, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date = CURRENT_DATE),
+    (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM menu_sets WHERE menu_set_name = 'Breakfast Set A'),
     'Standard Breakfast',
     'Includes eggs and toast',
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
-    SELECT 1 FROM meal_event_menu_sets 
-    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date = CURRENT_DATE)
+    SELECT 1 FROM meal_event_sets 
+    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date::date = CURRENT_DATE)
     AND menu_set_id = (SELECT id FROM menu_sets WHERE menu_set_name = 'Breakfast Set A')
 );
 
-INSERT INTO meal_event_menu_sets (meal_event_id, menu_set_id, label, note, created_by, updated_by)
+INSERT INTO meal_event_sets (meal_event_id, menu_set_id, label, note, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set A'),
     'Main Course Options',
     'Includes burger or pizza',
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
-    SELECT 1 FROM meal_event_menu_sets 
-    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)
+    SELECT 1 FROM meal_event_sets 
+    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND menu_set_id = (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set A')
 );
 
-INSERT INTO meal_event_menu_sets (meal_event_id, menu_set_id, label, note, created_by, updated_by)
+INSERT INTO meal_event_sets (meal_event_id, menu_set_id, label, note, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set B'),
     'Light Meal Options',
     'Includes salad or wrap',
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
-    SELECT 1 FROM meal_event_menu_sets 
-    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)
+    SELECT 1 FROM meal_event_sets 
+    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND menu_set_id = (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set B')
 );
 
 -- Insert test meal event addresses
 INSERT INTO meal_event_addresses (meal_event_id, address_id, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date = CURRENT_DATE),
+    (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM event_addresses WHERE address = 'Main Campus Cafeteria'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
     SELECT 1 FROM meal_event_addresses 
-    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date = CURRENT_DATE)
+    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date::date = CURRENT_DATE)
     AND address_id = (SELECT id FROM event_addresses WHERE address = 'Main Campus Cafeteria')
 );
 
 INSERT INTO meal_event_addresses (meal_event_id, address_id, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM event_addresses WHERE address = 'Main Campus Cafeteria'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
     SELECT 1 FROM meal_event_addresses 
-    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)
+    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND address_id = (SELECT id FROM event_addresses WHERE address = 'Main Campus Cafeteria')
 );
 
 INSERT INTO meal_event_addresses (meal_event_id, address_id, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM event_addresses WHERE address = 'Downtown Office Cafeteria'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
     (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (
     SELECT 1 FROM meal_event_addresses 
-    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)
+    WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND address_id = (SELECT id FROM event_addresses WHERE address = 'Downtown Office Cafeteria')
 );
 
+
 -- Insert test meal requests
-INSERT INTO meal_requests (employee_id, meal_event_id, event_menu_set_id, meal_event_address_id, created_by, updated_by)
+INSERT INTO meal_requests (user_id, meal_event_id, menu_set_id, event_address_id, created_by, updated_by)
 SELECT 
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
-    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE),
-    (SELECT id FROM meal_event_menu_sets WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE) 
-     AND menu_set_id = (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set A')),
-    (SELECT id FROM meal_event_addresses WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE) 
-     AND address_id = (SELECT id FROM event_addresses WHERE address = 'Main Campus Cafeteria')),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
+    (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set A'),
+    (SELECT id FROM event_addresses WHERE address = 'Main Campus Cafeteria'),
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
 WHERE NOT EXISTS (
     SELECT 1 FROM meal_requests 
-    WHERE employee_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
-    AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
+    AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
 );
 
--- Insert test meal request items
-INSERT INTO meal_request_items (meal_request_id, menu_item_id, menu_set_id, is_selected, quantity, notes, created_by, updated_by)
+-- Insert test user requested items
+INSERT INTO user_requested_items (user_id, meal_event_id, menu_item_id, quantity, notes, created_by, updated_by)
 SELECT 
-    (SELECT id FROM meal_requests WHERE employee_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
-     AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)),
+    (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM menu_items WHERE name = 'Classic Burger'),
-    (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set A'),
-    true,
     1,
     'No onions please',
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
 WHERE NOT EXISTS (
-    SELECT 1 FROM meal_request_items 
-    WHERE meal_request_id = (SELECT id FROM meal_requests WHERE employee_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
-                            AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE))
+    SELECT 1 FROM user_requested_items 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
+    AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND menu_item_id = (SELECT id FROM menu_items WHERE name = 'Classic Burger')
 );
 
--- Insert test meal comments
-INSERT INTO meal_comments (employee_id, meal_event_id, event_menu_set_id, menu_item_id, comment, rating, created_by, updated_by)
+-- Insert test menu item comments
+INSERT INTO menu_item_comment (user_id, meal_event_id, menu_item_id, comment, rating, created_by, updated_by)
 SELECT 
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
-    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE),
-    (SELECT id FROM meal_event_menu_sets WHERE meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE) 
-     AND menu_set_id = (SELECT id FROM menu_sets WHERE menu_set_name = 'Lunch Set A')),
+    (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
     (SELECT id FROM menu_items WHERE name = 'Classic Burger'),
     'The burger was delicious today!',
     5,
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
 WHERE NOT EXISTS (
-    SELECT 1 FROM meal_comments 
-    WHERE employee_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
-    AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE)
+    SELECT 1 FROM menu_item_comment 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
+    AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND menu_item_id = (SELECT id FROM menu_items WHERE name = 'Classic Burger')
 );
-
--- Insert test notifications
-INSERT INTO notifications (employee_id, type, payload, read, created_by, updated_by)
-SELECT 
-    (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
-    'confirmation',
-    '{"meal_event_id": ' || (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date = CURRENT_DATE) || 
-    ', "message": "Your meal request for Classic Burger has been confirmed."}',
-    false,
-    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
-    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
-WHERE NOT EXISTS (
-    SELECT 1 FROM notifications 
-    WHERE employee_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
-    AND type = 'confirmation'
-); 

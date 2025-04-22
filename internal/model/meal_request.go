@@ -5,20 +5,20 @@ import "time"
 // MealRequest represents a meal request entity in the system
 type MealRequest struct {
 	Base
-	UserID             uint              `json:"user_id" gorm:"not null"`
-	MealEventID        uint              `json:"meal_event_id" gorm:"not null"`
-	EventMenuSetID     uint              `json:"event_menu_set_id"`
-	MealEventAddressID uint              `json:"meal_event_address_id"`
-	ConfirmedAt        *time.Time        `json:"confirmed_at"`
-	CreatedBy          uint              `json:"created_by"`
-	UpdatedBy          uint              `json:"updated_by"`
-	User               User              `json:"user" gorm:"foreignKey:UserID"`
-	MealEvent          MealEvent         `json:"meal_event" gorm:"foreignKey:MealEventID"`
-	EventMenuSet       MealEventMenuSet  `json:"event_menu_set" gorm:"foreignKey:EventMenuSetID"`
-	EventAddress       MealEventAddress  `json:"event_address" gorm:"foreignKey:MealEventAddressID"`
-	CreatedByUser      User              `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
-	UpdatedByUser      User              `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
-	RequestItems       []MealRequestItem `json:"request_items" gorm:"foreignKey:MealRequestID"`
+	UserID         uint              `json:"user_id" gorm:"not null"`
+	MealEventID    uint              `json:"meal_event_id" gorm:"not null"`
+	MenuSetID      uint              `json:"menu_set_id"`
+	EventAddressID uint              `json:"event_address_id"`
+	ConfirmedAt    *time.Time        `json:"confirmed_at"`
+	CreatedBy      uint              `json:"created_by"`
+	UpdatedBy      uint              `json:"updated_by"`
+	User           User              `json:"user" gorm:"foreignKey:UserID"`
+	MealEvent      MealEvent         `json:"meal_event" gorm:"foreignKey:MealEventID"`
+	MenuSet        MenuSet           `json:"menu_set" gorm:"foreignKey:MenuSetID"`
+	EventAddress   EventAddress      `json:"event_address" gorm:"foreignKey:EventAddressID"`
+	CreatedByUser  User              `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
+	UpdatedByUser  User              `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
+	RequestItems   []MealRequestItem `json:"request_items" gorm:"foreignKey:MealRequestID"`
 }
 
 // MealRequestItem represents an item in a meal request
