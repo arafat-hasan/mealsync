@@ -335,7 +335,7 @@ CREATE TABLE meal_events (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   description TEXT,
-  event_date DATE NOT NULL,
+  event_date TIMESTAMP NOT NULL,
   event_duration INT NOT NULL, -- in minutes
   cutoff_time TIMESTAMP NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
@@ -437,7 +437,7 @@ CREATE TABLE menu_item_comment (
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
   menu_item_id INT NOT NULL REFERENCES menu_items(id),
   comment TEXT NOT NULL,
-  rating SMALLINT CHECK (rating BETWEEN 1 AND 5),
+  rating SMALLINT CHECK (rating BETWEEN 1 AND 5) NOT NULL,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
