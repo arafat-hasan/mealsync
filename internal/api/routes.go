@@ -6,7 +6,7 @@ import (
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, mealCommentHandler *MealCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler) {
+func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, mealCommentHandler *MealCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler, notificationHandler *NotificationHandler) {
 	// Public routes (no auth required)
 	public := r.Group("/api")
 	{
@@ -97,6 +97,18 @@ func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealEvent
 		users := protected.Group("/users")
 		{
 			users.GET("/:user_id/comments", mealCommentHandler.GetUserComments)
+		}
+
+		// Notification routes
+		notifications := protected.Group("/notifications")
+		{
+			notifications.GET("", notificationHandler.GetNotifications)
+			notifications.GET("/unread", notificationHandler.GetUnreadNotifications)
+			notifications.GET("/unread/count", notificationHandler.GetUnreadNotificationCount)
+			notifications.GET("/type/:type", notificationHandler.GetNotificationsByType)
+			notifications.PUT("/:notification_id/read", notificationHandler.MarkNotificationAsRead)
+			notifications.PUT("/:notification_id/delivered", notificationHandler.MarkNotificationAsDelivered)
+			notifications.DELETE("/:notification_id", notificationHandler.DeleteNotification)
 		}
 	}
 }

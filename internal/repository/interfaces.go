@@ -69,6 +69,11 @@ type NotificationRepository interface {
 	BaseRepository[model.Notification]
 	FindByUserID(ctx context.Context, userID uint) ([]model.Notification, error)
 	CountUnreadByUserID(ctx context.Context, userID uint) (int64, error)
+	CountUndeliveredByUserID(ctx context.Context, userID uint) (int64, error)
+	MarkAsRead(ctx context.Context, id uint) error
+	MarkAsDelivered(ctx context.Context, id uint) error
+	FindUnreadByUserID(ctx context.Context, userID uint) ([]model.Notification, error)
+	FindByType(ctx context.Context, userID uint, notificationType model.NotificationType) ([]model.Notification, error)
 }
 
 // MealRequestRepository handles meal request related database operations

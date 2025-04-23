@@ -240,7 +240,6 @@ WHERE NOT EXISTS (
     AND address_id = (SELECT id FROM event_addresses WHERE address = 'Downtown Office Cafeteria')
 );
 
-
 -- Insert test meal requests
 INSERT INTO meal_requests (user_id, meal_event_id, menu_set_id, event_address_id, created_by, updated_by)
 SELECT 
@@ -288,4 +287,113 @@ WHERE NOT EXISTS (
     WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
     AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND menu_item_id = (SELECT id FROM menu_items WHERE name = 'Classic Burger')
+);
+
+-- Insert test notifications
+-- Confirmation notifications
+INSERT INTO notifications (user_id, type, payload, message, read, created_by, updated_by)
+SELECT 
+    (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
+    'confirmation',
+    ('{"meal_event_id": ' || (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE) || 
+    ', "message": "Your meal request for Lunch Event has been confirmed."}')::jsonb,
+    'Your meal request for Lunch Event has been confirmed.',
+    false,
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+WHERE NOT EXISTS (
+    SELECT 1 FROM notifications 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
+    AND type = 'confirmation'
+    AND payload::text LIKE '%Lunch Event%'
+);
+
+-- Reminder notifications
+INSERT INTO notifications (user_id, type, payload, message, read, created_by, updated_by)
+SELECT 
+    (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
+    'reminder',
+    ('{"meal_event_id": ' || (SELECT id FROM meal_events WHERE name = 'Breakfast Event' AND event_date::date = CURRENT_DATE) || 
+    ', "message": "Don''t forget to submit your meal request for tomorrow''s Breakfast Event.", "deadline": "' || 
+    to_char((CURRENT_DATE + INTERVAL '1 day')::timestamp + INTERVAL '7 hours', 'YYYY-MM-DD"T"HH24:MI:SS') || '"}')::jsonb,
+    'Don''t forget to submit your meal request for tomorrow''s Breakfast Event.',
+    false,
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+WHERE NOT EXISTS (
+    SELECT 1 FROM notifications 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
+    AND type = 'reminder'
+    AND payload::text LIKE '%Breakfast Event%'
+);
+
+-- Admin message notifications
+INSERT INTO notifications (user_id, type, payload, message, read, created_by, updated_by)
+SELECT 
+    (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
+    'admin-message',
+    '{"message": "The cafeteria will be closed for renovations next Monday. Please plan accordingly.", "importance": "high"}'::jsonb,
+    'The cafeteria will be closed for renovations next Monday. Please plan accordingly.',
+    false,
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+WHERE NOT EXISTS (
+    SELECT 1 FROM notifications 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
+    AND type = 'admin-message'
+    AND payload::text LIKE '%renovations%'
+);
+
+-- Read notification for employee2
+INSERT INTO notifications (user_id, type, payload, message, read, created_by, updated_by)
+SELECT 
+    (SELECT id FROM users WHERE email = 'employee2@mealsync.com'),
+    'confirmation',
+    ('{"meal_event_id": ' || (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE) || 
+    ', "message": "Your meal request for Lunch Event has been confirmed."}')::jsonb,
+    'Your meal request for Lunch Event has been confirmed.',
+    true,
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+WHERE NOT EXISTS (
+    SELECT 1 FROM notifications 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee2@mealsync.com')
+    AND type = 'confirmation'
+    AND read = true
+);
+
+-- Multiple notifications for admin
+INSERT INTO notifications (user_id, type, payload, message, read, created_by, updated_by)
+SELECT 
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    'admin-message',
+    '{"message": "System maintenance completed successfully.", "importance": "low"}'::jsonb,
+    'System maintenance completed successfully.',
+    true,
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+WHERE NOT EXISTS (
+    SELECT 1 FROM notifications 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+    AND type = 'admin-message'
+    AND payload::text LIKE '%maintenance%'
+);
+
+-- Deadline approaching notification
+INSERT INTO notifications (user_id, type, payload, message, read, created_by, updated_by)
+SELECT 
+    (SELECT id FROM users WHERE email = 'employee2@mealsync.com'),
+    'reminder',
+    ('{"meal_event_id": ' || (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE) || 
+    ', "message": "Deadline approaching: Only 1 hour left to submit your meal request.", "deadline": "' || 
+    to_char((CURRENT_DATE)::timestamp + INTERVAL '10 hours 30 minutes', 'YYYY-MM-DD"T"HH24:MI:SS') || '"}')::jsonb,
+    'Deadline approaching: Only 1 hour left to submit your meal request.',
+    false,
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com'),
+    (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+WHERE NOT EXISTS (
+    SELECT 1 FROM notifications 
+    WHERE user_id = (SELECT id FROM users WHERE email = 'employee2@mealsync.com')
+    AND type = 'reminder'
+    AND payload::text LIKE '%Deadline approaching%'
 );

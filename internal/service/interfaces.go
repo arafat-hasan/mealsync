@@ -62,11 +62,16 @@ type NotificationService interface {
 	GetNotifications(ctx context.Context, userID uint) ([]model.Notification, error)
 	CreateNotification(ctx context.Context, notification *model.Notification, userID uint) error
 	MarkNotificationAsRead(ctx context.Context, notificationID uint, userID uint) error
+	MarkNotificationAsDelivered(ctx context.Context, notificationID uint, userID uint) error
 	DeleteNotification(ctx context.Context, notificationID uint, userID uint) error
 	GetUnreadNotificationCount(ctx context.Context, userID uint) (int64, error)
-	CreateMealConfirmationNotification(ctx context.Context, userID uint, mealEventID uint) error
-	CreateMealReminderNotification(ctx context.Context, userID uint, mealEventID uint) error
-	CreateMealCancellationNotification(ctx context.Context, userID uint, mealEventID uint) error
+	GetUndeliveredNotificationCount(ctx context.Context, userID uint) (int64, error)
+	GetNotificationsByType(ctx context.Context, userID uint, notificationType model.NotificationType) ([]model.Notification, error)
+	GetUnreadNotifications(ctx context.Context, userID uint) ([]model.Notification, error)
+	CreateMealConfirmationNotification(ctx context.Context, userID uint, mealEventID uint, message string) error
+	CreateMealReminderNotification(ctx context.Context, userID uint, mealEventID uint, message string, deadline time.Time) error
+	CreateMealCancellationNotification(ctx context.Context, userID uint, mealEventID uint, message string) error
+	CreateAdminNotification(ctx context.Context, userID uint, message string, importance string) error
 }
 
 // MealRequestService defines the interface for meal request operations

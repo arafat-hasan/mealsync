@@ -102,6 +102,7 @@ func main() {
 	menuItemHandler := api.NewMenuItemHandler(menuItemService)
 	mealRequestHandler := api.NewMealRequestHandler(mealRequestService)
 	mealCommentHandler := api.NewMealCommentHandler(mealCommentService)
+	notificationHandler := api.NewNotificationHandler(notificationService)
 
 	// Initialize router with custom middleware
 	router := gin.Default()
@@ -116,7 +117,7 @@ func main() {
 	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
 
 	// API routes
-	api.SetupRoutes(router, authHandler, mealEventHandler, menuSetHandler, mealCommentHandler, menuItemHandler, mealRequestHandler)
+	api.SetupRoutes(router, authHandler, mealEventHandler, menuSetHandler, mealCommentHandler, menuItemHandler, mealRequestHandler, notificationHandler)
 
 	// Documentation routes with custom configuration
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,

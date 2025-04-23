@@ -7,6 +7,7 @@ DROP TRIGGER IF EXISTS trg_rating_update ON menu_item_comment;
 DROP TRIGGER IF EXISTS trg_rating_delete ON menu_item_comment;
 
 -- Then drop tables in correct dependency order
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS menu_item_comment;
 DROP TABLE IF EXISTS user_requested_items;
 DROP TABLE IF EXISTS meal_requests;

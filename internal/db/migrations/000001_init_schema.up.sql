@@ -304,3 +304,26 @@ CREATE INDEX idx_menu_item_comment_deleted_at ON menu_item_comment(deleted_at);
 CREATE INDEX idx_menu_item_comment_meal_event_id ON menu_item_comment(meal_event_id);
 CREATE INDEX idx_menu_item_comment_menu_item_id ON menu_item_comment(menu_item_id);
 CREATE INDEX idx_menu_item_comment_rating ON menu_item_comment(rating);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL CHECK (type IN ('reminder', 'confirmation', 'admin-message', 'event-info')),
+    payload JSONB,
+    message TEXT NOT NULL,
+    read BOOLEAN DEFAULT FALSE,
+    delivered BOOLEAN DEFAULT FALSE,
+    read_at TIMESTAMP DEFAULT NULL,
+    delivered_at TIMESTAMP DEFAULT NULL,
+    deleted_at TIMESTAMP DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    created_by INT REFERENCES users(id),
+    updated_by INT REFERENCES users(id)
+);
+
+CREATE INDEX idx_notifications_deleted_at ON notifications(deleted_at);
+CREATE INDEX idx_notifications_delivered ON notifications(delivered);
+CREATE INDEX idx_notifications_user_read ON notifications(user_id, read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at);
+CREATE INDEX idx_notifications_payload_gin ON notifications USING GIN (payload);
