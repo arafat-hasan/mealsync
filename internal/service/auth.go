@@ -37,7 +37,11 @@ func (s *AuthService) Register(user *model.User) error {
 	if err != nil {
 		return apperrors.NewInternalError("Failed to hash password", err)
 	}
-	user.Password = string(hashedPassword)
+
+	// Store the hash in the correct field
+	user.PasswordHash = string(hashedPassword)
+	// Clear the transient password field
+	user.Password = ""
 
 	// Create user
 	if err := s.userRepo.Create(nil, user); err != nil {
@@ -58,7 +62,8 @@ func (s *AuthService) Authenticate(email, password string) (*model.User, error) 
 	}
 
 	// Compare passwords
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	// Use PasswordHash instead of Password field for comparison
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return nil, apperrors.NewUnauthorizedError("Invalid credentials", nil)
 	}
 

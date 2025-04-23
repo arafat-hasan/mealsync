@@ -7,7 +7,8 @@ type User struct {
 	Base
 	EmployeeID          string         `json:"employee_id" gorm:"unique;not null"`
 	Username            string         `json:"username" gorm:"unique;not null"`
-	Password            string         `json:"-" gorm:"not null"` // "-" means don't include in JSON
+	PasswordHash        string         `json:"-" gorm:"column:password_hash;not null"` // Map to password_hash column
+	Password            string         `json:"-" gorm:"-"`                             // Transient field for password input, not stored
 	Name                string         `json:"name" gorm:"not null"`
 	Email               string         `json:"email" gorm:"unique;not null"`
 	Department          string         `json:"department" gorm:"not null"`
