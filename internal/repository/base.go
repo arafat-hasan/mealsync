@@ -2,8 +2,14 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"gorm.io/gorm"
+)
+
+// Common repository errors
+var (
+	ErrNotFound = errors.New("record not found")
 )
 
 // baseRepository implements common CRUD operations

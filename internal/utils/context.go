@@ -7,7 +7,7 @@ import (
 
 // GetUserIDFromContext extracts user ID from the context set by auth middleware
 func GetUserIDFromContext(c *gin.Context) (uint, error) {
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("user_id") // Match the key used in auth middleware
 	if !exists {
 		return 0, errors.NewUnauthorizedError("user not authenticated", nil)
 	}

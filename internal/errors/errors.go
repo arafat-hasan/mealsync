@@ -1,8 +1,15 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+)
+
+// Common errors
+var (
+	// ErrNotFound represents a not found error
+	ErrNotFound = errors.New("record not found")
 )
 
 // ErrorType represents the type of error

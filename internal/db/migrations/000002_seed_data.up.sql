@@ -273,7 +273,7 @@ WHERE NOT EXISTS (
 );
 
 -- Insert test menu item comments
-INSERT INTO menu_item_comment (user_id, meal_event_id, menu_item_id, comment, rating, created_by, updated_by)
+INSERT INTO menu_item_comments (user_id, meal_event_id, menu_item_id, comment, rating, created_by, updated_by)
 SELECT 
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
     (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE),
@@ -283,7 +283,7 @@ SELECT
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com'),
     (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
 WHERE NOT EXISTS (
-    SELECT 1 FROM menu_item_comment 
+    SELECT 1 FROM menu_item_comments 
     WHERE user_id = (SELECT id FROM users WHERE email = 'employee1@mealsync.com')
     AND meal_event_id = (SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE)
     AND menu_item_id = (SELECT id FROM menu_items WHERE name = 'Classic Burger')

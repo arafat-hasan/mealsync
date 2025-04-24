@@ -46,7 +46,7 @@ func InitDB() error {
 		&model.MealEventAddress{},
 		&model.MealRequest{},
 		&model.MealRequestItem{},
-		&model.MealComment{},
+		&model.MenuItemComment{},
 		&model.Notification{},
 	)
 	if err != nil {

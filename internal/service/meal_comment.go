@@ -8,28 +8,31 @@ import (
 	"github.com/arafat-hasan/mealsync/internal/repository"
 )
 
-// mealCommentService handles business logic for meal comment operations
-type mealCommentService struct {
-	commentRepo repository.MealCommentRepository
+// menuItemCommentService handles business logic for menu item comment operations
+type menuItemCommentService struct {
+	commentRepo repository.MenuItemCommentRepository
 	mealRepo    repository.MealEventRepository
 	userRepo    repository.UserRepository
+	menuRepo    repository.MenuItemRepository
 }
 
-// NewMealCommentService creates a new instance of MealCommentService
-func NewMealCommentService(
-	commentRepo repository.MealCommentRepository,
+// NewMenuItemCommentService creates a new instance of MenuItemCommentService
+func NewMenuItemCommentService(
+	commentRepo repository.MenuItemCommentRepository,
 	mealRepo repository.MealEventRepository,
 	userRepo repository.UserRepository,
-) MealCommentService {
-	return &mealCommentService{
+	menuRepo repository.MenuItemRepository,
+) MenuItemCommentService {
+	return &menuItemCommentService{
 		commentRepo: commentRepo,
 		mealRepo:    mealRepo,
 		userRepo:    userRepo,
+		menuRepo:    menuRepo,
 	}
 }
 
 // GetComments retrieves comments for a meal event
-func (s *mealCommentService) GetComments(ctx context.Context, mealEventID uint) ([]model.MealComment, error) {
+func (s *menuItemCommentService) GetComments(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error) {
 	// Verify meal event exists
 	_, err := s.mealRepo.FindByID(ctx, mealEventID)
 	if err != nil {
@@ -40,18 +43,24 @@ func (s *mealCommentService) GetComments(ctx context.Context, mealEventID uint) 
 }
 
 // GetCommentByID retrieves a specific comment by ID
-func (s *mealCommentService) GetCommentByID(ctx context.Context, id uint) (*model.MealComment, error) {
+func (s *menuItemCommentService) GetCommentByID(ctx context.Context, id uint) (*model.MenuItemComment, error) {
 	return s.commentRepo.FindByID(ctx, id)
 }
 
 // CreateComment creates a new comment
-func (s *mealCommentService) CreateComment(ctx context.Context, comment *model.MealComment, userID uint) error {
+func (s *menuItemCommentService) CreateComment(ctx context.Context, comment *model.MenuItemComment, userID uint) error {
 	if comment == nil {
 		return errors.NewValidationError("comment cannot be nil", nil)
 	}
 
 	// Verify meal event exists
 	_, err := s.mealRepo.FindByID(ctx, comment.MealEventID)
+	if err != nil {
+		return err
+	}
+
+	// Verify menu item exists
+	_, err = s.menuRepo.FindByID(ctx, comment.MenuItemID)
 	if err != nil {
 		return err
 	}
@@ -65,7 +74,7 @@ func (s *mealCommentService) CreateComment(ctx context.Context, comment *model.M
 }
 
 // UpdateComment updates an existing comment
-func (s *mealCommentService) UpdateComment(ctx context.Context, id uint, comment *model.MealComment, userID uint) error {
+func (s *menuItemCommentService) UpdateComment(ctx context.Context, id uint, comment *model.MenuItemComment, userID uint) error {
 	if comment == nil {
 		return errors.NewValidationError("comment cannot be nil", nil)
 	}
@@ -89,7 +98,7 @@ func (s *mealCommentService) UpdateComment(ctx context.Context, id uint, comment
 }
 
 // DeleteComment soft deletes a comment
-func (s *mealCommentService) DeleteComment(ctx context.Context, id uint, userID uint) error {
+func (s *menuItemCommentService) DeleteComment(ctx context.Context, id uint, userID uint) error {
 	comment, err := s.commentRepo.FindByID(ctx, id)
 	if err != nil {
 		return err
@@ -104,18 +113,30 @@ func (s *mealCommentService) DeleteComment(ctx context.Context, id uint, userID 
 	return s.commentRepo.Delete(ctx, comment)
 }
 
-// GetReplies retrieves replies for a comment
-func (s *mealCommentService) GetReplies(ctx context.Context, commentID uint) ([]model.MealComment, error) {
+// GetUserComments retrieves all comments by a user
+func (s *menuItemCommentService) GetUserComments(ctx context.Context, userID uint) ([]model.MenuItemComment, error) {
+	return s.commentRepo.FindByUserID(ctx, userID)
+}
+
+// GetMenuItemComments retrieves all comments for a specific menu item
+func (s *menuItemCommentService) GetMenuItemComments(ctx context.Context, menuItemID uint) ([]model.MenuItemComment, error) {
+	// Verify menu item exists
+	_, err := s.menuRepo.FindByID(ctx, menuItemID)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.commentRepo.FindByMenuItemID(ctx, menuItemID)
+}
+
+// GetReplies retrieves all replies to a specific comment
+func (s *menuItemCommentService) GetReplies(ctx context.Context, commentID uint) ([]model.MenuItemComment, error) {
 	// Verify parent comment exists
 	_, err := s.commentRepo.FindByID(ctx, commentID)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.commentRepo.FindByParentCommentID(ctx, commentID)
-}
-
-// GetUserComments retrieves all comments by a user
-func (s *mealCommentService) GetUserComments(ctx context.Context, userID uint) ([]model.MealComment, error) {
-	return s.commentRepo.FindByUserID(ctx, userID)
+	// Fetch all replies to this comment
+	return s.commentRepo.FindReplies(ctx, commentID)
 }

@@ -8,58 +8,58 @@ import (
 	"gorm.io/gorm"
 )
 
-// mealCommentRepository implements MealCommentRepository interface
-type mealCommentRepository struct {
-	*baseRepository[model.MealComment]
+// menuItemCommentRepository implements MenuItemCommentRepository interface
+type menuItemCommentRepository struct {
+	*baseRepository[model.MenuItemComment]
 	db *gorm.DB
 }
 
-// NewMealCommentRepository creates a new instance of MealCommentRepository
-func NewMealCommentRepository(db *gorm.DB) MealCommentRepository {
-	return &mealCommentRepository{
-		baseRepository: NewBaseRepository[model.MealComment](db),
+// NewMenuItemCommentRepository creates a new instance of MenuItemCommentRepository
+func NewMenuItemCommentRepository(db *gorm.DB) MenuItemCommentRepository {
+	return &menuItemCommentRepository{
+		baseRepository: NewBaseRepository[model.MenuItemComment](db),
 		db:             db,
 	}
 }
 
-// Create creates a new meal comment
-func (r *mealCommentRepository) Create(ctx context.Context, comment *model.MealComment) error {
+// Create creates a new menu item comment
+func (r *menuItemCommentRepository) Create(ctx context.Context, comment *model.MenuItemComment) error {
 	return r.baseRepository.Create(ctx, comment)
 }
 
-// FindByID finds a meal comment by ID
-func (r *mealCommentRepository) FindByID(ctx context.Context, id uint) (*model.MealComment, error) {
+// FindByID finds a menu item comment by ID
+func (r *menuItemCommentRepository) FindByID(ctx context.Context, id uint) (*model.MenuItemComment, error) {
 	return r.baseRepository.FindByID(ctx, id)
 }
 
-// FindAll finds all meal comments
-func (r *mealCommentRepository) FindAll(ctx context.Context) ([]model.MealComment, error) {
+// FindAll finds all menu item comments
+func (r *menuItemCommentRepository) FindAll(ctx context.Context) ([]model.MenuItemComment, error) {
 	return r.baseRepository.FindAll(ctx)
 }
 
-// FindActive finds active meal comments based on conditions
-func (r *mealCommentRepository) FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MealComment, error) {
+// FindActive finds active menu item comments based on conditions
+func (r *menuItemCommentRepository) FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MenuItemComment, error) {
 	return r.baseRepository.FindActive(ctx, conditions)
 }
 
-// Update updates a meal comment
-func (r *mealCommentRepository) Update(ctx context.Context, comment *model.MealComment) error {
+// Update updates a menu item comment
+func (r *menuItemCommentRepository) Update(ctx context.Context, comment *model.MenuItemComment) error {
 	return r.baseRepository.Update(ctx, comment)
 }
 
-// Delete soft deletes a meal comment
-func (r *mealCommentRepository) Delete(ctx context.Context, comment *model.MealComment) error {
+// Delete soft deletes a menu item comment
+func (r *menuItemCommentRepository) Delete(ctx context.Context, comment *model.MenuItemComment) error {
 	return r.baseRepository.Delete(ctx, comment)
 }
 
-// HardDelete permanently deletes a meal comment
-func (r *mealCommentRepository) HardDelete(ctx context.Context, comment *model.MealComment) error {
+// HardDelete permanently deletes a menu item comment
+func (r *menuItemCommentRepository) HardDelete(ctx context.Context, comment *model.MenuItemComment) error {
 	return r.baseRepository.HardDelete(ctx, comment)
 }
 
-// FindByMealEventID finds meal comments by meal event ID
-func (r *mealCommentRepository) FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MealComment, error) {
-	var comments []model.MealComment
+// FindByMealEventID finds menu item comments by meal event ID
+func (r *menuItemCommentRepository) FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error) {
+	var comments []model.MenuItemComment
 	err := r.db.WithContext(ctx).Where("meal_event_id = ?", mealEventID).Find(&comments).Error
 	if err != nil {
 		return nil, err
@@ -67,9 +67,9 @@ func (r *mealCommentRepository) FindByMealEventID(ctx context.Context, mealEvent
 	return comments, nil
 }
 
-// FindByUserID finds meal comments by user ID
-func (r *mealCommentRepository) FindByUserID(ctx context.Context, userID uint) ([]model.MealComment, error) {
-	var comments []model.MealComment
+// FindByUserID finds menu item comments by user ID
+func (r *menuItemCommentRepository) FindByUserID(ctx context.Context, userID uint) ([]model.MenuItemComment, error) {
+	var comments []model.MenuItemComment
 	err := r.db.WithContext(ctx).Where("user_id = ?", userID).Find(&comments).Error
 	if err != nil {
 		return nil, err
@@ -77,10 +77,20 @@ func (r *mealCommentRepository) FindByUserID(ctx context.Context, userID uint) (
 	return comments, nil
 }
 
+// FindByMenuItemID finds comments by menu item ID
+func (r *menuItemCommentRepository) FindByMenuItemID(ctx context.Context, menuItemID uint) ([]model.MenuItemComment, error) {
+	var comments []model.MenuItemComment
+	err := r.db.WithContext(ctx).Where("menu_item_id = ?", menuItemID).Find(&comments).Error
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}
+
 // CountByMealEventID counts comments by meal event ID
-func (r *mealCommentRepository) CountByMealEventID(ctx context.Context, mealEventID uint) (int64, error) {
+func (r *menuItemCommentRepository) CountByMealEventID(ctx context.Context, mealEventID uint) (int64, error) {
 	var count int64
-	err := r.db.WithContext(ctx).Model(&model.MealComment{}).Where("meal_event_id = ?", mealEventID).Count(&count).Error
+	err := r.db.WithContext(ctx).Model(&model.MenuItemComment{}).Where("meal_event_id = ?", mealEventID).Count(&count).Error
 	if err != nil {
 		return 0, err
 	}
@@ -88,8 +98,8 @@ func (r *mealCommentRepository) CountByMealEventID(ctx context.Context, mealEven
 }
 
 // FindByDateRange finds comments within a date range
-func (r *mealCommentRepository) FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealComment, error) {
-	var comments []model.MealComment
+func (r *menuItemCommentRepository) FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MenuItemComment, error) {
+	var comments []model.MenuItemComment
 	err := r.db.WithContext(ctx).
 		Where("created_at BETWEEN ? AND ?", startDate, endDate).
 		Find(&comments).Error
@@ -99,33 +109,9 @@ func (r *mealCommentRepository) FindByDateRange(ctx context.Context, startDate, 
 	return comments, nil
 }
 
-// FindByMealRequestID finds comments by meal request ID
-func (r *mealCommentRepository) FindByMealRequestID(ctx context.Context, mealRequestID uint) ([]model.MealComment, error) {
-	var comments []model.MealComment
-	err := r.db.WithContext(ctx).
-		Where("meal_request_id = ?", mealRequestID).
-		Find(&comments).Error
-	if err != nil {
-		return nil, err
-	}
-	return comments, nil
-}
-
-// FindByParentCommentID finds comments by parent comment ID
-func (r *mealCommentRepository) FindByParentCommentID(ctx context.Context, parentCommentID uint) ([]model.MealComment, error) {
-	var comments []model.MealComment
-	err := r.db.WithContext(ctx).
-		Where("parent_comment_id = ?", parentCommentID).
-		Find(&comments).Error
-	if err != nil {
-		return nil, err
-	}
-	return comments, nil
-}
-
 // FindRecentComments finds recent comments with a limit
-func (r *mealCommentRepository) FindRecentComments(ctx context.Context, limit int) ([]model.MealComment, error) {
-	var comments []model.MealComment
+func (r *menuItemCommentRepository) FindRecentComments(ctx context.Context, limit int) ([]model.MenuItemComment, error) {
+	var comments []model.MenuItemComment
 	err := r.db.WithContext(ctx).
 		Order("created_at DESC").
 		Limit(limit).
@@ -137,8 +123,8 @@ func (r *mealCommentRepository) FindRecentComments(ctx context.Context, limit in
 }
 
 // FindWithUserDetails finds a comment with user details by ID
-func (r *mealCommentRepository) FindWithUserDetails(ctx context.Context, commentID uint) (*model.MealComment, error) {
-	var comment model.MealComment
+func (r *menuItemCommentRepository) FindWithUserDetails(ctx context.Context, commentID uint) (*model.MenuItemComment, error) {
+	var comment model.MenuItemComment
 	err := r.db.WithContext(ctx).
 		Preload("User").
 		First(&comment, commentID).Error
@@ -146,4 +132,17 @@ func (r *mealCommentRepository) FindWithUserDetails(ctx context.Context, comment
 		return nil, err
 	}
 	return &comment, nil
+}
+
+// FindReplies finds all replies to a parent comment
+func (r *menuItemCommentRepository) FindReplies(ctx context.Context, parentID uint) ([]model.MenuItemComment, error) {
+	var replies []model.MenuItemComment
+	err := r.db.WithContext(ctx).
+		Preload("User").
+		Where("parent_id = ?", parentID).
+		Find(&replies).Error
+	if err != nil {
+		return nil, err
+	}
+	return replies, nil
 }

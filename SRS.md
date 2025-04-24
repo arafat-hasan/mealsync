@@ -242,7 +242,7 @@ BEGIN
         UPDATE menu_items
         SET average_rating = (
             SELECT ROUND(AVG(rating)::numeric, 2)
-            FROM menu_item_comment
+            FROM menu_item_comments
             WHERE menu_item_id = NEW.menu_item_id
               AND rating IS NOT NULL
         )
@@ -429,7 +429,7 @@ EXECUTE FUNCTION validate_requested_item();
 CREATE INDEX idx_user_requested_items_deleted_at ON user_requested_items(deleted_at);
 CREATE INDEX idx_user_requested_items_menu_item_id ON user_requested_items(menu_item_id);
 
-CREATE TABLE menu_item_comment (
+CREATE TABLE menu_item_comments (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
@@ -445,30 +445,30 @@ CREATE TABLE menu_item_comment (
 
 
 CREATE TRIGGER trg_validate_menu_item_comment
-BEFORE INSERT OR UPDATE ON menu_item_comment
+BEFORE INSERT OR UPDATE ON menu_item_comments
 FOR EACH ROW
 EXECUTE FUNCTION validate_menu_item_comment();
 
 CREATE TRIGGER trg_rating_insert
-AFTER INSERT ON menu_item_comment
+AFTER INSERT ON menu_item_comments
 FOR EACH ROW
 EXECUTE FUNCTION update_menu_item_rating();
 
 CREATE TRIGGER trg_rating_update
-AFTER UPDATE OF rating ON menu_item_comment
+AFTER UPDATE OF rating ON menu_item_comments
 FOR EACH ROW
 EXECUTE FUNCTION update_menu_item_rating();
 
 CREATE TRIGGER trg_rating_delete
-AFTER DELETE ON menu_item_comment
+AFTER DELETE ON menu_item_comments
 FOR EACH ROW
 EXECUTE FUNCTION update_menu_item_rating();
 
 
-CREATE INDEX idx_menu_item_comment_deleted_at ON menu_item_comment(deleted_at);
-CREATE INDEX idx_menu_item_comment_meal_event_id ON menu_item_comment(meal_event_id);
-CREATE INDEX idx_menu_item_comment_menu_item_id ON menu_item_comment(menu_item_id);
-CREATE INDEX idx_menu_item_comment_rating ON menu_item_comment(rating);
+CREATE INDEX idx_menu_item_comment_deleted_at ON menu_item_comments(deleted_at);
+CREATE INDEX idx_menu_item_comment_meal_event_id ON menu_item_comments(meal_event_id);
+CREATE INDEX idx_menu_item_comment_menu_item_id ON menu_item_comments(menu_item_id);
+CREATE INDEX idx_menu_item_comment_rating ON menu_item_comments(rating);
 ```
 
 ---

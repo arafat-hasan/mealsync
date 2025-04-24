@@ -17,16 +17,46 @@ type UserService interface {
 	DeleteUser(ctx context.Context, id uint) error
 }
 
-// MealEventService defines meal event-related business operations
+// MealEventService defines meal event-specific business logic
 type MealEventService interface {
+	Create(ctx context.Context, meal *model.MealEvent) error
+	FindByID(ctx context.Context, id uint) (*model.MealEvent, error)
+	FindAll(ctx context.Context) ([]model.MealEvent, error)
+	FindActive(ctx context.Context) ([]model.MealEvent, error)
+	Update(ctx context.Context, meal *model.MealEvent) error
+	Delete(ctx context.Context, meal *model.MealEvent) error
+	HardDelete(ctx context.Context, meal *model.MealEvent) error
+
+	// Methods used by the API handlers
 	GetMeals(ctx context.Context, userID uint, isAdmin bool) ([]model.MealEvent, error)
 	GetMealByID(ctx context.Context, id uint, userID uint, isAdmin bool) (*model.MealEvent, error)
 	CreateMeal(ctx context.Context, meal *model.MealEvent, userID uint) error
 	UpdateMeal(ctx context.Context, id uint, meal *model.MealEvent, userID uint) error
 	DeleteMeal(ctx context.Context, id uint, userID uint) error
-	SubmitMealRequest(ctx context.Context, request *model.MealRequest, userID uint) error
-	WithdrawMealRequest(ctx context.Context, requestID uint, userID uint) error
-	GetMealRequests(ctx context.Context, userID uint, isAdmin bool) ([]model.MealRequest, error)
+
+	// MealEventMenuSet management with label and note
+	AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
+	UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
+	RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error
+	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventMenuSet, error)
+
+	// MealRequest specific operations
+	CreateMealRequest(ctx context.Context, request *model.MealRequest) error
+	FindRequestByID(ctx context.Context, id uint) (*model.MealRequest, error)
+	FindAllRequests(ctx context.Context) ([]model.MealRequest, error)
+	FindRequestsByUserID(ctx context.Context, userID uint) ([]model.MealRequest, error)
+	DeleteMealRequest(ctx context.Context, request *model.MealRequest) error
+
+	// MealEventAddress operations
+	AddAddressToEvent(ctx context.Context, eventAddressID uint, mealEventID uint) error
+	RemoveAddressFromEvent(ctx context.Context, eventAddressID uint, mealEventID uint) error
+	FindAddressesByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventAddress, error)
+
+	CreateComment(ctx context.Context, comment *model.MenuItemComment) error
+	FindCommentsByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
+
+	FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error)
+	FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error)
 }
 
 // MenuSetService defines menu set-related business operations
@@ -100,13 +130,14 @@ type EventAddressService interface {
 	GetAvailableAddresses(ctx context.Context, date time.Time) ([]model.MealEventAddress, error)
 }
 
-// MealCommentService defines meal comment-related business operations
-type MealCommentService interface {
-	GetComments(ctx context.Context, mealEventID uint) ([]model.MealComment, error)
-	GetCommentByID(ctx context.Context, id uint) (*model.MealComment, error)
-	CreateComment(ctx context.Context, comment *model.MealComment, userID uint) error
-	UpdateComment(ctx context.Context, id uint, comment *model.MealComment, userID uint) error
+// MenuItemCommentService defines menu item comment-related business operations
+type MenuItemCommentService interface {
+	GetComments(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
+	GetCommentByID(ctx context.Context, id uint) (*model.MenuItemComment, error)
+	CreateComment(ctx context.Context, comment *model.MenuItemComment, userID uint) error
+	UpdateComment(ctx context.Context, id uint, comment *model.MenuItemComment, userID uint) error
 	DeleteComment(ctx context.Context, id uint, userID uint) error
-	GetReplies(ctx context.Context, commentID uint) ([]model.MealComment, error)
-	GetUserComments(ctx context.Context, userID uint) ([]model.MealComment, error)
+	GetUserComments(ctx context.Context, userID uint) ([]model.MenuItemComment, error)
+	GetMenuItemComments(ctx context.Context, menuItemID uint) ([]model.MenuItemComment, error)
+	GetReplies(ctx context.Context, commentID uint) ([]model.MenuItemComment, error) // Added for comment replies
 }

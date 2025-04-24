@@ -987,7 +987,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.MealComment"
+                                "$ref": "#/definitions/model.MenuItemComment"
                             }
                         }
                     },
@@ -1048,7 +1048,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.MealComment"
+                            "$ref": "#/definitions/model.MenuItemComment"
                         }
                     }
                 ],
@@ -1056,7 +1056,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.MealComment"
+                            "$ref": "#/definitions/model.MenuItemComment"
                         }
                     },
                     "400": {
@@ -1124,7 +1124,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.MealComment"
+                            "$ref": "#/definitions/model.MenuItemComment"
                         }
                     },
                     "400": {
@@ -1191,7 +1191,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.MealComment"
+                            "$ref": "#/definitions/model.MenuItemComment"
                         }
                     }
                 ],
@@ -1199,7 +1199,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.MealComment"
+                            "$ref": "#/definitions/model.MenuItemComment"
                         }
                     },
                     "400": {
@@ -1347,7 +1347,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.MealComment"
+                                "$ref": "#/definitions/model.MenuItemComment"
                             }
                         }
                     },
@@ -2411,7 +2411,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.MealComment"
+                                "$ref": "#/definitions/model.MenuItemComment"
                             }
                         }
                     },
@@ -2572,7 +2572,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.MealComment": {
+        "model.MenuItemComment": {
             "type": "object",
             "properties": {
                 "comment": {
@@ -2674,10 +2674,10 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "meal_comments": {
+                "menu_item_comments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealComment"
+                        "$ref": "#/definitions/model.MenuItemComment"
                     }
                 },
                 "meal_requests": {
@@ -2939,10 +2939,10 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "meal_comments": {
+                "menu_item_comments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealComment"
+                        "$ref": "#/definitions/model.MenuItemComment"
                     }
                 },
                 "meal_request_items": {
@@ -2992,7 +2992,7 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "meal_event_menu_sets": {
+                "meal_event_sets": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.MealEventMenuSet"
@@ -3166,10 +3166,10 @@ const docTemplate = `{
                 "last_login_at": {
                     "type": "string"
                 },
-                "meal_comments": {
+                "menu_item_comments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealComment"
+                        "$ref": "#/definitions/model.MenuItemComment"
                     }
                 },
                 "meal_requests": {

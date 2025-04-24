@@ -1,5 +1,5 @@
 -- Delete test menu item comments
-DELETE FROM menu_item_comment WHERE user_id IN (
+DELETE FROM menu_item_comments WHERE user_id IN (
     SELECT id FROM users WHERE email = 'employee1@mealsync.com'
 ) AND meal_event_id IN (
     SELECT id FROM meal_events WHERE name = 'Lunch Event' AND event_date::date = CURRENT_DATE

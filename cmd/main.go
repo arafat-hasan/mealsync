@@ -59,7 +59,7 @@ func main() {
 	menuSetRepo := repository.NewMenuSetRepository(db)
 	menuItemRepo := repository.NewMenuItemRepository(db)
 	mealRequestRepo := repository.NewMealRequestRepository(db)
-	mealCommentRepo := repository.NewMealCommentRepository(db)
+	MenuItemCommentRepo := repository.NewMenuItemCommentRepository(db)
 	eventAddressRepo := repository.NewEventAddressRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
 
@@ -72,7 +72,7 @@ func main() {
 		menuSetRepo,
 		eventAddressRepo,
 		mealRequestRepo,
-		mealCommentRepo,
+		MenuItemCommentRepo,
 		notificationService,
 	)
 	menuSetService := service.NewMenuSetService(
@@ -89,10 +89,11 @@ func main() {
 		mealEventRepo,
 		userRepo,
 	)
-	mealCommentService := service.NewMealCommentService(
-		mealCommentRepo,
+	MenuItemCommentService := service.NewMenuItemCommentService(
+		MenuItemCommentRepo,
 		mealEventRepo,
 		userRepo,
+		menuItemRepo,
 	)
 
 	// Initialize handlers
@@ -101,7 +102,7 @@ func main() {
 	menuSetHandler := api.NewMenuSetHandler(menuSetService)
 	menuItemHandler := api.NewMenuItemHandler(menuItemService)
 	mealRequestHandler := api.NewMealRequestHandler(mealRequestService)
-	mealCommentHandler := api.NewMealCommentHandler(mealCommentService)
+	MenuItemCommentHandler := api.NewMenuItemCommentHandler(MenuItemCommentService)
 	notificationHandler := api.NewNotificationHandler(notificationService)
 
 	// Initialize router with custom middleware
@@ -117,7 +118,7 @@ func main() {
 	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
 
 	// API routes
-	api.SetupRoutes(router, cfg, authHandler, mealEventHandler, menuSetHandler, mealCommentHandler, menuItemHandler, mealRequestHandler, notificationHandler)
+	api.SetupRoutes(router, cfg, authHandler, mealEventHandler, menuSetHandler, MenuItemCommentHandler, menuItemHandler, mealRequestHandler, notificationHandler)
 
 	// Documentation routes with custom configuration
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,

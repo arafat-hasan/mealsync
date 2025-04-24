@@ -13,7 +13,7 @@ type MenuItem struct {
 	UpdatedByUser    User              `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
 	MenuSetItems     []MenuSetItem     `json:"menu_set_items" gorm:"foreignKey:MenuItemID"`
 	MealRequestItems []MealRequestItem `json:"meal_request_items" gorm:"foreignKey:MenuItemID"`
-	MealComments     []MealComment     `json:"meal_comments" gorm:"foreignKey:MenuItemID"`
+	MenuItemComments []MenuItemComment `json:"menu_item_comments" gorm:"foreignKey:MenuItemID"`
 	AverageRating    float64           `json:"average_rating" gorm:"type:numeric(3,2);default:0"`
 }
 

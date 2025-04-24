@@ -7,7 +7,7 @@ import (
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, mealCommentHandler *MealCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler, notificationHandler *NotificationHandler) {
+func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, MenuItemCommentHandler *MenuItemCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler, notificationHandler *NotificationHandler) {
 	// Public routes (no auth required)
 	public := r.Group("/api")
 	{
@@ -38,8 +38,8 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, me
 				// Comment routes under meal event
 				comments := meal.Group("/comments")
 				{
-					comments.GET("", mealCommentHandler.GetComments)
-					comments.POST("", mealCommentHandler.CreateComment)
+					comments.GET("", MenuItemCommentHandler.GetComments)
+					comments.POST("", MenuItemCommentHandler.CreateComment)
 				}
 			}
 		}
@@ -88,16 +88,16 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, me
 		// Comment routes
 		comments := protected.Group("/comments")
 		{
-			comments.GET("/:id", mealCommentHandler.GetCommentByID)
-			comments.PUT("/:id", mealCommentHandler.UpdateComment)
-			comments.DELETE("/:id", mealCommentHandler.DeleteComment)
-			comments.GET("/:id/replies", mealCommentHandler.GetReplies)
+			comments.GET("/:id", MenuItemCommentHandler.GetCommentByID)
+			comments.PUT("/:id", MenuItemCommentHandler.UpdateComment)
+			comments.DELETE("/:id", MenuItemCommentHandler.DeleteComment)
+			comments.GET("/:id/replies", MenuItemCommentHandler.GetReplies)
 		}
 
 		// User comment routes
 		users := protected.Group("/users")
 		{
-			users.GET("/:user_id/comments", mealCommentHandler.GetUserComments)
+			users.GET("/:user_id/comments", MenuItemCommentHandler.GetUserComments)
 		}
 
 		// Notification routes

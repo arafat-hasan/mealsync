@@ -34,9 +34,33 @@ type MealEventRepository interface {
 	FindAllRequests(ctx context.Context) ([]model.MealRequest, error)
 	FindRequestsByUserID(ctx context.Context, userID uint) ([]model.MealRequest, error)
 	DeleteRequest(ctx context.Context, request *model.MealRequest) error
-	CreateComment(ctx context.Context, comment *model.MealComment) error
-	FindCommentsByMealEventID(ctx context.Context, mealEventID uint) ([]model.MealComment, error)
+	CreateComment(ctx context.Context, comment *model.MenuItemComment) error
+	FindCommentsByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
 	FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error)
+	FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error)
+	AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
+	UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
+	RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error
+	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventMenuSet, error)
+}
+
+// EventAddressRepository defines the interface for event address repository
+type EventAddressRepository interface {
+	Create(ctx context.Context, address *model.MealEventAddress) error
+	FindByID(ctx context.Context, id uint) (*model.MealEventAddress, error)
+	FindAll(ctx context.Context) ([]model.MealEventAddress, error)
+	FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MealEventAddress, error)
+	Update(ctx context.Context, address *model.MealEventAddress) error
+	Delete(ctx context.Context, address *model.MealEventAddress) error
+	HardDelete(ctx context.Context, address *model.MealEventAddress) error
+	FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MealEventAddress, error)
+	CountByMealEventID(ctx context.Context, mealEventID uint) (int64, error)
+	FindAvailableAddresses(ctx context.Context, date time.Time) ([]model.MealEventAddress, error)
+	FindByAddressType(ctx context.Context, addressType string) ([]model.MealEventAddress, error)
+	FindByBuildingName(ctx context.Context, buildingName string) ([]model.MealEventAddress, error)
+	FindByCapacity(ctx context.Context, minCapacity, maxCapacity int) ([]model.MealEventAddress, error)
+	FindByLocation(ctx context.Context, lat, lng, radius float64) ([]model.MealEventAddress, error)
+	FindWithEventDetails(ctx context.Context, mealEventID uint) (*model.MealEventAddress, error)
 }
 
 // MenuSetRepository handles menu set related database operations
@@ -101,42 +125,22 @@ type MealRequestRepository interface {
 	FindWithDetails(ctx context.Context, requestID uint) (*model.MealRequest, error)
 }
 
-// MealCommentRepository handles meal comment related database operations
-type MealCommentRepository interface {
-	Create(ctx context.Context, comment *model.MealComment) error
-	FindByID(ctx context.Context, id uint) (*model.MealComment, error)
-	FindAll(ctx context.Context) ([]model.MealComment, error)
-	FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MealComment, error)
-	Update(ctx context.Context, comment *model.MealComment) error
-	Delete(ctx context.Context, comment *model.MealComment) error
-	HardDelete(ctx context.Context, comment *model.MealComment) error
-	FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MealComment, error)
-	FindByUserID(ctx context.Context, userID uint) ([]model.MealComment, error)
+// MenuItemCommentRepository handles menu item comment related database operations
+type MenuItemCommentRepository interface {
+	Create(ctx context.Context, comment *model.MenuItemComment) error
+	FindByID(ctx context.Context, id uint) (*model.MenuItemComment, error)
+	FindAll(ctx context.Context) ([]model.MenuItemComment, error)
+	FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MenuItemComment, error)
+	Update(ctx context.Context, comment *model.MenuItemComment) error
+	Delete(ctx context.Context, comment *model.MenuItemComment) error
+	HardDelete(ctx context.Context, comment *model.MenuItemComment) error
+	FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
+	FindByUserID(ctx context.Context, userID uint) ([]model.MenuItemComment, error)
+	FindByMenuItemID(ctx context.Context, menuItemID uint) ([]model.MenuItemComment, error)
 	// Additional methods
-	FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealComment, error)
-	FindRecentComments(ctx context.Context, limit int) ([]model.MealComment, error)
+	FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MenuItemComment, error)
+	FindRecentComments(ctx context.Context, limit int) ([]model.MenuItemComment, error)
 	CountByMealEventID(ctx context.Context, mealEventID uint) (int64, error)
-	FindByParentCommentID(ctx context.Context, parentID uint) ([]model.MealComment, error)
-	FindWithUserDetails(ctx context.Context, commentID uint) (*model.MealComment, error)
-	FindByMealRequestID(ctx context.Context, requestID uint) ([]model.MealComment, error)
-}
-
-// EventAddressRepository handles event address related database operations
-type EventAddressRepository interface {
-	Create(ctx context.Context, address *model.MealEventAddress) error
-	FindByID(ctx context.Context, id uint) (*model.MealEventAddress, error)
-	FindAll(ctx context.Context) ([]model.MealEventAddress, error)
-	FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MealEventAddress, error)
-	Update(ctx context.Context, address *model.MealEventAddress) error
-	Delete(ctx context.Context, address *model.MealEventAddress) error
-	HardDelete(ctx context.Context, address *model.MealEventAddress) error
-	FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MealEventAddress, error)
-	// Additional methods
-	FindByLocation(ctx context.Context, latitude, longitude float64, radiusInKm float64) ([]model.MealEventAddress, error)
-	FindByAddressType(ctx context.Context, addressType string) ([]model.MealEventAddress, error)
-	FindByCapacity(ctx context.Context, minCapacity, maxCapacity int) ([]model.MealEventAddress, error)
-	FindAvailableAddresses(ctx context.Context, date time.Time) ([]model.MealEventAddress, error)
-	CountByMealEventID(ctx context.Context, mealEventID uint) (int64, error)
-	FindWithEventDetails(ctx context.Context, addressID uint) (*model.MealEventAddress, error)
-	FindByBuildingName(ctx context.Context, buildingName string) ([]model.MealEventAddress, error)
+	FindWithUserDetails(ctx context.Context, commentID uint) (*model.MenuItemComment, error)
+	FindReplies(ctx context.Context, parentID uint) ([]model.MenuItemComment, error) // Added for replies
 }
