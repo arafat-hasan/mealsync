@@ -1,12 +1,13 @@
 package api
 
 import (
+	"github.com/arafat-hasan/mealsync/internal/config"
 	"github.com/arafat-hasan/mealsync/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, mealCommentHandler *MealCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler, notificationHandler *NotificationHandler) {
+func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, mealCommentHandler *MealCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler, notificationHandler *NotificationHandler) {
 	// Public routes (no auth required)
 	public := r.Group("/api")
 	{
@@ -17,7 +18,7 @@ func SetupRoutes(r *gin.Engine, authHandler *AuthHandler, mealHandler *MealEvent
 
 	// Protected routes
 	protected := r.Group("/api")
-	protected.Use(middleware.AuthMiddleware())
+	protected.Use(middleware.AuthMiddleware(cfg))
 	{
 		// Meal event routes
 		meals := protected.Group("/meals")

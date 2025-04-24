@@ -2,14 +2,15 @@ package middleware
 
 import (
 	"net/http"
-	"os"
 	"strings"
 
+	"github.com/arafat-hasan/mealsync/internal/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+// AuthMiddleware validates JWT tokens in the Authorization header
+func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -29,7 +30,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenString := parts[1]
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
+			return []byte(cfg.JWTSecret), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -70,6 +71,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// AdminOnly middleware restricts access to admin users only
 func AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get("role")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
+	"github.com/arafat-hasan/mealsync/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,8 +32,12 @@ func NewMealEventHandler(mealService service.MealEventService) *MealEventHandler
 // @Failure      500  {object}  ErrorResponse
 // @Router       /meals [get]
 func (h *MealEventHandler) GetMealEvents(c *gin.Context) {
-	userID := uint(1) // TODO: Get from context after auth
-	isAdmin := false  // TODO: Get from context after auth
+	userID, err := utils.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	isAdmin := utils.IsAdminFromContext(c)
 
 	meals, err := h.mealService.GetMeals(c.Request.Context(), userID, isAdmin)
 	if err != nil {
@@ -64,8 +69,12 @@ func (h *MealEventHandler) GetMealEventByID(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1) // TODO: Get from context after auth
-	isAdmin := false  // TODO: Get from context after auth
+	userID, err := utils.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	isAdmin := utils.IsAdminFromContext(c)
 
 	meal, err := h.mealService.GetMealByID(c.Request.Context(), uint(id), userID, isAdmin)
 	if err != nil {
@@ -96,7 +105,11 @@ func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1) // TODO: Get from context after auth
+	userID, err := utils.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
 	if err := h.mealService.CreateMeal(c.Request.Context(), &meal, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
@@ -135,7 +148,11 @@ func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1) // TODO: Get from context after auth
+	userID, err := utils.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
 	if err := h.mealService.UpdateMeal(c.Request.Context(), uint(id), &meal, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
@@ -167,7 +184,11 @@ func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 		return
 	}
 
-	userID := uint(1) // TODO: Get from context after auth
+	userID, err := utils.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
 	if err := h.mealService.DeleteMeal(c.Request.Context(), uint(id), userID); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})

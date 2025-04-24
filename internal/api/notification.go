@@ -7,6 +7,7 @@ import (
 	"github.com/arafat-hasan/mealsync/internal/errors"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
+	"github.com/arafat-hasan/mealsync/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,15 +21,6 @@ func NewNotificationHandler(notificationService service.NotificationService) *No
 	return &NotificationHandler{
 		notificationService: notificationService,
 	}
-}
-
-// getUserIDFromContext extracts user ID from the JWT claims in the request context
-func getUserIDFromContext(c *gin.Context) (uint, error) {
-	userID, exists := c.Get("userID")
-	if !exists {
-		return 0, errors.NewUnauthorizedError("user not authenticated", nil)
-	}
-	return userID.(uint), nil
 }
 
 // handleError properly formats and returns API errors
@@ -52,7 +44,7 @@ func handleError(c *gin.Context, err error) {
 // @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
 // @Router /notifications [get]
 func (h *NotificationHandler) GetNotifications(c *gin.Context) {
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -87,7 +79,7 @@ func (h *NotificationHandler) GetNotificationsByType(c *gin.Context) {
 		return
 	}
 
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -114,7 +106,7 @@ func (h *NotificationHandler) GetNotificationsByType(c *gin.Context) {
 // @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
 // @Router /notifications/unread [get]
 func (h *NotificationHandler) GetUnreadNotifications(c *gin.Context) {
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -141,7 +133,7 @@ func (h *NotificationHandler) GetUnreadNotifications(c *gin.Context) {
 // @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
 // @Router /notifications/unread/count [get]
 func (h *NotificationHandler) GetUnreadNotificationCount(c *gin.Context) {
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -178,7 +170,7 @@ func (h *NotificationHandler) MarkNotificationAsRead(c *gin.Context) {
 		return
 	}
 
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -215,7 +207,7 @@ func (h *NotificationHandler) MarkNotificationAsDelivered(c *gin.Context) {
 		return
 	}
 
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -252,7 +244,7 @@ func (h *NotificationHandler) DeleteNotification(c *gin.Context) {
 		return
 	}
 
-	userID, err := getUserIDFromContext(c)
+	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return

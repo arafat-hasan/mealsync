@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/arafat-hasan/mealsync/internal/config"
 	apperrors "github.com/arafat-hasan/mealsync/internal/errors"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/repository"
@@ -15,12 +16,14 @@ import (
 // AuthService handles authentication-related operations
 type AuthService struct {
 	userRepo repository.UserRepository
+	config   *config.Config
 }
 
 // NewAuthService creates a new AuthService
-func NewAuthService(db *gorm.DB) *AuthService {
+func NewAuthService(db *gorm.DB, cfg *config.Config) *AuthService {
 	return &AuthService{
 		userRepo: repository.NewUserRepository(db),
+		config:   cfg,
 	}
 }
 
@@ -84,8 +87,8 @@ func (s *AuthService) GenerateTokens(user *model.User) (*TokenPair, error) {
 		"role": user.Role,
 	})
 
-	// Sign access token
-	accessTokenString, err := accessToken.SignedString([]byte("your_jwt_secret_key"))
+	// Sign access token with config secret
+	accessTokenString, err := accessToken.SignedString([]byte(s.config.JWTSecret))
 	if err != nil {
 		return nil, apperrors.NewInternalError("Failed to generate access token", err)
 	}
@@ -97,8 +100,8 @@ func (s *AuthService) GenerateTokens(user *model.User) (*TokenPair, error) {
 		"iat": time.Now().Unix(),
 	})
 
-	// Sign refresh token
-	refreshTokenString, err := refreshToken.SignedString([]byte("your_jwt_refresh_secret_key"))
+	// Sign refresh token with config secret
+	refreshTokenString, err := refreshToken.SignedString([]byte(s.config.JWTRefreshSecret))
 	if err != nil {
 		return nil, apperrors.NewInternalError("Failed to generate refresh token", err)
 	}
@@ -117,7 +120,7 @@ func (s *AuthService) RefreshToken(refreshTokenString string) (*TokenPair, error
 
 	// Parse and validate refresh token
 	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte("your_jwt_refresh_secret_key"), nil
+		return []byte(s.config.JWTRefreshSecret), nil
 	})
 
 	if err != nil || !refreshToken.Valid {

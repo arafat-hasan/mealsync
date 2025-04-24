@@ -64,7 +64,7 @@ func main() {
 	notificationRepo := repository.NewNotificationRepository(db)
 
 	// Initialize services
-	authService := service.NewAuthService(db)
+	authService := service.NewAuthService(db, cfg)
 	notificationService := service.NewNotificationService(notificationRepo, userRepo)
 	mealEventService := service.NewMealEventService(
 		mealEventRepo,
@@ -117,7 +117,7 @@ func main() {
 	router.LoadHTMLGlob(filepath.Join("docs", "*.html"))
 
 	// API routes
-	api.SetupRoutes(router, authHandler, mealEventHandler, menuSetHandler, mealCommentHandler, menuItemHandler, mealRequestHandler, notificationHandler)
+	api.SetupRoutes(router, cfg, authHandler, mealEventHandler, menuSetHandler, mealCommentHandler, menuItemHandler, mealRequestHandler, notificationHandler)
 
 	// Documentation routes with custom configuration
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
