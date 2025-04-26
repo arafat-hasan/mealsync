@@ -721,47 +721,6 @@ const docTemplate = `{
             }
         },
         "/meals": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all meal events for the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "meals"
-                ],
-                "summary": "List meal events",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.MealEvent"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -3093,9 +3052,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3107,13 +3063,13 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
+                "label": {
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3134,9 +3090,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "cutoff_time": {
@@ -3186,9 +3139,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3206,9 +3156,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3227,9 +3174,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3241,9 +3185,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3271,9 +3212,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3288,9 +3226,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3327,9 +3262,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "user": {
@@ -3347,9 +3279,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3389,9 +3318,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3406,9 +3332,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3451,9 +3374,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3468,9 +3388,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3511,12 +3428,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "user_id": {
@@ -3531,9 +3442,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3567,9 +3475,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3581,9 +3486,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3608,9 +3510,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3621,10 +3520,6 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "string"
-                },
-                "created_by": {
-                    "type": "integer",
-                    "example": 1
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3673,10 +3568,6 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "user_id": {
                     "type": "integer",
                     "example": 1
@@ -3706,9 +3597,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "created_meal_events": {
@@ -3769,9 +3657,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "updated_meal_events": {

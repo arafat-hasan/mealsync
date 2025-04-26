@@ -38,12 +38,15 @@ func (s *notificationService) CreateNotification(ctx context.Context, notificati
 	if notification.Type == "" {
 		return errors.NewValidationError("notification type is required", nil)
 	}
-
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
 	// Set notification fields
 	notification.UserID = userID
 	notification.Read = false
-	notification.CreatedBy = userID
-	notification.UpdatedBy = userID
+	notification.CreatedBy = *user
+	notification.UpdatedBy = *user
 
 	return s.notificationRepo.Create(ctx, notification)
 }
@@ -89,8 +92,11 @@ func (s *notificationService) DeleteNotification(ctx context.Context, notificati
 	if notification.UserID != userID {
 		return errors.NewValidationError("unauthorized to delete this notification", nil)
 	}
-
-	notification.UpdatedBy = userID
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	notification.UpdatedBy = *user
 	return s.notificationRepo.Delete(ctx, notification)
 }
 
@@ -123,7 +129,10 @@ func (s *notificationService) CreateMealConfirmationNotification(ctx context.Con
 	if err != nil {
 		return err
 	}
-
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
 	notification := &model.Notification{
 		UserID:    userID,
 		Type:      model.NotificationTypeConfirmation,
@@ -131,8 +140,8 @@ func (s *notificationService) CreateMealConfirmationNotification(ctx context.Con
 		Message:   message,
 		Read:      false,
 		Delivered: false,
-		CreatedBy: userID,
-		UpdatedBy: userID,
+		CreatedBy: *user,
+		UpdatedBy: *user,
 	}
 
 	return s.notificationRepo.Create(ctx, notification)
@@ -148,7 +157,10 @@ func (s *notificationService) CreateMealReminderNotification(ctx context.Context
 	if err != nil {
 		return err
 	}
-
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
 	notification := &model.Notification{
 		UserID:    userID,
 		Type:      model.NotificationTypeReminder,
@@ -156,8 +168,8 @@ func (s *notificationService) CreateMealReminderNotification(ctx context.Context
 		Message:   message,
 		Read:      false,
 		Delivered: false,
-		CreatedBy: userID,
-		UpdatedBy: userID,
+		CreatedBy: *user,
+		UpdatedBy: *user,
 	}
 
 	return s.notificationRepo.Create(ctx, notification)
@@ -172,7 +184,10 @@ func (s *notificationService) CreateMealCancellationNotification(ctx context.Con
 	if err != nil {
 		return err
 	}
-
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
 	notification := &model.Notification{
 		UserID:    userID,
 		Type:      model.NotificationTypeConfirmation,
@@ -180,8 +195,8 @@ func (s *notificationService) CreateMealCancellationNotification(ctx context.Con
 		Message:   message,
 		Read:      false,
 		Delivered: false,
-		CreatedBy: userID,
-		UpdatedBy: userID,
+		CreatedBy: *user,
+		UpdatedBy: *user,
 	}
 
 	return s.notificationRepo.Create(ctx, notification)
@@ -196,7 +211,10 @@ func (s *notificationService) CreateAdminNotification(ctx context.Context, userI
 	if err != nil {
 		return err
 	}
-
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
 	notification := &model.Notification{
 		UserID:    userID,
 		Type:      model.NotificationTypeAdminMessage,
@@ -204,8 +222,8 @@ func (s *notificationService) CreateAdminNotification(ctx context.Context, userI
 		Message:   message,
 		Read:      false,
 		Delivered: false,
-		CreatedBy: userID,
-		UpdatedBy: userID,
+		CreatedBy: *user,
+		UpdatedBy: *user,
 	}
 
 	return s.notificationRepo.Create(ctx, notification)

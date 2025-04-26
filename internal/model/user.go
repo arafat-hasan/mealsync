@@ -16,10 +16,8 @@ type User struct {
 	IsActive            bool              `json:"is_active" gorm:"default:true"`
 	NotificationEnabled bool              `json:"notification_enabled" gorm:"default:true"`
 	LastLoginAt         time.Time         `json:"last_login_at"`
-	CreatedBy           uint              `json:"created_by"`
-	UpdatedBy           uint              `json:"updated_by"`
-	CreatedByUser       *User             `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
-	UpdatedByUser       *User             `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
+	CreatedBy           *User             `json:"created_by" gorm:"foreignKey:CreatedBy"`
+	UpdatedBy           *User             `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 	MealRequests        []MealRequest     `json:"meal_requests" gorm:"foreignKey:UserID"`
 	MenuItemComments    []MenuItemComment `json:"menu_item_comments" gorm:"foreignKey:UserID"`
 	Notifications       []Notification    `json:"notifications" gorm:"foreignKey:UserID"`

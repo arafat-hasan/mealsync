@@ -715,47 +715,6 @@
             }
         },
         "/meals": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all meal events for the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "meals"
-                ],
-                "summary": "List meal events",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.MealEvent"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -3087,9 +3046,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3101,13 +3057,13 @@
                 "is_active": {
                     "type": "boolean"
                 },
+                "label": {
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3128,9 +3084,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "cutoff_time": {
@@ -3180,9 +3133,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3200,9 +3150,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3221,9 +3168,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3235,9 +3179,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3265,9 +3206,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3282,9 +3220,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3321,9 +3256,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "user": {
@@ -3341,9 +3273,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3383,9 +3312,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3400,9 +3326,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3445,9 +3368,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3462,9 +3382,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3505,12 +3422,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "user_id": {
@@ -3525,9 +3436,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3561,9 +3469,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3575,9 +3480,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "deleted_at": {
@@ -3602,9 +3504,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 }
             }
@@ -3615,10 +3514,6 @@
             "properties": {
                 "created_at": {
                     "type": "string"
-                },
-                "created_by": {
-                    "type": "integer",
-                    "example": 1
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3667,10 +3562,6 @@
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "user_id": {
                     "type": "integer",
                     "example": 1
@@ -3700,9 +3591,6 @@
                     "type": "string"
                 },
                 "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "created_meal_events": {
@@ -3763,9 +3651,6 @@
                     "type": "string"
                 },
                 "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
                     "$ref": "#/definitions/model.User"
                 },
                 "updated_meal_events": {

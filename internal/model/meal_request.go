@@ -10,14 +10,12 @@ type MealRequest struct {
 	MenuSetID      uint              `json:"menu_set_id"`
 	EventAddressID uint              `json:"event_address_id"`
 	ConfirmedAt    *time.Time        `json:"confirmed_at"`
-	CreatedBy      uint              `json:"created_by"`
-	UpdatedBy      uint              `json:"updated_by"`
 	User           User              `json:"user" gorm:"foreignKey:UserID"`
 	MealEvent      MealEvent         `json:"meal_event" gorm:"foreignKey:MealEventID"`
 	MenuSet        MenuSet           `json:"menu_set" gorm:"foreignKey:MenuSetID"`
 	EventAddress   EventAddress      `json:"event_address" gorm:"foreignKey:EventAddressID"`
-	CreatedByUser  User              `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
-	UpdatedByUser  User              `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
+	CreatedBy      User              `json:"created_by" gorm:"foreignKey:CreatedBy"`
+	UpdatedBy      User              `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 	RequestItems   []MealRequestItem `json:"request_items" gorm:"foreignKey:MealRequestID"`
 }
 
@@ -33,10 +31,8 @@ type MealRequestItem struct {
 	MealRequest   MealRequest `json:"meal_request" gorm:"foreignKey:MealRequestID"`
 	MenuItem      MenuItem    `json:"menu_item" gorm:"foreignKey:MenuItemID"`
 	MenuSet       MenuSet     `json:"menu_set" gorm:"foreignKey:MenuSetID"`
-	CreatedBy     uint        `json:"created_by"`
-	UpdatedBy     uint        `json:"updated_by"`
-	CreatedByUser User        `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
-	UpdatedByUser User        `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
+	CreatedBy     User        `json:"created_by" gorm:"foreignKey:CreatedBy"`
+	UpdatedBy     User        `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 }
 
 // RequestStatus represents the status of a meal request

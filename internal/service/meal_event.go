@@ -201,8 +201,12 @@ func (s *mealEventService) GetMealByID(ctx context.Context, id uint, userID uint
 
 // CreateMeal creates a new meal event with the creator's user ID
 func (s *mealEventService) CreateMeal(ctx context.Context, meal *model.MealEvent, userID uint) error {
-	meal.CreatedBy = userID
-	meal.UpdatedBy = userID
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	meal.CreatedBy = *user
+	meal.UpdatedBy = *user
 	return s.Create(ctx, meal)
 }
 
@@ -214,7 +218,11 @@ func (s *mealEventService) UpdateMeal(ctx context.Context, id uint, meal *model.
 	}
 
 	meal.ID = id
-	meal.UpdatedBy = userID
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	meal.UpdatedBy = *user
 
 	// Preserve created_by and other fields that shouldn't be updated
 	meal.CreatedBy = existingMeal.CreatedBy
@@ -231,7 +239,11 @@ func (s *mealEventService) DeleteMeal(ctx context.Context, id uint, userID uint)
 	}
 
 	// Update the updatedBy field to track who triggered the deletion
-	meal.UpdatedBy = userID
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	meal.UpdatedBy = *user
 
 	// Use the Delete method which properly handles soft deletion
 	return s.Delete(ctx, meal)
