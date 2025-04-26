@@ -38,6 +38,7 @@ type MealEventRepository interface {
 	FindCommentsByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
 	FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error)
 	FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error)
+	FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error)
 	AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
 	UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
 	RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error

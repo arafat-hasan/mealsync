@@ -203,3 +203,22 @@ func (r *mealEventRepository) FindMenuSetsByEventID(ctx context.Context, mealEve
 	}
 	return menuSets, nil
 }
+
+// FindByDateRange finds meal events within a specified date range
+func (r *mealEventRepository) FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error) {
+	var meals []model.MealEvent
+	err := r.db.WithContext(ctx).
+		Preload("MenuSets").
+		Preload("MenuSets.MenuSet").
+		Preload("Addresses").
+		Preload("Addresses.Address").
+		Preload("MealRequests").
+		Preload("MenuItemComments").
+		Where("event_date BETWEEN ? AND ?", startDate, endDate).
+		Order("event_date ASC").
+		Find(&meals).Error
+	if err != nil {
+		return nil, err
+	}
+	return meals, nil
+}

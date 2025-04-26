@@ -57,6 +57,7 @@ type MealEventService interface {
 
 	FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error)
 	FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error)
+	FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error)
 }
 
 // MenuSetService defines menu set-related business operations

@@ -30,6 +30,16 @@ const (
 	ErrorTypeConflict ErrorType = "CONFLICT"
 )
 
+// ErrorResponse represents the error response for the Swagger documentation
+// This is used to document the error responses in the Swagger documentation
+type ErrorResponse struct {
+	Type      ErrorType `json:"type"`
+	Message   string    `json:"message"`
+	Code      int       `json:"code"`
+	Details   string    `json:"details,omitempty"`
+	RequestID string    `json:"request_id,omitempty"`
+}
+
 // AppError represents an application error
 type AppError struct {
 	Type      ErrorType `json:"type"`

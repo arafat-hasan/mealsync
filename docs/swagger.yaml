@@ -61,6 +61,35 @@ definitions:
       role:
         $ref: '#/definitions/model.UserRole'
     type: object
+  errors.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      details:
+        type: string
+      message:
+        type: string
+      request_id:
+        type: string
+      type:
+        $ref: '#/definitions/errors.ErrorType'
+    type: object
+  errors.ErrorType:
+    enum:
+    - VALIDATION_ERROR
+    - NOT_FOUND
+    - UNAUTHORIZED
+    - FORBIDDEN
+    - INTERNAL_ERROR
+    - CONFLICT
+    type: string
+    x-enum-varnames:
+    - ErrorTypeValidation
+    - ErrorTypeNotFound
+    - ErrorTypeUnauthorized
+    - ErrorTypeForbidden
+    - ErrorTypeInternal
+    - ErrorTypeConflict
   model.EventAddress:
     properties:
       address:
@@ -83,45 +112,6 @@ definitions:
         type: integer
       updated_by_user:
         $ref: '#/definitions/model.User'
-    type: object
-  model.MenuItemComment:
-    properties:
-      comment:
-        type: string
-      created_at:
-        type: string
-      created_by:
-        type: integer
-      created_by_user:
-        $ref: '#/definitions/model.User'
-      deleted_at:
-        type: string
-      event_menu_set:
-        $ref: '#/definitions/model.MealEventMenuSet'
-      event_menu_set_id:
-        type: integer
-      id:
-        type: integer
-      meal_event:
-        $ref: '#/definitions/model.MealEvent'
-      meal_event_id:
-        type: integer
-      menu_item:
-        $ref: '#/definitions/model.MenuItem'
-      menu_item_id:
-        type: integer
-      rating:
-        type: integer
-      updated_at:
-        type: string
-      updated_by:
-        type: integer
-      updated_by_user:
-        $ref: '#/definitions/model.User'
-      user:
-        $ref: '#/definitions/model.User'
-      user_id:
-        type: integer
     type: object
   model.MealEvent:
     properties:
@@ -152,13 +142,13 @@ definitions:
         type: integer
       is_active:
         type: boolean
-      menu_item_comments:
-        items:
-          $ref: '#/definitions/model.MenuItemComment'
-        type: array
       meal_requests:
         items:
           $ref: '#/definitions/model.MealRequest'
+        type: array
+      menu_item_comments:
+        items:
+          $ref: '#/definitions/model.MenuItemComment'
         type: array
       menu_sets:
         items:
@@ -210,8 +200,6 @@ definitions:
         $ref: '#/definitions/model.User'
       deleted_at:
         type: string
-      id:
-        type: integer
       label:
         type: string
       meal_event:
@@ -244,18 +232,18 @@ definitions:
       deleted_at:
         type: string
       event_address:
-        $ref: '#/definitions/model.MealEventAddress'
-      event_menu_set:
-        $ref: '#/definitions/model.MealEventMenuSet'
-      event_menu_set_id:
+        $ref: '#/definitions/model.EventAddress'
+      event_address_id:
         type: integer
       id:
         type: integer
       meal_event:
         $ref: '#/definitions/model.MealEvent'
-      meal_event_address_id:
-        type: integer
       meal_event_id:
+        type: integer
+      menu_set:
+        $ref: '#/definitions/model.MenuSet'
+      menu_set_id:
         type: integer
       request_items:
         items:
@@ -311,6 +299,8 @@ definitions:
     type: object
   model.MenuItem:
     properties:
+      average_rating:
+        type: number
       created_at:
         type: string
       created_by:
@@ -327,13 +317,13 @@ definitions:
         type: string
       is_active:
         type: boolean
-      menu_item_comments:
-        items:
-          $ref: '#/definitions/model.MenuItemComment'
-        type: array
       meal_request_items:
         items:
           $ref: '#/definitions/model.MealRequestItem'
+        type: array
+      menu_item_comments:
+        items:
+          $ref: '#/definitions/model.MenuItemComment'
         type: array
       menu_set_items:
         items:
@@ -347,6 +337,50 @@ definitions:
         type: integer
       updated_by_user:
         $ref: '#/definitions/model.User'
+    type: object
+  model.MenuItemComment:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      created_by_user:
+        $ref: '#/definitions/model.User'
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      meal_event:
+        $ref: '#/definitions/model.MealEvent'
+      meal_event_id:
+        type: integer
+      menu_item:
+        $ref: '#/definitions/model.MenuItem'
+      menu_item_id:
+        type: integer
+      parent:
+        $ref: '#/definitions/model.MenuItemComment'
+      parent_id:
+        description: Added to support replies
+        type: integer
+      rating:
+        type: integer
+      replies:
+        items:
+          $ref: '#/definitions/model.MenuItemComment'
+        type: array
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      updated_by_user:
+        $ref: '#/definitions/model.User'
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
     type: object
   model.MenuSet:
     properties:
@@ -362,7 +396,7 @@ definitions:
         type: integer
       is_active:
         type: boolean
-      meal_event_sets:
+      meal_event_menu_sets:
         items:
           $ref: '#/definitions/model.MealEventMenuSet'
         type: array
@@ -418,14 +452,26 @@ definitions:
         type: integer
       deleted_at:
         type: string
+      delivered:
+        example: false
+        type: boolean
+      delivered_at:
+        example: "2025-04-24T10:00:00Z"
+        type: string
       id:
         type: integer
+      message:
+        example: Your meal request has been confirmed.
+        type: string
       payload:
         example: '{"message":"Your meal request has been confirmed"}'
         type: string
       read:
         example: false
         type: boolean
+      read_at:
+        example: "2025-04-24T10:15:00Z"
+        type: string
       type:
         allOf:
         - $ref: '#/definitions/model.NotificationType'
@@ -433,6 +479,7 @@ definitions:
         - reminder
         - confirmation
         - admin-message
+        - event-info
         example: reminder
       updated_at:
         type: string
@@ -444,16 +491,19 @@ definitions:
         type: integer
     type: object
   model.NotificationType:
-    description: Type of notification (reminder, confirmation, or admin message)
+    description: Type of notification (reminder, confirmation, admin message, or event
+      info)
     enum:
     - reminder
     - confirmation
     - admin-message
+    - event-info
     type: string
     x-enum-varnames:
     - NotificationTypeReminder
     - NotificationTypeConfirmation
     - NotificationTypeAdminMessage
+    - NotificationTypeEventInfo
   model.User:
     properties:
       created_at:
@@ -480,13 +530,13 @@ definitions:
         type: boolean
       last_login_at:
         type: string
-      menu_item_comments:
-        items:
-          $ref: '#/definitions/model.MenuItemComment'
-        type: array
       meal_requests:
         items:
           $ref: '#/definitions/model.MealRequest'
+        type: array
+      menu_item_comments:
+        items:
+          $ref: '#/definitions/model.MenuItemComment'
         type: array
       name:
         type: string
@@ -542,6 +592,47 @@ info:
   title: MealSync API
   version: "1.0"
 paths:
+  /comments/{comment_id}/replies:
+    get:
+      consumes:
+      - application/json
+      description: Get all replies to a specific comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuItemComment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get comment replies
+      tags:
+      - menu-item-comments
   /login:
     post:
       consumes:
@@ -1179,9 +1270,9 @@ paths:
             $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: List meal comments
+      summary: List menu item comments
       tags:
-      - meal-comments
+      - menu-item-comments
     post:
       consumes:
       - application/json
@@ -1225,7 +1316,7 @@ paths:
       - BearerAuth: []
       summary: Create comment
       tags:
-      - meal-comments
+      - menu-item-comments
   /meals/{meal_event_id}/comments/{id}:
     delete:
       consumes:
@@ -1273,7 +1364,7 @@ paths:
       - BearerAuth: []
       summary: Delete comment
       tags:
-      - meal-comments
+      - menu-item-comments
     get:
       consumes:
       - application/json
@@ -1316,7 +1407,7 @@ paths:
       - BearerAuth: []
       summary: Get comment by ID
       tags:
-      - meal-comments
+      - menu-item-comments
     put:
       consumes:
       - application/json
@@ -1369,23 +1460,23 @@ paths:
       - BearerAuth: []
       summary: Update comment
       tags:
-      - meal-comments
-  /meals/{meal_event_id}/comments/{id}/replies:
+      - menu-item-comments
+  /meals/daterange:
     get:
       consumes:
       - application/json
-      description: Get all replies to a specific comment
+      description: Get meal events within a date range
       parameters:
-      - description: Meal Event ID
-        in: path
-        name: meal_event_id
+      - description: Start Date (YYYY-MM-DD)
+        in: query
+        name: start_date
         required: true
-        type: integer
-      - description: Comment ID
-        in: path
-        name: id
+        type: string
+      - description: End Date (YYYY-MM-DD)
+        in: query
+        name: end_date
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1393,7 +1484,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.MenuItemComment'
+              $ref: '#/definitions/model.MealEvent'
             type: array
         "400":
           description: Bad Request
@@ -1403,19 +1494,15 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: List comment replies
+      summary: List meal events by date range
       tags:
-      - meal-comments
+      - meals
   /menu-items:
     get:
       consumes:
@@ -1607,6 +1694,47 @@ paths:
       summary: Update menu item
       tags:
       - menu-items
+  /menu-items/{menu_item_id}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments for a specific menu item
+      parameters:
+      - description: Menu Item ID
+        in: path
+        name: menu_item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MenuItemComment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List menu item comments
+      tags:
+      - menu-item-comments
   /menu-items/category/{category}:
     get:
       consumes:
@@ -2001,6 +2129,253 @@ paths:
       summary: Remove menu item from set
       tags:
       - menu-sets
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all notifications for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Notification'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get notifications for current user
+      tags:
+      - notifications
+  /notifications/{notification_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a notification for the authenticated user
+      parameters:
+      - description: Notification ID
+        in: path
+        name: notification_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete notification
+      tags:
+      - notifications
+  /notifications/{notification_id}/delivered:
+    put:
+      consumes:
+      - application/json
+      description: Marks a notification as delivered for the authenticated user
+      parameters:
+      - description: Notification ID
+        in: path
+        name: notification_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Mark notification as delivered
+      tags:
+      - notifications
+  /notifications/{notification_id}/read:
+    put:
+      consumes:
+      - application/json
+      description: Marks a notification as read for the authenticated user
+      parameters:
+      - description: Notification ID
+        in: path
+        name: notification_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Mark notification as read
+      tags:
+      - notifications
+  /notifications/type/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves notifications by type for the authenticated user
+      parameters:
+      - description: Notification type
+        enum:
+        - reminder
+        - confirmation
+        - admin-message
+        - event-info
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Notification'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get notifications by type
+      tags:
+      - notifications
+  /notifications/unread:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves unread notifications for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Notification'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get unread notifications
+      tags:
+      - notifications
+  /notifications/unread/count:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the count of unread notifications for the authenticated
+        user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get unread notification count
+      tags:
+      - notifications
   /refresh:
     post:
       consumes:
@@ -2101,7 +2476,7 @@ paths:
       - BearerAuth: []
       summary: List user comments
       tags:
-      - meal-comments
+      - menu-item-comments
 security:
 - BearerAuth: []
 securityDefinitions:

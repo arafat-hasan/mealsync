@@ -24,6 +24,70 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/comments/{comment_id}/replies": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all replies to a specific comment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-item-comments"
+                ],
+                "summary": "Get comment replies",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
+                        "name": "comment_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MenuItemComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Authenticate user and return JWT tokens",
@@ -754,6 +818,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/meals/daterange": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get meal events within a date range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meals"
+                ],
+                "summary": "List meal events by date range",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Start Date (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End Date (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MealEvent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/meals/{id}": {
             "get": {
                 "security": [
@@ -969,9 +1098,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meal-comments"
+                    "menu-item-comments"
                 ],
-                "summary": "List meal comments",
+                "summary": "List menu item comments",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1031,7 +1160,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meal-comments"
+                    "menu-item-comments"
                 ],
                 "summary": "Create comment",
                 "parameters": [
@@ -1101,7 +1230,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meal-comments"
+                    "menu-item-comments"
                 ],
                 "summary": "Get comment by ID",
                 "parameters": [
@@ -1167,7 +1296,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meal-comments"
+                    "menu-item-comments"
                 ],
                 "summary": "Update comment",
                 "parameters": [
@@ -1248,7 +1377,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meal-comments"
+                    "menu-item-comments"
                 ],
                 "summary": "Delete comment",
                 "parameters": [
@@ -1288,77 +1417,6 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/meals/{meal_event_id}/comments/{id}/replies": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all replies to a specific comment",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "meal-comments"
-                ],
-                "summary": "List comment replies",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Meal Event ID",
-                        "name": "meal_event_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Comment ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.MenuItemComment"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
@@ -1757,6 +1815,70 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu-items/{menu_item_id}/comments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all comments for a specific menu item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu-item-comments"
+                ],
+                "summary": "List menu item comments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu Item ID",
+                        "name": "menu_item_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.MenuItemComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
@@ -2286,6 +2408,391 @@ const docTemplate = `{
                 }
             }
         },
+        "/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves all notifications for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Get notifications for current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Notification"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/type/{type}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves notifications by type for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Get notifications by type",
+                "parameters": [
+                    {
+                        "enum": [
+                            "reminder",
+                            "confirmation",
+                            "admin-message",
+                            "event-info"
+                        ],
+                        "type": "string",
+                        "description": "Notification type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Notification"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/unread": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves unread notifications for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Get unread notifications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Notification"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/unread/count": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves the count of unread notifications for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Get unread notification count",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/{notification_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a notification for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Delete notification",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Notification ID",
+                        "name": "notification_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/{notification_id}/delivered": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Marks a notification as delivered for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Mark notification as delivered",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Notification ID",
+                        "name": "notification_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notifications/{notification_id}/read": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Marks a notification as read for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notifications"
+                ],
+                "summary": "Mark notification as read",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Notification ID",
+                        "name": "notification_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/refresh": {
             "post": {
                 "description": "Get a new access token using a refresh token",
@@ -2393,7 +2900,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "meal-comments"
+                    "menu-item-comments"
                 ],
                 "summary": "List user comments",
                 "parameters": [
@@ -2537,6 +3044,45 @@ const docTemplate = `{
                 }
             }
         },
+        "errors.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/errors.ErrorType"
+                }
+            }
+        },
+        "errors.ErrorType": {
+            "type": "string",
+            "enum": [
+                "VALIDATION_ERROR",
+                "NOT_FOUND",
+                "UNAUTHORIZED",
+                "FORBIDDEN",
+                "INTERNAL_ERROR",
+                "CONFLICT"
+            ],
+            "x-enum-varnames": [
+                "ErrorTypeValidation",
+                "ErrorTypeNotFound",
+                "ErrorTypeUnauthorized",
+                "ErrorTypeForbidden",
+                "ErrorTypeInternal",
+                "ErrorTypeConflict"
+            ]
+        },
         "model.EventAddress": {
             "type": "object",
             "properties": {
@@ -2569,65 +3115,6 @@ const docTemplate = `{
                 },
                 "updated_by_user": {
                     "$ref": "#/definitions/model.User"
-                }
-            }
-        },
-        "model.MenuItemComment": {
-            "type": "object",
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "integer"
-                },
-                "created_by_user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "event_menu_set": {
-                    "$ref": "#/definitions/model.MealEventMenuSet"
-                },
-                "event_menu_set_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "meal_event": {
-                    "$ref": "#/definitions/model.MealEvent"
-                },
-                "meal_event_id": {
-                    "type": "integer"
-                },
-                "menu_item": {
-                    "$ref": "#/definitions/model.MenuItem"
-                },
-                "menu_item_id": {
-                    "type": "integer"
-                },
-                "rating": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "updated_by": {
-                    "type": "integer"
-                },
-                "updated_by_user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -2674,16 +3161,16 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "menu_item_comments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MenuItemComment"
-                    }
-                },
                 "meal_requests": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.MealRequest"
+                    }
+                },
+                "menu_item_comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MenuItemComment"
                     }
                 },
                 "menu_sets": {
@@ -2762,9 +3249,6 @@ const docTemplate = `{
                 "deleted_at": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "label": {
                     "type": "string"
                 },
@@ -2813,12 +3297,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "event_address": {
-                    "$ref": "#/definitions/model.MealEventAddress"
+                    "$ref": "#/definitions/model.EventAddress"
                 },
-                "event_menu_set": {
-                    "$ref": "#/definitions/model.MealEventMenuSet"
-                },
-                "event_menu_set_id": {
+                "event_address_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -2827,10 +3308,13 @@ const docTemplate = `{
                 "meal_event": {
                     "$ref": "#/definitions/model.MealEvent"
                 },
-                "meal_event_address_id": {
+                "meal_event_id": {
                     "type": "integer"
                 },
-                "meal_event_id": {
+                "menu_set": {
+                    "$ref": "#/definitions/model.MenuSet"
+                },
+                "menu_set_id": {
                     "type": "integer"
                 },
                 "request_items": {
@@ -2915,6 +3399,9 @@ const docTemplate = `{
         "model.MenuItem": {
             "type": "object",
             "properties": {
+                "average_rating": {
+                    "type": "number"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2939,16 +3426,16 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "menu_item_comments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MenuItemComment"
-                    }
-                },
                 "meal_request_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.MealRequestItem"
+                    }
+                },
+                "menu_item_comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MenuItemComment"
                     }
                 },
                 "menu_set_items": {
@@ -2968,6 +3455,72 @@ const docTemplate = `{
                 },
                 "updated_by_user": {
                     "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.MenuItemComment": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "created_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "meal_event": {
+                    "$ref": "#/definitions/model.MealEvent"
+                },
+                "meal_event_id": {
+                    "type": "integer"
+                },
+                "menu_item": {
+                    "$ref": "#/definitions/model.MenuItem"
+                },
+                "menu_item_id": {
+                    "type": "integer"
+                },
+                "parent": {
+                    "$ref": "#/definitions/model.MenuItemComment"
+                },
+                "parent_id": {
+                    "description": "Added to support replies",
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "replies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MenuItemComment"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
+                "updated_by_user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2992,7 +3545,7 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "meal_event_sets": {
+                "meal_event_menu_sets": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.MealEventMenuSet"
@@ -3076,8 +3629,20 @@ const docTemplate = `{
                 "deleted_at": {
                     "type": "string"
                 },
+                "delivered": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "delivered_at": {
+                    "type": "string",
+                    "example": "2025-04-24T10:00:00Z"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Your meal request has been confirmed."
                 },
                 "payload": {
                     "type": "string",
@@ -3087,11 +3652,16 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": false
                 },
+                "read_at": {
+                    "type": "string",
+                    "example": "2025-04-24T10:15:00Z"
+                },
                 "type": {
                     "enum": [
                         "reminder",
                         "confirmation",
-                        "admin-message"
+                        "admin-message",
+                        "event-info"
                     ],
                     "allOf": [
                         {
@@ -3114,17 +3684,19 @@ const docTemplate = `{
             }
         },
         "model.NotificationType": {
-            "description": "Type of notification (reminder, confirmation, or admin message)",
+            "description": "Type of notification (reminder, confirmation, admin message, or event info)",
             "type": "string",
             "enum": [
                 "reminder",
                 "confirmation",
-                "admin-message"
+                "admin-message",
+                "event-info"
             ],
             "x-enum-varnames": [
                 "NotificationTypeReminder",
                 "NotificationTypeConfirmation",
-                "NotificationTypeAdminMessage"
+                "NotificationTypeAdminMessage",
+                "NotificationTypeEventInfo"
             ]
         },
         "model.User": {
@@ -3166,16 +3738,16 @@ const docTemplate = `{
                 "last_login_at": {
                     "type": "string"
                 },
-                "menu_item_comments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MenuItemComment"
-                    }
-                },
                 "meal_requests": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.MealRequest"
+                    }
+                },
+                "menu_item_comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MenuItemComment"
                     }
                 },
                 "name": {

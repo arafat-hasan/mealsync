@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/repository"
@@ -265,4 +266,9 @@ func (s *mealEventService) DeleteMeal(ctx context.Context, id uint, userID uint)
 
 	// Use the Delete method which properly handles soft deletion
 	return s.Delete(ctx, meal)
+}
+
+// FindByDateRange finds meal events within a date range
+func (s *mealEventService) FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error) {
+	return s.mealRepo.FindByDateRange(ctx, startDate, endDate)
 }

@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
@@ -196,4 +197,91 @@ func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, SuccessResponse{Message: "Meal event deleted successfully"})
+}
+
+// GetMealEventsByDateRange handles GET /api/meals/daterange
+// @Summary      List meal events by date range
+// @Description  Get meal events within a date range
+// @Tags         meals
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        start_date  query     string  true  "Start Date (YYYY-MM-DD)"
+// @Param        end_date    query     string  true  "End Date (YYYY-MM-DD)"
+// @Success      200  {array}   model.MealEvent
+// @Failure      400  {object}  ErrorResponse
+// @Failure      401  {object}  ErrorResponse
+// @Failure      500  {object}  ErrorResponse
+// @Router       /meals/daterange [get]
+func (h *MealEventHandler) GetMealEventsByDateRange(c *gin.Context) {
+	startDateStr := c.Query("start_date")
+	endDateStr := c.Query("end_date")
+
+	if startDateStr == "" || endDateStr == "" {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Both start_date and end_date are required"})
+		return
+	}
+
+	// Parse dates
+	startDate, err := time.Parse("2006-01-02", startDateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid start date format. Use YYYY-MM-DD"})
+		return
+	}
+
+	endDate, err := time.Parse("2006-01-02", endDateStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid end date format. Use YYYY-MM-DD"})
+		return
+	}
+
+	// Set end date to the end of the day
+	endDate = endDate.Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+
+	// Validate date range
+	if startDate.After(endDate) {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Start date must be before end date"})
+		return
+	}
+
+	userID, err := utils.GetUserIDFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	isAdmin := utils.IsAdminFromContext(c)
+
+	// Get meals in the date range
+	meals, err := h.mealService.FindByDateRange(c.Request.Context(), startDate, endDate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	// Filter by user access if not admin
+	if !isAdmin {
+		userMeals, err := h.mealService.FindByUserID(c.Request.Context(), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+			return
+		}
+
+		// Create a map for fast lookup of user's meal IDs
+		userMealIDs := make(map[uint]bool)
+		for _, meal := range userMeals {
+			userMealIDs[meal.ID] = true
+		}
+
+		// Filter meals to only include those the user has access to
+		filteredMeals := []model.MealEvent{}
+		for _, meal := range meals {
+			if userMealIDs[meal.ID] {
+				filteredMeals = append(filteredMeals, meal)
+			}
+		}
+
+		meals = filteredMeals
+	}
+
+	c.JSON(http.StatusOK, meals)
 }
