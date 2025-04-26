@@ -16,14 +16,14 @@ type MealEvent struct {
 	UpdatedBy        uint               `json:"updated_by"`
 	CreatedByUser    User               `json:"created_by_user" gorm:"foreignKey:CreatedBy"`
 	UpdatedByUser    User               `json:"updated_by_user" gorm:"foreignKey:UpdatedBy"`
-	MenuSets         []MealEventMenuSet `json:"menu_sets" gorm:"foreignKey:MealEventID"`
+	MenuSets         []MealEventSet     `json:"menu_sets" gorm:"foreignKey:MealEventID"`
 	Addresses        []MealEventAddress `json:"addresses" gorm:"foreignKey:MealEventID"`
 	MealRequests     []MealRequest      `json:"meal_requests" gorm:"foreignKey:MealEventID"`
 	MenuItemComments []MenuItemComment  `json:"menu_item_comments" gorm:"foreignKey:MealEventID"`
 }
 
-// MealEventMenuSet represents a junction table between meal events and menu sets
-type MealEventMenuSet struct {
+// MealEventSet represents a junction table between meal events and menu sets
+type MealEventSet struct {
 	MealEventID   uint       `json:"meal_event_id" gorm:"primaryKey;not null"`
 	MenuSetID     uint       `json:"menu_set_id" gorm:"primaryKey;not null"`
 	Label         string     `json:"label"`

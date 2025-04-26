@@ -21,34 +21,6 @@ func NewMealEventHandler(mealService service.MealEventService) *MealEventHandler
 	return &MealEventHandler{mealService: mealService}
 }
 
-// GetMealEvents handles GET /api/meals
-// @Summary      List meal events
-// @Description  Get all meal events for the authenticated user
-// @Tags         meals
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Success      200  {array}   model.MealEvent
-// @Failure      401  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
-// @Router       /meals [get]
-func (h *MealEventHandler) GetMealEvents(c *gin.Context) {
-	userID, err := utils.GetUserIDFromContext(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-	isAdmin := utils.IsAdminFromContext(c)
-
-	meals, err := h.mealService.GetMeals(c.Request.Context(), userID, isAdmin)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, meals)
-}
-
 // GetMealEventByID handles GET /api/meals/:id
 // @Summary      Get meal event by ID
 // @Description  Get a specific meal event by its ID
@@ -244,43 +216,16 @@ func (h *MealEventHandler) GetMealEventsByDateRange(c *gin.Context) {
 		return
 	}
 
-	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	isAdmin := utils.IsAdminFromContext(c)
 
 	// Get meals in the date range
 	meals, err := h.mealService.FindByDateRange(c.Request.Context(), startDate, endDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return
-	}
-
-	// Filter by user access if not admin
-	if !isAdmin {
-		userMeals, err := h.mealService.FindByUserID(c.Request.Context(), userID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
-			return
-		}
-
-		// Create a map for fast lookup of user's meal IDs
-		userMealIDs := make(map[uint]bool)
-		for _, meal := range userMeals {
-			userMealIDs[meal.ID] = true
-		}
-
-		// Filter meals to only include those the user has access to
-		filteredMeals := []model.MealEvent{}
-		for _, meal := range meals {
-			if userMealIDs[meal.ID] {
-				filteredMeals = append(filteredMeals, meal)
-			}
-		}
-
-		meals = filteredMeals
 	}
 
 	c.JSON(http.StatusOK, meals)

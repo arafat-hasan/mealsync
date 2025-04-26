@@ -24,7 +24,6 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, me
 		meals := protected.Group("/meals")
 		{
 			// List and create routes (no parameters)
-			meals.GET("", mealHandler.GetMealEvents)
 			meals.POST("", mealHandler.CreateMealEvent)
 
 			// Date range filtering

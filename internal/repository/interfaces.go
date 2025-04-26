@@ -36,13 +36,12 @@ type MealEventRepository interface {
 	DeleteRequest(ctx context.Context, request *model.MealRequest) error
 	CreateComment(ctx context.Context, comment *model.MenuItemComment) error
 	FindCommentsByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
-	FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error)
 	FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error)
 	FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error)
-	AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
-	UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
+	AddMenuSetToEvent(ctx context.Context, MealEventSet *model.MealEventSet) error
+	UpdateMenuSetInEvent(ctx context.Context, MealEventSet *model.MealEventSet) error
 	RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error
-	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventMenuSet, error)
+	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventSet, error)
 }
 
 // EventAddressRepository defines the interface for event address repository

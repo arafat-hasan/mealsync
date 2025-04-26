@@ -152,7 +152,7 @@ definitions:
         type: array
       menu_sets:
         items:
-          $ref: '#/definitions/model.MealEventMenuSet'
+          $ref: '#/definitions/model.MealEventSet'
         type: array
       name:
         type: string
@@ -190,7 +190,7 @@ definitions:
       updated_by_user:
         $ref: '#/definitions/model.User'
     type: object
-  model.MealEventMenuSet:
+  model.MealEventSet:
     properties:
       created_at:
         type: string
@@ -396,9 +396,9 @@ definitions:
         type: integer
       is_active:
         type: boolean
-      meal_event_menu_sets:
+      meal_event_sets:
         items:
-          $ref: '#/definitions/model.MealEventMenuSet'
+          $ref: '#/definitions/model.MealEventSet'
         type: array
       menu_set_description:
         type: string

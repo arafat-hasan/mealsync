@@ -136,16 +136,6 @@ func (r *mealEventRepository) HardDelete(ctx context.Context, meal *model.MealEv
 	return r.baseRepository.HardDelete(ctx, meal)
 }
 
-// FindByUserID finds meal events by user ID
-func (r *mealEventRepository) FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error) {
-	var meals []model.MealEvent
-	err := r.db.WithContext(ctx).Where("user_id = ?", userID).Find(&meals).Error
-	if err != nil {
-		return nil, err
-	}
-	return meals, nil
-}
-
 // FindUpcomingAndActive finds upcoming and active meal events
 func (r *mealEventRepository) FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error) {
 	var meals []model.MealEvent
@@ -167,19 +157,19 @@ func (r *mealEventRepository) FindUpcomingAndActive(ctx context.Context) ([]mode
 }
 
 // AddMenuSetToEvent associates a menu set with a meal event
-func (r *mealEventRepository) AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error {
-	return r.db.WithContext(ctx).Create(MealEventMenuSet).Error
+func (r *mealEventRepository) AddMenuSetToEvent(ctx context.Context, MealEventSet *model.MealEventSet) error {
+	return r.db.WithContext(ctx).Create(MealEventSet).Error
 }
 
 // UpdateMenuSetInEvent updates the menu set association details in a meal event
-func (r *mealEventRepository) UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error {
+func (r *mealEventRepository) UpdateMenuSetInEvent(ctx context.Context, MealEventSet *model.MealEventSet) error {
 	return r.db.WithContext(ctx).
-		Model(&model.MealEventMenuSet{}).
-		Where("meal_event_id = ? AND menu_set_id = ?", MealEventMenuSet.MealEventID, MealEventMenuSet.MenuSetID).
+		Model(&model.MealEventSet{}).
+		Where("meal_event_id = ? AND menu_set_id = ?", MealEventSet.MealEventID, MealEventSet.MenuSetID).
 		Updates(map[string]interface{}{
-			"label":      MealEventMenuSet.Label,
-			"note":       MealEventMenuSet.Note,
-			"updated_by": MealEventMenuSet.UpdatedBy,
+			"label":      MealEventSet.Label,
+			"note":       MealEventSet.Note,
+			"updated_by": MealEventSet.UpdatedBy,
 			"updated_at": time.Now(),
 		}).Error
 }
@@ -188,12 +178,12 @@ func (r *mealEventRepository) UpdateMenuSetInEvent(ctx context.Context, MealEven
 func (r *mealEventRepository) RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error {
 	return r.db.WithContext(ctx).
 		Where("meal_event_id = ? AND menu_set_id = ?", mealEventID, menuSetID).
-		Delete(&model.MealEventMenuSet{}).Error
+		Delete(&model.MealEventSet{}).Error
 }
 
 // FindMenuSetsByEventID finds all menu sets associated with a meal event
-func (r *mealEventRepository) FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventMenuSet, error) {
-	var menuSets []model.MealEventMenuSet
+func (r *mealEventRepository) FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventSet, error) {
+	var menuSets []model.MealEventSet
 	err := r.db.WithContext(ctx).
 		Preload("MenuSet").
 		Where("meal_event_id = ?", mealEventID).
@@ -212,8 +202,6 @@ func (r *mealEventRepository) FindByDateRange(ctx context.Context, startDate, en
 		Preload("MenuSets.MenuSet").
 		Preload("Addresses").
 		Preload("Addresses.Address").
-		Preload("MealRequests").
-		Preload("MenuItemComments").
 		Where("event_date BETWEEN ? AND ?", startDate, endDate).
 		Order("event_date ASC").
 		Find(&meals).Error

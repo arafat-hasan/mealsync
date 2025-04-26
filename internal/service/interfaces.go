@@ -28,17 +28,16 @@ type MealEventService interface {
 	HardDelete(ctx context.Context, meal *model.MealEvent) error
 
 	// Methods used by the API handlers
-	GetMeals(ctx context.Context, userID uint, isAdmin bool) ([]model.MealEvent, error)
 	GetMealByID(ctx context.Context, id uint, userID uint, isAdmin bool) (*model.MealEvent, error)
 	CreateMeal(ctx context.Context, meal *model.MealEvent, userID uint) error
 	UpdateMeal(ctx context.Context, id uint, meal *model.MealEvent, userID uint) error
 	DeleteMeal(ctx context.Context, id uint, userID uint) error
 
-	// MealEventMenuSet management with label and note
-	AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
-	UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error
+	// MealEventSet management with label and note
+	AddMenuSetToEvent(ctx context.Context, MealEventSet *model.MealEventSet) error
+	UpdateMenuSetInEvent(ctx context.Context, MealEventSet *model.MealEventSet) error
 	RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error
-	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventMenuSet, error)
+	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventSet, error)
 
 	// MealRequest specific operations
 	CreateMealRequest(ctx context.Context, request *model.MealRequest) error
@@ -55,7 +54,6 @@ type MealEventService interface {
 	CreateComment(ctx context.Context, comment *model.MenuItemComment) error
 	FindCommentsByMealEventID(ctx context.Context, mealEventID uint) ([]model.MenuItemComment, error)
 
-	FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error)
 	FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error)
 	FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error)
 }

@@ -76,37 +76,37 @@ func (s *mealEventService) HardDelete(ctx context.Context, meal *model.MealEvent
 }
 
 // AddMenuSetToEvent associates a menu set with a meal event, including label and note
-func (s *mealEventService) AddMenuSetToEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error {
+func (s *mealEventService) AddMenuSetToEvent(ctx context.Context, MealEventSet *model.MealEventSet) error {
 	// Validate meal event exists
-	_, err := s.mealRepo.FindByID(ctx, MealEventMenuSet.MealEventID)
+	_, err := s.mealRepo.FindByID(ctx, MealEventSet.MealEventID)
 	if err != nil {
 		return err
 	}
 
 	// Validate menu set exists
-	_, err = s.menuRepo.FindByID(ctx, MealEventMenuSet.MenuSetID)
+	_, err = s.menuRepo.FindByID(ctx, MealEventSet.MenuSetID)
 	if err != nil {
 		return err
 	}
 
-	return s.mealRepo.AddMenuSetToEvent(ctx, MealEventMenuSet)
+	return s.mealRepo.AddMenuSetToEvent(ctx, MealEventSet)
 }
 
 // UpdateMenuSetInEvent updates label and note for a menu set in an event
-func (s *mealEventService) UpdateMenuSetInEvent(ctx context.Context, MealEventMenuSet *model.MealEventMenuSet) error {
+func (s *mealEventService) UpdateMenuSetInEvent(ctx context.Context, MealEventSet *model.MealEventSet) error {
 	// Validate meal event exists
-	_, err := s.mealRepo.FindByID(ctx, MealEventMenuSet.MealEventID)
+	_, err := s.mealRepo.FindByID(ctx, MealEventSet.MealEventID)
 	if err != nil {
 		return err
 	}
 
 	// Validate menu set exists
-	_, err = s.menuRepo.FindByID(ctx, MealEventMenuSet.MenuSetID)
+	_, err = s.menuRepo.FindByID(ctx, MealEventSet.MenuSetID)
 	if err != nil {
 		return err
 	}
 
-	return s.mealRepo.UpdateMenuSetInEvent(ctx, MealEventMenuSet)
+	return s.mealRepo.UpdateMenuSetInEvent(ctx, MealEventSet)
 }
 
 // RemoveMenuSetFromEvent removes a menu set from a meal event
@@ -121,7 +121,7 @@ func (s *mealEventService) RemoveMenuSetFromEvent(ctx context.Context, mealEvent
 }
 
 // FindMenuSetsByEventID finds all menu sets associated with a meal event
-func (s *mealEventService) FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventMenuSet, error) {
+func (s *mealEventService) FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventSet, error) {
 	// Validate meal event exists
 	_, err := s.mealRepo.FindByID(ctx, mealEventID)
 	if err != nil {
@@ -184,50 +184,19 @@ func (s *mealEventService) FindCommentsByMealEventID(ctx context.Context, mealEv
 	return s.mealRepo.FindCommentsByMealEventID(ctx, mealEventID)
 }
 
-// FindByUserID finds all meal events for a user
-func (s *mealEventService) FindByUserID(ctx context.Context, userID uint) ([]model.MealEvent, error) {
-	return s.mealRepo.FindByUserID(ctx, userID)
-}
-
 // FindUpcomingAndActive finds all upcoming and active meal events
 func (s *mealEventService) FindUpcomingAndActive(ctx context.Context) ([]model.MealEvent, error) {
 	return s.mealRepo.FindUpcomingAndActive(ctx)
-}
-
-// GetMeals retrieves all meal events based on user access
-func (s *mealEventService) GetMeals(ctx context.Context, userID uint, isAdmin bool) ([]model.MealEvent, error) {
-	if isAdmin {
-		return s.FindAll(ctx)
-	}
-	return s.FindByUserID(ctx, userID)
 }
 
 // GetMealByID retrieves a meal event by ID with permission checking
 func (s *mealEventService) GetMealByID(ctx context.Context, id uint, userID uint, isAdmin bool) (*model.MealEvent, error) {
 	meal, err := s.FindByID(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, repository.ErrNotFound
 	}
 
-	// Admin can access any meal event
-	if isAdmin {
-		return meal, nil
-	}
-
-	// For regular users, check if they have access to this meal event
-	// This is a simplified check - you may need to implement proper access control
-	userMeals, err := s.FindByUserID(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, userMeal := range userMeals {
-		if userMeal.ID == id {
-			return meal, nil
-		}
-	}
-
-	return nil, repository.ErrNotFound // Return a not found error
+	return meal, nil
 }
 
 // CreateMeal creates a new meal event with the creator's user ID

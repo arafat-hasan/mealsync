@@ -3176,7 +3176,7 @@ const docTemplate = `{
                 "menu_sets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealEventMenuSet"
+                        "$ref": "#/definitions/model.MealEventSet"
                     }
                 },
                 "name": {
@@ -3234,7 +3234,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.MealEventMenuSet": {
+        "model.MealEventSet": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -3545,10 +3545,10 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
-                "meal_event_menu_sets": {
+                "meal_event_sets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.MealEventMenuSet"
+                        "$ref": "#/definitions/model.MealEventSet"
                     }
                 },
                 "menu_set_description": {
