@@ -96,8 +96,8 @@ definitions:
         type: string
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       id:
@@ -108,8 +108,8 @@ definitions:
         type: string
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MealEvent:
     properties:
@@ -121,8 +121,8 @@ definitions:
         type: string
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       cutoff_time:
         type: string
       deleted_at:
@@ -154,8 +154,8 @@ definitions:
         type: string
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MealEventAddress:
     properties:
@@ -165,29 +165,35 @@ definitions:
         type: integer
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       id:
         type: integer
+      is_active:
+        type: boolean
       meal_event:
         $ref: '#/definitions/model.MealEvent'
       meal_event_id:
         type: integer
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MealEventSet:
     properties:
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
       label:
         type: string
       meal_event:
@@ -202,8 +208,8 @@ definitions:
         type: string
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MealRequest:
     properties:
@@ -211,8 +217,8 @@ definitions:
         type: string
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       event_address:
@@ -221,6 +227,8 @@ definitions:
         type: integer
       id:
         type: integer
+      is_active:
+        type: boolean
       meal_event:
         $ref: '#/definitions/model.MealEvent'
       meal_event_id:
@@ -235,8 +243,8 @@ definitions:
         type: array
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
       user:
         $ref: '#/definitions/model.User'
       user_id:
@@ -246,12 +254,14 @@ definitions:
     properties:
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       id:
         type: integer
+      is_active:
+        type: boolean
       is_selected:
         type: boolean
       meal_request:
@@ -272,8 +282,8 @@ definitions:
         type: integer
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MenuItem:
     properties:
@@ -281,8 +291,8 @@ definitions:
         type: number
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       description:
@@ -309,8 +319,8 @@ definitions:
         type: string
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MenuItemComment:
     properties:
@@ -318,12 +328,14 @@ definitions:
         type: string
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       id:
         type: integer
+      is_active:
+        type: boolean
       meal_event:
         $ref: '#/definitions/model.MealEvent'
       meal_event_id:
@@ -345,8 +357,8 @@ definitions:
         type: array
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
       user_id:
         type: integer
     type: object
@@ -354,8 +366,8 @@ definitions:
     properties:
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       id:
@@ -376,19 +388,21 @@ definitions:
         type: string
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.MenuSetItem:
     properties:
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       id:
         type: integer
+      is_active:
+        type: boolean
       menu_item:
         $ref: '#/definitions/model.MenuItem'
       menu_item_id:
@@ -399,14 +413,16 @@ definitions:
         type: integer
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
+      updated_by_id:
+        type: integer
     type: object
   model.Notification:
     description: Notification entity containing user notifications and their details
     properties:
       created_at:
         type: string
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       delivered:
@@ -417,6 +433,8 @@ definitions:
         type: string
       id:
         type: integer
+      is_active:
+        type: boolean
       message:
         example: Your meal request has been confirmed.
         type: string
@@ -440,6 +458,8 @@ definitions:
         example: reminder
       updated_at:
         type: string
+      updated_by_id:
+        type: integer
       user_id:
         example: 1
         type: integer
@@ -462,12 +482,8 @@ definitions:
     properties:
       created_at:
         type: string
-      created_by:
-        $ref: '#/definitions/model.User'
-      created_meal_events:
-        items:
-          $ref: '#/definitions/model.MealEvent'
-        type: array
+      created_by_id:
+        type: integer
       deleted_at:
         type: string
       department:
@@ -482,32 +498,16 @@ definitions:
         type: boolean
       last_login_at:
         type: string
-      meal_requests:
-        items:
-          $ref: '#/definitions/model.MealRequest'
-        type: array
-      menu_item_comments:
-        items:
-          $ref: '#/definitions/model.MenuItemComment'
-        type: array
       name:
         type: string
       notification_enabled:
         type: boolean
-      notifications:
-        items:
-          $ref: '#/definitions/model.Notification'
-        type: array
       role:
         $ref: '#/definitions/model.UserRole'
       updated_at:
         type: string
-      updated_by:
-        $ref: '#/definitions/model.User'
-      updated_meal_events:
-        items:
-          $ref: '#/definitions/model.MealEvent'
-        type: array
+      updated_by_id:
+        type: integer
       username:
         type: string
     type: object
@@ -992,6 +992,47 @@ paths:
       tags:
       - meal-requests
   /meals:
+    get:
+      consumes:
+      - application/json
+      description: Get meal events within a date range
+      parameters:
+      - description: Start Date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: End Date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.MealEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List meal events by date range
+      tags:
+      - meals
     post:
       consumes:
       - application/json
@@ -1385,48 +1426,6 @@ paths:
       summary: Update comment
       tags:
       - menu-item-comments
-  /meals/daterange:
-    get:
-      consumes:
-      - application/json
-      description: Get meal events within a date range
-      parameters:
-      - description: Start Date (YYYY-MM-DD)
-        in: query
-        name: start_date
-        required: true
-        type: string
-      - description: End Date (YYYY-MM-DD)
-        in: query
-        name: end_date
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.MealEvent'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List meal events by date range
-      tags:
-      - meals
   /menu-items:
     get:
       consumes:

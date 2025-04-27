@@ -67,12 +67,9 @@ func (s *menuItemCommentService) CreateComment(ctx context.Context, comment *mod
 
 	// Set comment fields
 	comment.UserID = userID
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	comment.CreatedBy = *user
-	comment.UpdatedBy = *user
+
+	comment.CreatedByID = userID
+	comment.UpdatedByID = userID
 
 	return s.commentRepo.Create(ctx, comment)
 }
@@ -96,11 +93,8 @@ func (s *menuItemCommentService) UpdateComment(ctx context.Context, id uint, com
 	// Update fields
 	existingComment.Comment = comment.Comment
 	existingComment.Rating = comment.Rating
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	existingComment.UpdatedBy = *user
+
+	existingComment.UpdatedByID = userID
 
 	return s.commentRepo.Update(ctx, existingComment)
 }
@@ -117,12 +111,7 @@ func (s *menuItemCommentService) DeleteComment(ctx context.Context, id uint, use
 		return errors.NewForbiddenError("unauthorized to delete this comment", nil)
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-
-	comment.UpdatedBy = *user
+	comment.UpdatedByID = userID
 	return s.commentRepo.Delete(ctx, comment)
 }
 

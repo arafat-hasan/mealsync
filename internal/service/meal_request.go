@@ -84,14 +84,9 @@ func (s *mealRequestService) CreateMealRequest(ctx context.Context, request *mod
 		}
 	}
 
-	// Set request fields
 	request.UserID = userID
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	request.CreatedBy = *user
-	request.UpdatedBy = *user
+	request.CreatedByID = userID
+	request.UpdatedByID = userID
 
 	return s.requestRepo.Create(ctx, request)
 }
@@ -130,11 +125,8 @@ func (s *mealRequestService) UpdateMealRequest(ctx context.Context, id uint, req
 	// Update fields
 	existingRequest.MenuSetID = request.MenuSetID
 	existingRequest.EventAddressID = request.EventAddressID
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	existingRequest.UpdatedBy = *user
+
+	existingRequest.UpdatedByID = userID
 
 	return s.requestRepo.Update(ctx, existingRequest)
 }
@@ -161,11 +153,7 @@ func (s *mealRequestService) DeleteMealRequest(ctx context.Context, id uint, use
 		return errors.NewValidationError("cutoff time has passed", nil)
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	request.UpdatedBy = *user
+	request.UpdatedByID = userID
 	return s.requestRepo.Delete(ctx, request)
 }
 
@@ -187,12 +175,9 @@ func (s *mealRequestService) AddRequestItem(ctx context.Context, requestID uint,
 
 	// Set item fields
 	item.MealRequestID = requestID
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	item.CreatedBy = *user
-	item.UpdatedBy = *user
+
+	item.CreatedByID = userID
+	item.UpdatedByID = userID
 
 	return s.requestRepo.AddRequestItem(ctx, item)
 }
@@ -226,11 +211,7 @@ func (s *mealRequestService) RemoveRequestItem(ctx context.Context, requestID ui
 		return errors.NewNotFoundError("request item not found", nil)
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	itemToRemove.UpdatedBy = *user
+	itemToRemove.UpdatedByID = userID
 	return s.requestRepo.RemoveRequestItem(ctx, itemToRemove)
 }
 

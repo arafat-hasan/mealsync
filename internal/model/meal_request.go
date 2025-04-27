@@ -14,8 +14,6 @@ type MealRequest struct {
 	MealEvent      MealEvent         `json:"meal_event" gorm:"foreignKey:MealEventID"`
 	MenuSet        MenuSet           `json:"menu_set" gorm:"foreignKey:MenuSetID"`
 	EventAddress   EventAddress      `json:"event_address" gorm:"foreignKey:EventAddressID"`
-	CreatedBy      User              `json:"created_by" gorm:"foreignKey:CreatedBy"`
-	UpdatedBy      User              `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 	RequestItems   []MealRequestItem `json:"request_items" gorm:"foreignKey:MealRequestID"`
 }
 
@@ -31,8 +29,6 @@ type MealRequestItem struct {
 	MealRequest   MealRequest `json:"meal_request" gorm:"foreignKey:MealRequestID"`
 	MenuItem      MenuItem    `json:"menu_item" gorm:"foreignKey:MenuItemID"`
 	MenuSet       MenuSet     `json:"menu_set" gorm:"foreignKey:MenuSetID"`
-	CreatedBy     User        `json:"created_by" gorm:"foreignKey:CreatedBy"`
-	UpdatedBy     User        `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 }
 
 // RequestStatus represents the status of a meal request

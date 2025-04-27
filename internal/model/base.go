@@ -4,10 +4,13 @@ import "time"
 
 // Base contains common fields for all models
 type Base struct {
-	ID        uint       `json:"id" gorm:"primaryKey"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty" gorm:"index"`
+	ID          uint       `json:"id" gorm:"primaryKey"`
+	IsActive    bool       `json:"is_active" gorm:"default:true"`
+	CreatedByID uint       `json:"created_by_id" gorm:"column:created_by"`
+	UpdatedByID uint       `json:"updated_by_id" gorm:"column:updated_by"`
+	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt   *time.Time `json:"deleted_at,omitempty" gorm:"index"`
 }
 
 // OrderStatus represents the status of an order

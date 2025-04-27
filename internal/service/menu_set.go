@@ -49,13 +49,9 @@ func (s *menuSetService) CreateMenuSet(ctx context.Context, menuSet *model.MenuS
 	if menuSet.MenuSetName == "" {
 		return errors.NewValidationError("menu set name is required", nil)
 	}
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	// Set created by
-	menuSet.CreatedBy = *user
-	menuSet.UpdatedBy = *user
+
+	menuSet.CreatedByID = userID
+	menuSet.UpdatedByID = userID
 
 	return s.menuRepo.Create(ctx, menuSet)
 }
@@ -70,14 +66,10 @@ func (s *menuSetService) UpdateMenuSet(ctx context.Context, id uint, menuSet *mo
 	if err != nil {
 		return err
 	}
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	// Update fields
+
 	existingMenuSet.MenuSetName = menuSet.MenuSetName
 	existingMenuSet.MenuSetDescription = menuSet.MenuSetDescription
-	existingMenuSet.UpdatedBy = *user
+	existingMenuSet.UpdatedByID = userID
 
 	return s.menuRepo.Update(ctx, existingMenuSet)
 }
@@ -88,11 +80,8 @@ func (s *menuSetService) DeleteMenuSet(ctx context.Context, id uint, userID uint
 	if err != nil {
 		return err
 	}
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	menuSet.UpdatedBy = *user
+
+	menuSet.UpdatedByID = userID
 	return s.menuRepo.Delete(ctx, menuSet)
 }
 
@@ -118,13 +107,8 @@ func (s *menuSetService) CreateMenuItem(ctx context.Context, menuItem *model.Men
 		return errors.NewValidationError("menu item name is required", nil)
 	}
 
-	// Set created by
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	menuItem.CreatedBy = *user
-	menuItem.UpdatedBy = *user
+	menuItem.CreatedByID = userID
+	menuItem.UpdatedByID = userID
 
 	return s.menuItemRepo.Create(ctx, menuItem)
 }
@@ -144,11 +128,8 @@ func (s *menuSetService) UpdateMenuItem(ctx context.Context, id uint, menuItem *
 	existingMenuItem.Name = menuItem.Name
 	existingMenuItem.Description = menuItem.Description
 	existingMenuItem.ImageURL = menuItem.ImageURL
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	existingMenuItem.UpdatedBy = *user
+
+	existingMenuItem.UpdatedByID = userID
 
 	return s.menuItemRepo.Update(ctx, existingMenuItem)
 }
@@ -160,11 +141,7 @@ func (s *menuSetService) DeleteMenuItem(ctx context.Context, id uint, userID uin
 		return err
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	menuItem.UpdatedBy = *user
+	menuItem.UpdatedByID = userID
 	return s.menuItemRepo.Delete(ctx, menuItem)
 }
 
@@ -180,16 +157,9 @@ func (s *menuSetService) AddItemToMenuSet(ctx context.Context, menuSetID uint, m
 		return err
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	// Create menu set item
 	menuSetItem := &model.MenuSetItem{
-		MenuSetID:  menuSetID,
-		MenuItemID: menuItemID,
-		CreatedBy:  *user,
-		UpdatedBy:  *user,
+		MenuSetID:   menuSetID,
+		MenuItemID:  menuItemID,
 	}
 
 	return s.menuRepo.AddMenuItem(ctx, menuSetItem)
@@ -197,14 +167,10 @@ func (s *menuSetService) AddItemToMenuSet(ctx context.Context, menuSetID uint, m
 
 // RemoveItemFromMenuSet removes a menu item from a menu set
 func (s *menuSetService) RemoveItemFromMenuSet(ctx context.Context, menuSetID uint, menuItemID uint, userID uint) error {
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
+
 	menuSetItem := &model.MenuSetItem{
-		MenuSetID:  menuSetID,
-		MenuItemID: menuItemID,
-		UpdatedBy:  *user,
+		MenuSetID:   menuSetID,
+		MenuItemID:  menuItemID,
 	}
 
 	return s.menuRepo.RemoveMenuItem(ctx, menuSetItem)

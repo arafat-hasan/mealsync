@@ -18,8 +18,6 @@ type Notification struct {
 	ReadAt      *time.Time       `json:"read_at" gorm:"default:null" example:"2025-04-24T10:15:00Z"`
 	DeliveredAt *time.Time       `json:"delivered_at" gorm:"default:null" example:"2025-04-24T10:00:00Z"`
 	User        User             `json:"user" gorm:"foreignKey:UserID" swaggerignore:"true"`
-	CreatedBy   User             `json:"created_by" gorm:"foreignKey:CreatedBy" swaggerignore:"true"`
-	UpdatedBy   User             `json:"updated_by" gorm:"foreignKey:UpdatedBy" swaggerignore:"true"`
 }
 
 // NotificationType represents the type of notification

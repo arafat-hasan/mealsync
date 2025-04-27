@@ -721,63 +721,6 @@ const docTemplate = `{
             }
         },
         "/meals": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create a new meal event",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "meals"
-                ],
-                "summary": "Create meal event",
-                "parameters": [
-                    {
-                        "description": "Meal Event Data",
-                        "name": "meal",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.MealEvent"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/model.MealEvent"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/meals/daterange": {
             "get": {
                 "security": [
                     {
@@ -819,6 +762,61 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.MealEvent"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new meal event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meals"
+                ],
+                "summary": "Create meal event",
+                "parameters": [
+                    {
+                        "description": "Meal Event Data",
+                        "name": "meal",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MealEvent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.MealEvent"
                         }
                     },
                     "400": {
@@ -3051,8 +3049,8 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3069,8 +3067,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3089,8 +3087,8 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "cutoff_time": {
                     "type": "string"
@@ -3138,8 +3136,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3155,14 +3153,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "meal_event": {
                     "$ref": "#/definitions/model.MealEvent"
@@ -3173,8 +3174,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3184,11 +3185,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "label": {
                     "type": "string"
@@ -3211,8 +3218,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3225,8 +3232,8 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3239,6 +3246,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "meal_event": {
                     "$ref": "#/definitions/model.MealEvent"
@@ -3261,8 +3271,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 },
                 "user": {
                     "$ref": "#/definitions/model.User"
@@ -3278,14 +3288,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "is_selected": {
                     "type": "boolean"
@@ -3317,8 +3330,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3331,8 +3344,8 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3373,8 +3386,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3387,14 +3400,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "meal_event": {
                     "$ref": "#/definitions/model.MealEvent"
@@ -3427,8 +3443,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 },
                 "user_id": {
                     "type": "integer"
@@ -3441,8 +3457,8 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3474,8 +3490,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3485,14 +3501,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "menu_item": {
                     "$ref": "#/definitions/model.MenuItem"
@@ -3509,8 +3528,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
+                "updated_by_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3520,6 +3539,9 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "string"
+                },
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3534,6 +3556,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
                 },
                 "message": {
                     "type": "string",
@@ -3568,6 +3593,9 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
+                "updated_by_id": {
+                    "type": "integer"
+                },
                 "user_id": {
                     "type": "integer",
                     "example": 1
@@ -3596,14 +3624,8 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "created_by": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "created_meal_events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MealEvent"
-                    }
+                "created_by_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "type": "string"
@@ -3626,29 +3648,11 @@ const docTemplate = `{
                 "last_login_at": {
                     "type": "string"
                 },
-                "meal_requests": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MealRequest"
-                    }
-                },
-                "menu_item_comments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MenuItemComment"
-                    }
-                },
                 "name": {
                     "type": "string"
                 },
                 "notification_enabled": {
                     "type": "boolean"
-                },
-                "notifications": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Notification"
-                    }
                 },
                 "role": {
                     "$ref": "#/definitions/model.UserRole"
@@ -3656,14 +3660,8 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "updated_meal_events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.MealEvent"
-                    }
+                "updated_by_id": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"

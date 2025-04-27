@@ -52,13 +52,8 @@ func (s *eventAddressService) CreateAddress(ctx context.Context, address *model.
 		return err
 	}
 
-	// Set metadata
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return errors.NewNotFoundError("user not found", err)
-	}
-	address.CreatedBy = *user
-	address.UpdatedBy = *user
+	address.CreatedByID = userID
+	address.UpdatedByID = userID
 
 	if err := s.addressRepo.Create(ctx, address); err != nil {
 		return errors.NewInternalError("failed to create event address", err)
@@ -85,11 +80,8 @@ func (s *eventAddressService) UpdateAddress(ctx context.Context, id uint, addres
 	// Update fields
 	existingAddress.MealEventID = address.MealEventID
 	existingAddress.AddressID = address.AddressID
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return errors.NewNotFoundError("user not found", err)
-	}
-	existingAddress.UpdatedBy = *user
+
+	existingAddress.UpdatedByID = userID
 
 	if err := s.addressRepo.Update(ctx, existingAddress); err != nil {
 		return errors.NewInternalError("failed to update event address", err)
@@ -105,11 +97,8 @@ func (s *eventAddressService) DeleteAddress(ctx context.Context, id uint, userID
 		return errors.NewNotFoundError("event address not found", err)
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return errors.NewNotFoundError("user not found", err)
-	}
-	address.UpdatedBy = *user
+
+	address.UpdatedByID = userID
 	if err := s.addressRepo.Delete(ctx, address); err != nil {
 		return errors.NewInternalError("failed to delete event address", err)
 	}

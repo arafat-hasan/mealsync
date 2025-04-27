@@ -51,13 +51,8 @@ func (s *menuItemService) CreateMenuItem(ctx context.Context, menuItem *model.Me
 		return errors.NewValidationError("description is required", nil)
 	}
 
-	// Set created by
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	menuItem.CreatedBy = *user
-	menuItem.UpdatedBy = *user
+	menuItem.CreatedByID = userID
+	menuItem.UpdatedByID = userID
 
 	return s.menuItemRepo.Create(ctx, menuItem)
 }
@@ -77,11 +72,7 @@ func (s *menuItemService) UpdateMenuItem(ctx context.Context, id uint, menuItem 
 	existingMenuItem.Name = menuItem.Name
 	existingMenuItem.Description = menuItem.Description
 	existingMenuItem.ImageURL = menuItem.ImageURL
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	existingMenuItem.UpdatedBy = *user
+	existingMenuItem.UpdatedByID = userID
 
 	return s.menuItemRepo.Update(ctx, existingMenuItem)
 }
@@ -93,11 +84,7 @@ func (s *menuItemService) DeleteMenuItem(ctx context.Context, id uint, userID ui
 		return err
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
-	if err != nil {
-		return err
-	}
-	menuItem.UpdatedBy = *user
+	menuItem.UpdatedByID = userID
 	return s.menuItemRepo.Delete(ctx, menuItem)
 }
 

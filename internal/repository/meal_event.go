@@ -169,7 +169,7 @@ func (r *mealEventRepository) UpdateMenuSetInEvent(ctx context.Context, MealEven
 		Updates(map[string]interface{}{
 			"label":      MealEventSet.Label,
 			"note":       MealEventSet.Note,
-			"updated_by": MealEventSet.UpdatedBy,
+			"updated_by": MealEventSet.UpdatedByID,
 			"updated_at": time.Now(),
 		}).Error
 }

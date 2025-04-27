@@ -10,10 +10,7 @@ type MealEvent struct {
 	EventDate        time.Time          `json:"event_date" gorm:"not null"`
 	EventDuration    int                `json:"event_duration" gorm:"not null"` // in minutes
 	CutoffTime       time.Time          `json:"cutoff_time" gorm:"not null"`
-	IsActive         bool               `json:"is_active" gorm:"default:true"`
 	ConfirmedAt      *time.Time         `json:"confirmed_at"`
-	CreatedBy        User               `json:"created_by" gorm:"foreignKey:CreatedBy"`
-	UpdatedBy        User               `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 	MenuSets         []MealEventSet     `json:"menu_sets" gorm:"foreignKey:MealEventID"`
 	Addresses        []MealEventAddress `json:"addresses" gorm:"foreignKey:MealEventID"`
 	MealRequests     []MealRequest      `json:"meal_requests" gorm:"foreignKey:MealEventID"`
@@ -22,17 +19,13 @@ type MealEvent struct {
 
 // MealEventSet represents a junction table between meal events and menu sets
 type MealEventSet struct {
-	MealEventID uint       `json:"meal_event_id" gorm:"primaryKey;not null"`
-	MenuSetID   uint       `json:"menu_set_id" gorm:"primaryKey;not null"`
-	Label       string     `json:"label"`
-	Note        string     `json:"note"`
-	DeletedAt   *time.Time `json:"deleted_at" gorm:"index"`
-	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
-	MealEvent   MealEvent  `json:"meal_event" gorm:"foreignKey:MealEventID"`
-	MenuSet     MenuSet    `json:"menu_set" gorm:"foreignKey:MenuSetID"`
-	CreatedBy   User       `json:"created_by" gorm:"foreignKey:CreatedBy"`
-	UpdatedBy   User       `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
+	Base
+	MealEventID uint      `json:"meal_event_id" gorm:"primaryKey;not null"`
+	MenuSetID   uint      `json:"menu_set_id" gorm:"primaryKey;not null"`
+	Label       string    `json:"label"`
+	Note        string    `json:"note"`
+	MealEvent   MealEvent `json:"meal_event" gorm:"foreignKey:MealEventID"`
+	MenuSet     MenuSet   `json:"menu_set" gorm:"foreignKey:MenuSetID"`
 }
 
 // MealEventAddress represents an address for a meal event
@@ -42,6 +35,4 @@ type MealEventAddress struct {
 	AddressID   uint         `json:"address_id" gorm:"not null"`
 	MealEvent   MealEvent    `json:"meal_event" gorm:"foreignKey:MealEventID"`
 	Address     EventAddress `json:"address" gorm:"foreignKey:AddressID"`
-	CreatedBy   User         `json:"created_by" gorm:"foreignKey:CreatedBy"`
-	UpdatedBy   User         `json:"updated_by" gorm:"foreignKey:UpdatedBy"`
 }

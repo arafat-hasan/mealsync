@@ -171,7 +171,7 @@ func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, SuccessResponse{Message: "Meal event deleted successfully"})
 }
 
-// GetMealEventsByDateRange handles GET /api/meals/daterange
+// GetMeals handles GET /api/meals
 // @Summary      List meal events by date range
 // @Description  Get meal events within a date range
 // @Tags         meals
@@ -184,8 +184,8 @@ func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 // @Failure      400  {object}  ErrorResponse
 // @Failure      401  {object}  ErrorResponse
 // @Failure      500  {object}  ErrorResponse
-// @Router       /meals/daterange [get]
-func (h *MealEventHandler) GetMealEventsByDateRange(c *gin.Context) {
+// @Router       /meals [get]
+func (h *MealEventHandler) GetMeals(c *gin.Context) {
 	startDateStr := c.Query("start_date")
 	endDateStr := c.Query("end_date")
 
