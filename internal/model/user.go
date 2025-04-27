@@ -12,7 +12,7 @@ type User struct {
 	Name                string    `json:"name" gorm:"not null"`
 	Email               string    `json:"email" gorm:"unique;not null"`
 	Department          string    `json:"department" gorm:"not null"`
-	Role                UserRole  `json:"role" gorm:"not null;default:'employee'"`
+	Role                UserRole  `json:"role" gorm:"type:text;not null;default:'employee'"`
 	NotificationEnabled bool      `json:"notification_enabled" gorm:"default:true"`
 	LastLoginAt         time.Time `json:"last_login_at"`
 	// MealRequests        []MealRequest     `json:"meal_requests" gorm:"foreignKey:UserID"`
@@ -21,9 +21,11 @@ type User struct {
 	// CreatedMealEvents   []MealEvent       `json:"created_meal_events" gorm:"foreignKey:CreatedBy"`
 	// UpdatedMealEvents   []MealEvent       `json:"updated_meal_events" gorm:"foreignKey:UpdatedBy"`
 
-	IsActive    bool       `json:"is_active" gorm:"default:true"`
+	IsActive    bool       `json:"is_active" gorm:"not null;default:true"`
 	CreatedByID uint       `json:"created_by_id" gorm:"column:created_by"`
+	CreatedBy   *User      `gorm:"foreignKey:CreatedByID" json:"created_by,omitempty"`
 	UpdatedByID uint       `json:"updated_by_id" gorm:"column:updated_by"`
+	UpdatedBy   *User      `gorm:"foreignKey:UpdatedByID" json:"updated_by,omitempty"`
 	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   *time.Time `json:"deleted_at,omitempty" gorm:"index"`
