@@ -24,8 +24,8 @@ type MealEventSet struct {
 	MenuSetID   uint      `json:"menu_set_id" gorm:"primaryKey;not null"`
 	Label       string    `json:"label"`
 	Note        string    `json:"note"`
-	MealEvent   MealEvent `json:"meal_event" gorm:"foreignKey:MealEventID"`
-	MenuSet     MenuSet   `json:"menu_set" gorm:"foreignKey:MenuSetID"`
+	MealEvent   *MealEvent `json:"meal_event" gorm:"foreignKey:MealEventID"`
+	MenuSet     *MenuSet   `json:"menu_set" gorm:"foreignKey:MenuSetID"`
 }
 
 // MealEventAddress represents an address for a meal event
