@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/arafat-hasan/mealsync/internal/dto"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,7 @@ func NewMenuSetHandler(menuSetService service.MenuSetService) *MenuSetHandler {
 func (h *MenuSetHandler) GetMenuSets(c *gin.Context) {
 	menuSets, err := h.menuSetService.GetMenuSets(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -57,13 +58,13 @@ func (h *MenuSetHandler) GetMenuSets(c *gin.Context) {
 func (h *MenuSetHandler) GetMenuSetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu set ID"})
 		return
 	}
 
 	menuSet, err := h.menuSetService.GetMenuSetByID(c.Request.Context(), uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -86,14 +87,14 @@ func (h *MenuSetHandler) GetMenuSetByID(c *gin.Context) {
 func (h *MenuSetHandler) CreateMenuSet(c *gin.Context) {
 	var menuSet model.MenuSet
 	if err := c.ShouldBindJSON(&menuSet); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid request format"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuSetService.CreateMenuSet(c.Request.Context(), &menuSet, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -119,20 +120,20 @@ func (h *MenuSetHandler) CreateMenuSet(c *gin.Context) {
 func (h *MenuSetHandler) UpdateMenuSet(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu set ID"})
 		return
 	}
 
 	var menuSet model.MenuSet
 	if err := c.ShouldBindJSON(&menuSet); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid request format"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuSetService.UpdateMenuSet(c.Request.Context(), uint(id), &menuSet, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -157,18 +158,18 @@ func (h *MenuSetHandler) UpdateMenuSet(c *gin.Context) {
 func (h *MenuSetHandler) DeleteMenuSet(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu set ID"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuSetService.DeleteMenuSet(c.Request.Context(), uint(id), userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, SuccessResponse{Message: "Menu set deleted successfully"})
+	c.JSON(http.StatusOK, dto.SuccessResponse{Message: "Menu set deleted successfully"})
 }
 
 // GetMenuSetItems handles GET /api/menus/:id/items
@@ -188,13 +189,13 @@ func (h *MenuSetHandler) DeleteMenuSet(c *gin.Context) {
 func (h *MenuSetHandler) GetMenuSetItems(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu set ID"})
 		return
 	}
 
 	items, err := h.menuSetService.GetMenuSetItems(c.Request.Context(), uint(menuSetID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -220,24 +221,24 @@ func (h *MenuSetHandler) GetMenuSetItems(c *gin.Context) {
 func (h *MenuSetHandler) AddMenuItemToMenuSet(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu set ID"})
 		return
 	}
 
 	var itemID uint
 	if err := c.ShouldBindJSON(&itemID); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid request format"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuSetService.AddItemToMenuSet(c.Request.Context(), uint(menuSetID), itemID, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, SuccessResponse{Message: "Item added to menu set successfully"})
+	c.JSON(http.StatusOK, dto.SuccessResponse{Message: "Item added to menu set successfully"})
 }
 
 // RemoveMenuItemFromMenuSet handles DELETE /api/menus/:id/items/:item_id
@@ -259,22 +260,22 @@ func (h *MenuSetHandler) AddMenuItemToMenuSet(c *gin.Context) {
 func (h *MenuSetHandler) RemoveMenuItemFromMenuSet(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu set ID"})
 		return
 	}
 
 	itemID, err := strconv.ParseUint(c.Param("item_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid item ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid item ID"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuSetService.RemoveItemFromMenuSet(c.Request.Context(), uint(menuSetID), uint(itemID), userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, SuccessResponse{Message: "Item removed from menu set successfully"})
+	c.JSON(http.StatusOK, dto.SuccessResponse{Message: "Item removed from menu set successfully"})
 }

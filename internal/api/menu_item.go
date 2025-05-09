@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	apperrors "github.com/arafat-hasan/mealsync/internal/errors"
+	"github.com/arafat-hasan/mealsync/internal/middleware"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
@@ -33,7 +35,7 @@ func NewMenuItemHandler(menuItemService service.MenuItemService) *MenuItemHandle
 func (h *MenuItemHandler) GetMenuItems(c *gin.Context) {
 	items, err := h.menuItemService.GetMenuItems(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -57,13 +59,13 @@ func (h *MenuItemHandler) GetMenuItems(c *gin.Context) {
 func (h *MenuItemHandler) GetMenuItemByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu item ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid menu item ID", err))
 		return
 	}
 
 	item, err := h.menuItemService.GetMenuItemByID(c.Request.Context(), uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -86,14 +88,14 @@ func (h *MenuItemHandler) GetMenuItemByID(c *gin.Context) {
 func (h *MenuItemHandler) CreateMenuItem(c *gin.Context) {
 	var item model.MenuItem
 	if err := c.ShouldBindJSON(&item); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuItemService.CreateMenuItem(c.Request.Context(), &item, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -119,20 +121,20 @@ func (h *MenuItemHandler) CreateMenuItem(c *gin.Context) {
 func (h *MenuItemHandler) UpdateMenuItem(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu item ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid menu item ID", err))
 		return
 	}
 
 	var item model.MenuItem
 	if err := c.ShouldBindJSON(&item); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuItemService.UpdateMenuItem(c.Request.Context(), uint(id), &item, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -157,14 +159,14 @@ func (h *MenuItemHandler) UpdateMenuItem(c *gin.Context) {
 func (h *MenuItemHandler) DeleteMenuItem(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu item ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid menu item ID", err))
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuItemService.DeleteMenuItem(c.Request.Context(), uint(id), userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -185,13 +187,13 @@ func (h *MenuItemHandler) DeleteMenuItem(c *gin.Context) {
 func (h *MenuItemHandler) GetMenuItemsByCategory(c *gin.Context) {
 	category := c.Param("category")
 	if category == "" {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Category is required"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Category is required", nil))
 		return
 	}
 
 	items, err := h.menuItemService.GetMenuItemsByCategory(c.Request.Context(), category)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -213,13 +215,13 @@ func (h *MenuItemHandler) GetMenuItemsByCategory(c *gin.Context) {
 func (h *MenuItemHandler) GetMenuItemsByMenuSet(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("menu_set_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu set ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid menu set ID", err))
 		return
 	}
 
 	items, err := h.menuItemService.GetMenuItemsByMenuSet(c.Request.Context(), uint(menuSetID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 

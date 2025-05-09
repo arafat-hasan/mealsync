@@ -198,7 +198,7 @@ func (r *mealEventRepository) FindMenuSetsByEventID(ctx context.Context, mealEve
 func (r *mealEventRepository) FindByDateRange(ctx context.Context, startDate, endDate time.Time) ([]model.MealEvent, error) {
 	var meals []model.MealEvent
 	err := r.db.WithContext(ctx).
-		// Preload("MenuSets").
+		Preload("MenuSets").
 		Preload("MenuSets.MenuSet").
 		// Preload("Addresses").
 		// Preload("Addresses.Address").

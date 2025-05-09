@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	apperrors "github.com/arafat-hasan/mealsync/internal/errors"
+	"github.com/arafat-hasan/mealsync/internal/middleware"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
@@ -27,8 +29,8 @@ func NewMealRequestHandler(mealRequestService service.MealRequestService) *MealR
 // @Produce      json
 // @Security     BearerAuth
 // @Success      200  {array}   model.MealRequest
-// @Failure      401  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /meal-requests [get]
 func (h *MealRequestHandler) GetMealRequests(c *gin.Context) {
 	userID := uint(1) // TODO: Get from context after auth
@@ -36,7 +38,7 @@ func (h *MealRequestHandler) GetMealRequests(c *gin.Context) {
 
 	requests, err := h.mealRequestService.GetMealRequests(c.Request.Context(), userID, isAdmin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -52,15 +54,15 @@ func (h *MealRequestHandler) GetMealRequests(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Meal Request ID"
 // @Success      200  {object}  model.MealRequest
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id} [get]
 func (h *MealRequestHandler) GetMealRequestByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
@@ -69,7 +71,7 @@ func (h *MealRequestHandler) GetMealRequestByID(c *gin.Context) {
 
 	request, err := h.mealRequestService.GetMealRequestByID(c.Request.Context(), uint(id), userID, isAdmin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -85,21 +87,21 @@ func (h *MealRequestHandler) GetMealRequestByID(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        request  body      model.MealRequest  true  "Meal Request Data"
 // @Success      201     {object}  model.MealRequest
-// @Failure      400     {object}  ErrorResponse
-// @Failure      401     {object}  ErrorResponse
-// @Failure      500     {object}  ErrorResponse
+// @Failure      400     {object}  dto.ErrorResponse
+// @Failure      401     {object}  dto.ErrorResponse
+// @Failure      500     {object}  dto.ErrorResponse
 // @Router       /meal-requests [post]
 func (h *MealRequestHandler) CreateMealRequest(c *gin.Context) {
 	var request model.MealRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.mealRequestService.CreateMealRequest(c.Request.Context(), &request, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -116,22 +118,22 @@ func (h *MealRequestHandler) CreateMealRequest(c *gin.Context) {
 // @Param        id       path      int              true  "Meal Request ID"
 // @Param        request  body      model.MealRequest  true  "Meal Request Data"
 // @Success      200     {object}  model.MealRequest
-// @Failure      400     {object}  ErrorResponse
-// @Failure      401     {object}  ErrorResponse
-// @Failure      403     {object}  ErrorResponse
-// @Failure      404     {object}  ErrorResponse
-// @Failure      500     {object}  ErrorResponse
+// @Failure      400     {object}  dto.ErrorResponse
+// @Failure      401     {object}  dto.ErrorResponse
+// @Failure      403     {object}  dto.ErrorResponse
+// @Failure      404     {object}  dto.ErrorResponse
+// @Failure      500     {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id} [put]
 func (h *MealRequestHandler) UpdateMealRequest(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
 	var request model.MealRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
@@ -139,7 +141,7 @@ func (h *MealRequestHandler) UpdateMealRequest(c *gin.Context) {
 	isAdmin := false  // TODO: Get from context after auth
 
 	if err := h.mealRequestService.UpdateMealRequest(c.Request.Context(), uint(id), &request, userID, isAdmin); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -155,16 +157,16 @@ func (h *MealRequestHandler) UpdateMealRequest(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Meal Request ID"
 // @Success      200  {object}  SuccessResponse
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      403  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      403  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id} [delete]
 func (h *MealRequestHandler) DeleteMealRequest(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
@@ -172,7 +174,7 @@ func (h *MealRequestHandler) DeleteMealRequest(c *gin.Context) {
 	isAdmin := false  // TODO: Get from context after auth
 
 	if err := h.mealRequestService.DeleteMealRequest(c.Request.Context(), uint(id), userID, isAdmin); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -189,22 +191,22 @@ func (h *MealRequestHandler) DeleteMealRequest(c *gin.Context) {
 // @Param        id    path      int                 true  "Meal Request ID"
 // @Param        item  body      model.MealRequestItem  true  "Meal Request Item Data"
 // @Success      200   {object}  model.MealRequestItem
-// @Failure      400   {object}  ErrorResponse
-// @Failure      401   {object}  ErrorResponse
-// @Failure      403   {object}  ErrorResponse
-// @Failure      404   {object}  ErrorResponse
-// @Failure      500   {object}  ErrorResponse
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      403   {object}  dto.ErrorResponse
+// @Failure      404   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id}/items [post]
 func (h *MealRequestHandler) AddRequestItem(c *gin.Context) {
 	requestID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
 	var item model.MealRequestItem
 	if err := c.ShouldBindJSON(&item); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
@@ -212,7 +214,7 @@ func (h *MealRequestHandler) AddRequestItem(c *gin.Context) {
 	isAdmin := false  // TODO: Get from context after auth
 
 	if err := h.mealRequestService.AddRequestItem(c.Request.Context(), uint(requestID), &item, userID, isAdmin); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -229,22 +231,22 @@ func (h *MealRequestHandler) AddRequestItem(c *gin.Context) {
 // @Param        id       path      int  true  "Meal Request ID"
 // @Param        item_id  path      int  true  "Item ID"
 // @Success      200     {object}  SuccessResponse
-// @Failure      400     {object}  ErrorResponse
-// @Failure      401     {object}  ErrorResponse
-// @Failure      403     {object}  ErrorResponse
-// @Failure      404     {object}  ErrorResponse
-// @Failure      500     {object}  ErrorResponse
+// @Failure      400     {object}  dto.ErrorResponse
+// @Failure      401     {object}  dto.ErrorResponse
+// @Failure      403     {object}  dto.ErrorResponse
+// @Failure      404     {object}  dto.ErrorResponse
+// @Failure      500     {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id}/items/{item_id} [delete]
 func (h *MealRequestHandler) RemoveRequestItem(c *gin.Context) {
 	requestID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
 	itemID, err := strconv.ParseUint(c.Param("item_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid item ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid item ID", err))
 		return
 	}
 
@@ -252,7 +254,7 @@ func (h *MealRequestHandler) RemoveRequestItem(c *gin.Context) {
 	isAdmin := false  // TODO: Get from context after auth
 
 	if err := h.mealRequestService.RemoveRequestItem(c.Request.Context(), uint(requestID), uint(itemID), userID, isAdmin); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -268,15 +270,15 @@ func (h *MealRequestHandler) RemoveRequestItem(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Meal Request ID"
 // @Success      200  {array}   model.MealRequestItem
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id}/items [get]
 func (h *MealRequestHandler) GetRequestItems(c *gin.Context) {
 	requestID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
@@ -285,7 +287,7 @@ func (h *MealRequestHandler) GetRequestItems(c *gin.Context) {
 
 	items, err := h.mealRequestService.GetRequestItems(c.Request.Context(), uint(requestID), userID, isAdmin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -302,28 +304,28 @@ func (h *MealRequestHandler) GetRequestItems(c *gin.Context) {
 // @Param        id      path    int     true  "Meal Request ID"
 // @Param        status  body    string  true  "New Status"  Enums(pending, accepted, rejected, completed)
 // @Success      200     {object}  model.MealRequest
-// @Failure      400     {object}  ErrorResponse
-// @Failure      401     {object}  ErrorResponse
-// @Failure      404     {object}  ErrorResponse
-// @Failure      500     {object}  ErrorResponse
+// @Failure      400     {object}  dto.ErrorResponse
+// @Failure      401     {object}  dto.ErrorResponse
+// @Failure      404     {object}  dto.ErrorResponse
+// @Failure      500     {object}  dto.ErrorResponse
 // @Router       /meal-requests/{id}/status [put]
 func (h *MealRequestHandler) UpdateRequestStatus(c *gin.Context) {
 	requestID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal request ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal request ID", err))
 		return
 	}
 
 	var status model.RequestStatus
 	if err := c.ShouldBindJSON(&status); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.mealRequestService.UpdateRequestStatus(c.Request.Context(), uint(requestID), status, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 

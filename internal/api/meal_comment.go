@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/arafat-hasan/mealsync/internal/dto"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
@@ -36,13 +37,13 @@ func NewMenuItemCommentHandler(menuItemCommentService service.MenuItemCommentSer
 func (h *MenuItemCommentHandler) GetComments(c *gin.Context) {
 	mealEventID, err := strconv.ParseUint(c.Param("meal_event_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal event ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid meal event ID"})
 		return
 	}
 
 	comments, err := h.menuItemCommentService.GetComments(c.Request.Context(), uint(mealEventID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -67,13 +68,13 @@ func (h *MenuItemCommentHandler) GetComments(c *gin.Context) {
 func (h *MenuItemCommentHandler) GetCommentByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid comment ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid comment ID"})
 		return
 	}
 
 	comment, err := h.menuItemCommentService.GetCommentByID(c.Request.Context(), uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -98,13 +99,13 @@ func (h *MenuItemCommentHandler) GetCommentByID(c *gin.Context) {
 func (h *MenuItemCommentHandler) CreateComment(c *gin.Context) {
 	mealEventID, err := strconv.ParseUint(c.Param("meal_event_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal event ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid meal event ID"})
 		return
 	}
 
 	var comment model.MenuItemComment
 	if err := c.ShouldBindJSON(&comment); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid request format"})
 		return
 	}
 
@@ -113,7 +114,7 @@ func (h *MenuItemCommentHandler) CreateComment(c *gin.Context) {
 	comment.UserID = userID
 
 	if err := h.menuItemCommentService.CreateComment(c.Request.Context(), &comment, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -140,20 +141,20 @@ func (h *MenuItemCommentHandler) CreateComment(c *gin.Context) {
 func (h *MenuItemCommentHandler) UpdateComment(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid comment ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid comment ID"})
 		return
 	}
 
 	var comment model.MenuItemComment
 	if err := c.ShouldBindJSON(&comment); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid request format"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuItemCommentService.UpdateComment(c.Request.Context(), uint(id), &comment, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -179,18 +180,18 @@ func (h *MenuItemCommentHandler) UpdateComment(c *gin.Context) {
 func (h *MenuItemCommentHandler) DeleteComment(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid comment ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid comment ID"})
 		return
 	}
 
 	userID := uint(1) // TODO: Get from context after auth
 
 	if err := h.menuItemCommentService.DeleteComment(c.Request.Context(), uint(id), userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, SuccessResponse{Message: "Comment deleted successfully"})
+	c.JSON(http.StatusOK, dto.SuccessResponse{Message: "Comment deleted successfully"})
 }
 
 // GetUserComments handles GET /api/users/:user_id/comments
@@ -210,13 +211,13 @@ func (h *MenuItemCommentHandler) DeleteComment(c *gin.Context) {
 func (h *MenuItemCommentHandler) GetUserComments(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid user ID"})
 		return
 	}
 
 	comments, err := h.menuItemCommentService.GetUserComments(c.Request.Context(), uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -240,13 +241,13 @@ func (h *MenuItemCommentHandler) GetUserComments(c *gin.Context) {
 func (h *MenuItemCommentHandler) GetMenuItemComments(c *gin.Context) {
 	menuItemID, err := strconv.ParseUint(c.Param("menu_item_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid menu item ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid menu item ID"})
 		return
 	}
 
 	comments, err := h.menuItemCommentService.GetMenuItemComments(c.Request.Context(), uint(menuItemID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -270,13 +271,13 @@ func (h *MenuItemCommentHandler) GetMenuItemComments(c *gin.Context) {
 func (h *MenuItemCommentHandler) GetReplies(c *gin.Context) {
 	commentID, err := strconv.ParseUint(c.Param("comment_id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid comment ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Invalid comment ID"})
 		return
 	}
 
 	replies, err := h.menuItemCommentService.GetReplies(c.Request.Context(), uint(commentID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 

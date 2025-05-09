@@ -3,6 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/arafat-hasan/mealsync/internal/dto"
+	apperrors "github.com/arafat-hasan/mealsync/internal/errors"
+	"github.com/arafat-hasan/mealsync/internal/mapper"
+	"github.com/arafat-hasan/mealsync/internal/middleware"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/gin-gonic/gin"
@@ -18,79 +22,40 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
-// RegisterRequest represents the request body for user registration
-type RegisterRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6"`
-	Name     string `json:"name" binding:"required"`
-}
-
-// LoginRequest represents the request body for user login
-type LoginRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-}
-
-// RefreshTokenRequest represents the request body for token refresh
-type RefreshTokenRequest struct {
-	RefreshToken string `json:"refresh_token" binding:"required"`
-}
-
-// LoginResponse represents the response body for user login
-type LoginResponse struct {
-	AccessToken  string       `json:"access_token"`
-	RefreshToken string       `json:"refresh_token"`
-	User         UserResponse `json:"user"`
-}
-
-// UserResponse represents the user data in the response
-type UserResponse struct {
-	ID    uint           `json:"id"`
-	Email string         `json:"email"`
-	Name  string         `json:"name"`
-	Role  model.UserRole `json:"role"`
-}
-
 // Register handles user registration
 // @Summary      Register new user
 // @Description  Create a new user account
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request  body      RegisterRequest  true  "User registration data"
-// @Success      201      {object}  UserResponse
-// @Failure      400      {object}  ErrorResponse
-// @Failure      409      {object}  ErrorResponse
+// @Param        request  body      dto.UserRegisterRequest  true  "User registration data"
+// @Success      201      {object}  dto.UserResponse
+// @Failure      400      {object}  dto.ErrorResponse
+// @Failure      409      {object}  dto.ErrorResponse
 // @Router       /register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
-	var req RegisterRequest
+	var req dto.UserRegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	user := &model.User{
-		Email:    req.Email,
-		Password: req.Password,
-		Name:     req.Name,
-		Role:     model.UserRoleEmployee, // Default role
+		EmployeeID: req.EmployeeID,
+		Username:   req.Username,
+		Password:   req.Password,
+		Name:       req.Name,
+		Email:      req.Email,
+		Department: req.Department,
+		Role:       model.UserRoleEmployee, // Default role
 	}
 
 	if err := h.authService.Register(user); err != nil {
-		if err.Error() == "user already exists" {
-			c.JSON(http.StatusConflict, ErrorResponse{Error: "User already exists"})
-		} else {
-			c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Failed to register user"})
-		}
+		middleware.HandleAppError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, UserResponse{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
-		Role:  user.Role,
-	})
+	c.JSON(http.StatusCreated, mapper.ToUserResponse(user))
 }
 
 // Login handles user login
@@ -99,29 +64,29 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request  body      LoginRequest  true  "Login credentials"
-// @Success      200      {object}  LoginResponse
-// @Failure      400      {object}  ErrorResponse
-// @Failure      401      {object}  ErrorResponse
+// @Param        request  body      dto.UserLoginRequest  true  "Login credentials"
+// @Success      200      {object}  dto.TokenResponse
+// @Failure      400      {object}  dto.ErrorResponse
+// @Failure      401      {object}  dto.ErrorResponse
 // @Router       /login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
-	var req LoginRequest
+	var req dto.UserLoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	// Authenticate user
 	user, err := h.authService.Authenticate(req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Invalid credentials"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Invalid credentials", err))
 		return
 	}
 
 	// Generate tokens
 	tokens, err := h.authService.GenerateTokens(user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Failed to generate tokens"})
+		middleware.HandleAppError(c, apperrors.NewInternalError("Failed to generate tokens", err))
 		return
 	}
 
@@ -129,16 +94,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.Header("X-Access-Token", tokens.AccessToken)
 
 	// Return tokens in response body
-	c.JSON(http.StatusOK, LoginResponse{
-		AccessToken:  tokens.AccessToken,
-		RefreshToken: tokens.RefreshToken,
-		User: UserResponse{
-			ID:    user.ID,
-			Email: user.Email,
-			Name:  user.Name,
-			Role:  user.Role,
-		},
-	})
+	response := mapper.ToTokenResponse(tokens.AccessToken, tokens.RefreshToken, user)
+	c.JSON(http.StatusOK, response)
 }
 
 // RefreshToken handles token refresh
@@ -147,21 +104,21 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request  body      RefreshTokenRequest  true  "Refresh token"
+// @Param        request  body      dto.RefreshTokenRequest  true  "Refresh token"
 // @Success      200      {object}  service.TokenPair
-// @Failure      400      {object}  ErrorResponse
-// @Failure      401      {object}  ErrorResponse
+// @Failure      400      {object}  dto.ErrorResponse
+// @Failure      401      {object}  dto.ErrorResponse
 // @Router       /refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
-	var req RefreshTokenRequest
+	var req dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	tokens, err := h.authService.RefreshToken(req.RefreshToken)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Invalid refresh token"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Invalid refresh token", err))
 		return
 	}
 

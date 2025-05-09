@@ -8,6 +8,9 @@ import (
 
 // SetupRoutes configures all API routes
 func SetupRoutes(r *gin.Engine, cfg *config.Config, authHandler *AuthHandler, mealHandler *MealEventHandler, menuSetHandler *MenuSetHandler, MenuItemCommentHandler *MenuItemCommentHandler, menuItemHandler *MenuItemHandler, mealRequestHandler *MealRequestHandler, notificationHandler *NotificationHandler) {
+	// Global middleware
+	r.Use(middleware.ErrorHandler())
+
 	// Public routes (no auth required)
 	public := r.Group("/api")
 	{

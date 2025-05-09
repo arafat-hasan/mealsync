@@ -5,6 +5,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/arafat-hasan/mealsync/internal/dto"
+	apperrors "github.com/arafat-hasan/mealsync/internal/errors"
+	"github.com/arafat-hasan/mealsync/internal/mapper"
+	"github.com/arafat-hasan/mealsync/internal/middleware"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/service"
 	"github.com/arafat-hasan/mealsync/internal/utils"
@@ -29,33 +33,33 @@ func NewMealEventHandler(mealService service.MealEventService) *MealEventHandler
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Meal Event ID"
-// @Success      200  {object}  model.MealEvent
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Success      200  {object}  dto.MealEventResponse
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /meals/{id} [get]
 func (h *MealEventHandler) GetMealEventByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal event ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal event ID", err))
 		return
 	}
 
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Unauthorized", err))
 		return
 	}
 	isAdmin := utils.IsAdminFromContext(c)
 
 	meal, err := h.mealService.GetMealByID(c.Request.Context(), uint(id), userID, isAdmin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, meal)
+	c.JSON(http.StatusOK, mapper.ToMealEventResponse(meal))
 }
 
 // CreateMealEvent handles POST /api/meals
@@ -65,31 +69,41 @@ func (h *MealEventHandler) GetMealEventByID(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        meal  body      model.MealEvent  true  "Meal Event Data"
-// @Success      201   {object}  model.MealEvent
-// @Failure      400   {object}  ErrorResponse
-// @Failure      401   {object}  ErrorResponse
-// @Failure      500   {object}  ErrorResponse
+// @Param        meal  body      dto.MealEventCreateRequest  true  "Meal Event Data"
+// @Success      201   {object}  dto.MealEventResponse
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /meals [post]
 func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
-	var meal model.MealEvent
-	if err := c.ShouldBindJSON(&meal); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+	var reqDTO dto.MealEventCreateRequest
+	if err := c.ShouldBindJSON(&reqDTO); err != nil {
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
+	}
+
+	// Convert DTO to model
+	meal := &model.MealEvent{
+		Name:          reqDTO.Name,
+		Description:   reqDTO.Description,
+		EventDate:     reqDTO.EventDate,
+		EventDuration: reqDTO.EventDuration,
+		CutoffTime:    reqDTO.CutoffTime,
 	}
 
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Unauthorized", err))
 		return
 	}
 
-	if err := h.mealService.CreateMeal(c.Request.Context(), &meal, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+	if err := h.mealService.CreateMeal(c.Request.Context(), meal, userID); err != nil {
+		middleware.HandleAppError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, meal)
+	// Return response as DTO
+	c.JSON(http.StatusCreated, mapper.ToMealEventResponse(meal))
 }
 
 // UpdateMealEvent handles PUT /api/meals/:id
@@ -100,39 +114,63 @@ func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id    path      int             true  "Meal Event ID"
-// @Param        meal  body      model.MealEvent true  "Meal Event Data"
-// @Success      200   {object}  model.MealEvent
-// @Failure      400   {object}  ErrorResponse
-// @Failure      401   {object}  ErrorResponse
-// @Failure      403   {object}  ErrorResponse
-// @Failure      404   {object}  ErrorResponse
-// @Failure      500   {object}  ErrorResponse
+// @Param        meal  body      dto.MealEventUpdateRequest true  "Meal Event Data"
+// @Success      200   {object}  dto.MealEventResponse
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      403   {object}  dto.ErrorResponse
+// @Failure      404   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /meals/{id} [put]
 func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal event ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal event ID", err))
 		return
 	}
 
-	var meal model.MealEvent
-	if err := c.ShouldBindJSON(&meal); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid request format"})
+	var reqDTO dto.MealEventUpdateRequest
+	if err := c.ShouldBindJSON(&reqDTO); err != nil {
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
 		return
 	}
 
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Unauthorized", err))
 		return
 	}
 
-	if err := h.mealService.UpdateMeal(c.Request.Context(), uint(id), &meal, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+	// First fetch existing meal
+	existingMeal, err := h.mealService.GetMealByID(c.Request.Context(), uint(id), userID, utils.IsAdminFromContext(c))
+	if err != nil {
+		middleware.HandleAppError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, meal)
+	// Update the meal with values from DTO
+	if reqDTO.Name != nil {
+		existingMeal.Name = *reqDTO.Name
+	}
+	if reqDTO.Description != nil {
+		existingMeal.Description = *reqDTO.Description
+	}
+	if reqDTO.EventDate != nil {
+		existingMeal.EventDate = *reqDTO.EventDate
+	}
+	if reqDTO.EventDuration != nil {
+		existingMeal.EventDuration = *reqDTO.EventDuration
+	}
+	if reqDTO.CutoffTime != nil {
+		existingMeal.CutoffTime = *reqDTO.CutoffTime
+	}
+
+	if err := h.mealService.UpdateMeal(c.Request.Context(), uint(id), existingMeal, userID); err != nil {
+		middleware.HandleAppError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, mapper.ToMealEventResponse(existingMeal))
 }
 
 // DeleteMealEvent handles DELETE /api/meals/:id
@@ -144,27 +182,27 @@ func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Meal Event ID"
 // @Success      200  {object}  SuccessResponse
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      403  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      403   {object}  dto.ErrorResponse
+// @Failure      404   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /meals/{id} [delete]
 func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid meal event ID"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal event ID", err))
 		return
 	}
 
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Unauthorized", err))
 		return
 	}
 
 	if err := h.mealService.DeleteMeal(c.Request.Context(), uint(id), userID); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
@@ -180,30 +218,30 @@ func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        start_date  query     string  true  "Start Date (YYYY-MM-DD)"
 // @Param        end_date    query     string  true  "End Date (YYYY-MM-DD)"
-// @Success      200  {array}   model.MealEvent
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Success      200  {array}   dto.MealEventResponse
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /meals [get]
 func (h *MealEventHandler) GetMeals(c *gin.Context) {
 	startDateStr := c.Query("start_date")
 	endDateStr := c.Query("end_date")
 
 	if startDateStr == "" || endDateStr == "" {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Both start_date and end_date are required"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Both start_date and end_date are required", nil))
 		return
 	}
 
 	// Parse dates
 	startDate, err := time.Parse("2006-01-02", startDateStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid start date format. Use YYYY-MM-DD"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid start date format. Use YYYY-MM-DD", err))
 		return
 	}
 
 	endDate, err := time.Parse("2006-01-02", endDateStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid end date format. Use YYYY-MM-DD"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid end date format. Use YYYY-MM-DD", err))
 		return
 	}
 
@@ -212,21 +250,23 @@ func (h *MealEventHandler) GetMeals(c *gin.Context) {
 
 	// Validate date range
 	if startDate.After(endDate) {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Start date must be before end date"})
+		middleware.HandleAppError(c, apperrors.NewValidationError("Start date must be before end date", nil))
 		return
 	}
 
+	// Check authentication
+	_, err = utils.GetUserIDFromContext(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		middleware.HandleAppError(c, apperrors.NewUnauthorizedError("Unauthorized", err))
 		return
 	}
 
-	// Get meals in the date range
 	meals, err := h.mealService.FindByDateRange(c.Request.Context(), startDate, endDate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		middleware.HandleAppError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, meals)
+	// Convert to DTOs
+	c.JSON(http.StatusOK, mapper.ToMealEventResponseList(meals))
 }
