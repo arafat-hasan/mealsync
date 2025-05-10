@@ -43,11 +43,11 @@ services:
     image: migrate/migrate
     volumes:
       - ./internal/db/migrations:/migrations
-    command: ["-path", "/migrations", "-database",  "postgres://postgres:postgres@db:5432/mealsync?sslmode=disable", "up"]
-    depends_on:
-      - db
     networks:
       - mealsync-network
+    depends_on:
+      - db
+    entrypoint: ["migrate", "-verbose", "-path", "/migrations", "-database", "postgres://postgres:postgres@db:5432/mealsync?sslmode=disable", "up"]
 
 volumes:
   postgres-data:

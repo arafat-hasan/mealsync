@@ -200,8 +200,9 @@ func (r *mealEventRepository) FindByDateRange(ctx context.Context, startDate, en
 	err := r.db.WithContext(ctx).
 		Preload("MenuSets").
 		Preload("MenuSets.MenuSet").
-		// Preload("Addresses").
-		// Preload("Addresses.Address").
+		Preload("MenuSets.MenuSet.MenuSetItems").
+		Preload("Addresses").
+		Preload("Addresses.Address").
 		Where("event_date BETWEEN ? AND ?", startDate, endDate).
 		Order("event_date ASC").
 		Find(&meals).Error

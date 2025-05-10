@@ -29,8 +29,8 @@ func NewMenuItemHandler(menuItemService service.MenuItemService) *MenuItemHandle
 // @Produce      json
 // @Security     BearerAuth
 // @Success      200  {array}   model.MenuItem
-// @Failure      401  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /menu-items [get]
 func (h *MenuItemHandler) GetMenuItems(c *gin.Context) {
 	items, err := h.menuItemService.GetMenuItems(c.Request.Context())
@@ -51,10 +51,10 @@ func (h *MenuItemHandler) GetMenuItems(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Menu Item ID"
 // @Success      200  {object}  model.MenuItem
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /menu-items/{id} [get]
 func (h *MenuItemHandler) GetMenuItemByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
@@ -79,11 +79,11 @@ func (h *MenuItemHandler) GetMenuItemByID(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        item  body      model.MenuItem  true  "Menu Item Data"
-// @Success      201   {object}  model.MenuItem
-// @Failure      400   {object}  ErrorResponse
-// @Failure      401   {object}  ErrorResponse
-// @Failure      500   {object}  ErrorResponse
+// @Param        menuItem  body      model.MenuItem  true  "Menu Item object"
+// @Success      201      {object}  model.MenuItem
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /menu-items [post]
 func (h *MenuItemHandler) CreateMenuItem(c *gin.Context) {
 	var item model.MenuItem
@@ -109,14 +109,14 @@ func (h *MenuItemHandler) CreateMenuItem(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id    path      int           true  "Menu Item ID"
-// @Param        item  body      model.MenuItem  true  "Menu Item Data"
-// @Success      200   {object}  model.MenuItem
-// @Failure      400   {object}  ErrorResponse
-// @Failure      401   {object}  ErrorResponse
-// @Failure      403   {object}  ErrorResponse
-// @Failure      404   {object}  ErrorResponse
-// @Failure      500   {object}  ErrorResponse
+// @Param        id        path      int           true  "Menu Item ID"
+// @Param        menuItem  body      model.MenuItem  true  "Menu Item object"
+// @Success      200      {object}  model.MenuItem
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      401   {object}  dto.ErrorResponse
+// @Failure      403   {object}  dto.ErrorResponse
+// @Failure      404   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
 // @Router       /menu-items/{id} [put]
 func (h *MenuItemHandler) UpdateMenuItem(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
@@ -150,11 +150,11 @@ func (h *MenuItemHandler) UpdateMenuItem(c *gin.Context) {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Menu Item ID"
 // @Success      200  {object}  SuccessResponse
-// @Failure      400  {object}  ErrorResponse
-// @Failure      401  {object}  ErrorResponse
-// @Failure      403  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
+// @Failure      400  {object}  dto.ErrorResponse
+// @Failure      401  {object}  dto.ErrorResponse
+// @Failure      403  {object}  dto.ErrorResponse
+// @Failure      404  {object}  dto.ErrorResponse
+// @Failure      500  {object}  dto.ErrorResponse
 // @Router       /menu-items/{id} [delete]
 func (h *MenuItemHandler) DeleteMenuItem(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
@@ -181,8 +181,8 @@ func (h *MenuItemHandler) DeleteMenuItem(c *gin.Context) {
 // @Produce json
 // @Param category path string true "Category name"
 // @Success 200 {array} model.MenuItem
-// @Failure 400 {object} ErrorResponse
-// @Failure 401 {object} ErrorResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 401 {object} dto.ErrorResponse
 // @Router /menu-items/category/{category} [get]
 func (h *MenuItemHandler) GetMenuItemsByCategory(c *gin.Context) {
 	category := c.Param("category")
@@ -208,9 +208,9 @@ func (h *MenuItemHandler) GetMenuItemsByCategory(c *gin.Context) {
 // @Produce json
 // @Param menu_set_id path string true "Menu Set ID"
 // @Success 200 {array} model.MenuItem
-// @Failure 400 {object} ErrorResponse
-// @Failure 401 {object} ErrorResponse
-// @Failure 404 {object} ErrorResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 401 {object} dto.ErrorResponse
+// @Failure 404 {object} dto.ErrorResponse
 // @Router /menu-items/menu-set/{menu_set_id} [get]
 func (h *MenuItemHandler) GetMenuItemsByMenuSet(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("menu_set_id"), 10, 32)

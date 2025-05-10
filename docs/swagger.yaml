@@ -1,65 +1,320 @@
 basePath: /api
 definitions:
-  api.ErrorResponse:
+  api.SuccessResponse:
     properties:
-      error:
+      message:
         type: string
     type: object
-  api.LoginRequest:
+  dto.ErrorResponse:
     properties:
-      email:
+      code:
+        description: Error code for client-side error handling
         type: string
-      password:
+      details:
+        description: Additional details for debugging
+        type: string
+      error:
+        description: User-friendly error message
+        type: string
+      request_id:
+        description: Request ID for tracing
+        type: string
+    type: object
+  dto.EventAddressResponse:
+    properties:
+      address_line:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        $ref: '#/definitions/dto.UserResponse'
+      created_by_id:
+        type: integer
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        $ref: '#/definitions/dto.UserResponse'
+      updated_by_id:
+        type: integer
+    type: object
+  dto.MealEventAddressResponse:
+    properties:
+      address:
+        $ref: '#/definitions/dto.EventAddressResponse'
+      address_id:
+        type: integer
+      created_at:
+        type: string
+      created_by:
+        $ref: '#/definitions/dto.UserResponse'
+      created_by_id:
+        type: integer
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      meal_event_id:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        $ref: '#/definitions/dto.UserResponse'
+      updated_by_id:
+        type: integer
+    type: object
+  dto.MealEventCreateRequest:
+    properties:
+      address_ids:
+        items:
+          type: integer
+        type: array
+      cutoff_time:
+        type: string
+      description:
+        type: string
+      event_date:
+        type: string
+      event_duration:
+        description: in minutes
+        minimum: 1
+        type: integer
+      menu_set_ids:
+        items:
+          type: integer
+        type: array
+      name:
         type: string
     required:
-    - email
-    - password
+    - cutoff_time
+    - event_date
+    - event_duration
+    - name
     type: object
-  api.LoginResponse:
+  dto.MealEventResponse:
     properties:
-      access_token:
+      addresses:
+        items:
+          $ref: '#/definitions/dto.MealEventAddressResponse'
+        type: array
+      confirmed_at:
         type: string
-      refresh_token:
+      created_at:
         type: string
-      user:
-        $ref: '#/definitions/api.UserResponse'
+      created_by:
+        $ref: '#/definitions/dto.UserResponse'
+      created_by_id:
+        type: integer
+      cutoff_time:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      event_date:
+        type: string
+      event_duration:
+        description: in minutes
+        type: integer
+      id:
+        type: integer
+      menu_sets:
+        items:
+          $ref: '#/definitions/dto.MealEventSetResponse'
+        type: array
+      name:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        $ref: '#/definitions/dto.UserResponse'
+      updated_by_id:
+        type: integer
     type: object
-  api.RefreshTokenRequest:
+  dto.MealEventSetResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        $ref: '#/definitions/dto.UserResponse'
+      created_by_id:
+        type: integer
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      label:
+        type: string
+      meal_event_id:
+        type: integer
+      menu_set:
+        $ref: '#/definitions/dto.MenuSetResponse'
+      menu_set_id:
+        type: integer
+      note:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        $ref: '#/definitions/dto.UserResponse'
+      updated_by_id:
+        type: integer
+    type: object
+  dto.MealEventUpdateRequest:
+    properties:
+      address_ids:
+        items:
+          type: integer
+        type: array
+      cutoff_time:
+        type: string
+      description:
+        type: string
+      event_date:
+        type: string
+      event_duration:
+        description: in minutes
+        minimum: 1
+        type: integer
+      menu_set_ids:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+    type: object
+  dto.MenuItemResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        $ref: '#/definitions/dto.UserResponse'
+      created_by_id:
+        type: integer
+      deleted_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      updated_at:
+        type: string
+      updated_by:
+        $ref: '#/definitions/dto.UserResponse'
+      updated_by_id:
+        type: integer
+    type: object
+  dto.MenuSetResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        $ref: '#/definitions/dto.UserResponse'
+      created_by_id:
+        type: integer
+      deleted_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      menu_items:
+        items:
+          $ref: '#/definitions/dto.MenuItemResponse'
+        type: array
+      name:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        $ref: '#/definitions/dto.UserResponse'
+      updated_by_id:
+        type: integer
+    type: object
+  dto.RefreshTokenRequest:
     properties:
       refresh_token:
         type: string
     required:
     - refresh_token
     type: object
-  api.RegisterRequest:
+  dto.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserResponse'
+    type: object
+  dto.UserLoginRequest:
     properties:
       email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.UserRegisterRequest:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      employee_id:
         type: string
       name:
         type: string
       password:
         minLength: 6
         type: string
+      username:
+        type: string
     required:
+    - department
     - email
+    - employee_id
     - name
     - password
+    - username
     type: object
-  api.SuccessResponse:
+  dto.UserResponse:
     properties:
-      message:
+      created_at:
         type: string
-    type: object
-  api.UserResponse:
-    properties:
+      deleted_at:
+        type: string
+      department:
+        type: string
       email:
+        type: string
+      employee_id:
         type: string
       id:
         type: integer
+      is_active:
+        type: boolean
       name:
         type: string
+      notification_enabled:
+        type: boolean
       role:
         $ref: '#/definitions/model.UserRole'
+      updated_at:
+        type: string
+      username:
+        type: string
     type: object
   errors.ErrorResponse:
     properties:
@@ -96,6 +351,8 @@ definitions:
         type: string
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -108,6 +365,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -121,6 +380,8 @@ definitions:
         type: string
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       cutoff_time:
@@ -154,6 +415,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -165,6 +428,8 @@ definitions:
         type: integer
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -179,6 +444,8 @@ definitions:
         type: integer
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -186,6 +453,8 @@ definitions:
     properties:
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -208,6 +477,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -217,6 +488,8 @@ definitions:
         type: string
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -243,6 +516,8 @@ definitions:
         type: array
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
       user:
@@ -254,6 +529,8 @@ definitions:
     properties:
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -282,6 +559,8 @@ definitions:
         type: integer
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -291,6 +570,8 @@ definitions:
         type: number
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -319,6 +600,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -328,6 +611,8 @@ definitions:
         type: string
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -357,6 +642,8 @@ definitions:
         type: array
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
       user_id:
@@ -366,6 +653,8 @@ definitions:
     properties:
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -374,10 +663,6 @@ definitions:
         type: integer
       is_active:
         type: boolean
-      meal_event_sets:
-        items:
-          $ref: '#/definitions/model.MealEventSet'
-        type: array
       menu_set_description:
         type: string
       menu_set_items:
@@ -388,6 +673,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -395,6 +682,8 @@ definitions:
     properties:
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -407,12 +696,12 @@ definitions:
         $ref: '#/definitions/model.MenuItem'
       menu_item_id:
         type: integer
-      menu_set:
-        $ref: '#/definitions/model.MenuSet'
       menu_set_id:
         type: integer
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
     type: object
@@ -421,6 +710,8 @@ definitions:
     properties:
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -458,6 +749,8 @@ definitions:
         example: reminder
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
       user_id:
@@ -482,6 +775,8 @@ definitions:
     properties:
       created_at:
         type: string
+      created_by:
+        $ref: '#/definitions/model.User'
       created_by_id:
         type: integer
       deleted_at:
@@ -506,6 +801,8 @@ definitions:
         $ref: '#/definitions/model.UserRole'
       updated_at:
         type: string
+      updated_by:
+        $ref: '#/definitions/model.User'
       updated_by_id:
         type: integer
       username:
@@ -565,19 +862,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get comment replies
@@ -594,22 +891,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/api.LoginRequest'
+          $ref: '#/definitions/dto.UserLoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.LoginResponse'
+            $ref: '#/definitions/dto.TokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       summary: Login user
       tags:
       - auth
@@ -630,11 +927,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List meal requests
@@ -661,15 +958,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create meal request
@@ -696,23 +993,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete meal request
@@ -738,19 +1035,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get meal request by ID
@@ -782,23 +1079,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update meal request
@@ -827,19 +1124,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List meal request items
@@ -871,23 +1168,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Add item to meal request
@@ -919,23 +1216,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Remove item from meal request
@@ -973,19 +1270,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update meal request status
@@ -1014,20 +1311,20 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.MealEvent'
+              $ref: '#/definitions/dto.MealEventResponse'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List meal events by date range
@@ -1043,26 +1340,26 @@ paths:
         name: meal
         required: true
         schema:
-          $ref: '#/definitions/model.MealEvent'
+          $ref: '#/definitions/dto.MealEventCreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.MealEvent'
+            $ref: '#/definitions/dto.MealEventResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create meal event
@@ -1089,23 +1386,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete meal event
@@ -1127,23 +1424,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.MealEvent'
+            $ref: '#/definitions/dto.MealEventResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get meal event by ID
@@ -1164,34 +1461,34 @@ paths:
         name: meal
         required: true
         schema:
-          $ref: '#/definitions/model.MealEvent'
+          $ref: '#/definitions/dto.MealEventUpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.MealEvent'
+            $ref: '#/definitions/dto.MealEventResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update meal event
@@ -1220,19 +1517,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List menu item comments
@@ -1264,19 +1561,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create comment
@@ -1308,23 +1605,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete comment
@@ -1355,19 +1652,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get comment by ID
@@ -1404,23 +1701,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update comment
@@ -1443,11 +1740,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List menu items
@@ -1458,9 +1755,9 @@ paths:
       - application/json
       description: Create a new menu item
       parameters:
-      - description: Menu Item Data
+      - description: Menu Item object
         in: body
-        name: item
+        name: menuItem
         required: true
         schema:
           $ref: '#/definitions/model.MenuItem'
@@ -1474,15 +1771,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create menu item
@@ -1509,23 +1806,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete menu item
@@ -1551,19 +1848,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get menu item by ID
@@ -1579,9 +1876,9 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Menu Item Data
+      - description: Menu Item object
         in: body
-        name: item
+        name: menuItem
         required: true
         schema:
           $ref: '#/definitions/model.MenuItem'
@@ -1595,23 +1892,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update menu item
@@ -1640,19 +1937,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List menu item comments
@@ -1681,11 +1978,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       summary: Get menu items by category
       tags:
       - menu-items
@@ -1712,15 +2009,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       summary: Get menu items by menu set
       tags:
       - menu-items
@@ -1741,11 +2038,11 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List menu sets
@@ -1772,15 +2069,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create menu set
@@ -1807,23 +2104,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete menu set
@@ -1849,19 +2146,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get menu set by ID
@@ -1893,23 +2190,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update menu set
@@ -1938,19 +2235,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List menu set items
@@ -1982,23 +2279,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Add menu item to set
@@ -2030,23 +2327,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Remove menu item from set
@@ -2310,7 +2607,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/api.RefreshTokenRequest'
+          $ref: '#/definitions/dto.RefreshTokenRequest'
       produces:
       - application/json
       responses:
@@ -2321,11 +2618,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       summary: Refresh access token
       tags:
       - auth
@@ -2340,22 +2637,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/api.RegisterRequest'
+          $ref: '#/definitions/dto.UserRegisterRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/api.UserResponse'
+            $ref: '#/definitions/dto.UserResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       summary: Register new user
       tags:
       - auth
@@ -2382,19 +2679,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
       - BearerAuth: []
       summary: List user comments

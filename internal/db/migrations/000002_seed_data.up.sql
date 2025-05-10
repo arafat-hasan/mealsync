@@ -13,12 +13,12 @@ SELECT 1003, 'jane.smith', '$2a$10$TdFO5yl0tUgVA7UuIlKNmubSnXPey22Qw/BXOgFJWXCcJ
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'employee2@mealsync.com');
 
 -- Insert test event addresses
-INSERT INTO event_addresses (address, is_active, created_by, updated_by)
-SELECT 'Main Campus Cafeteria', true, (SELECT id FROM users WHERE email = 'admin@mealsync.com'), (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+INSERT INTO event_addresses (address, label, is_active, created_by, updated_by)
+SELECT 'Main Campus Cafeteria', 'Main Campus Cafeteria', true, (SELECT id FROM users WHERE email = 'admin@mealsync.com'), (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (SELECT 1 FROM event_addresses WHERE address = 'Main Campus Cafeteria');
 
-INSERT INTO event_addresses (address, is_active, created_by, updated_by)
-SELECT 'Downtown Office Cafeteria', true, (SELECT id FROM users WHERE email = 'admin@mealsync.com'), (SELECT id FROM users WHERE email = 'admin@mealsync.com')
+INSERT INTO event_addresses (address, label, is_active, created_by, updated_by)
+SELECT 'Downtown Office Cafeteria', 'Downtown Office Cafeteria', true, (SELECT id FROM users WHERE email = 'admin@mealsync.com'), (SELECT id FROM users WHERE email = 'admin@mealsync.com')
 WHERE NOT EXISTS (SELECT 1 FROM event_addresses WHERE address = 'Downtown Office Cafeteria');
 
 -- Insert test menu items
