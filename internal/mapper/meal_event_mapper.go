@@ -214,6 +214,5 @@ func ToMenuItemResponse(item *model.MenuItem) *dto.MenuItemResponse {
 		},
 		Name:        item.Name,
 		Description: item.Description,
-		Price:       0, // MenuItem doesn't have a Price field, consider adding it to the model or removing from DTO
 	}
 }
