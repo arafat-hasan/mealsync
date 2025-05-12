@@ -831,6 +831,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -3191,6 +3197,9 @@ const docTemplate = `{
         "dto.MenuItemResponse": {
             "type": "object",
             "properties": {
+                "average_rating": {
+                    "type": "number"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -3209,11 +3218,11 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "image_url": {
                     "type": "string"
                 },
-                "price": {
-                    "type": "number"
+                "name": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"

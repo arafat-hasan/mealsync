@@ -23,16 +23,16 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 }
 
 // Register handles user registration
-// @Summary      Register new user
-// @Description  Create a new user account
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        request  body      dto.UserRegisterRequest  true  "User registration data"
-// @Success      201      {object}  dto.UserResponse
-// @Failure      400      {object}  dto.ErrorResponse
-// @Failure      409      {object}  dto.ErrorResponse
-// @Router       /register [post]
+//	@Summary		Register new user
+//	@Description	Create a new user account
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		dto.UserRegisterRequest	true	"User registration data"
+//	@Success		201		{object}	dto.UserResponse
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		409		{object}	dto.ErrorResponse
+//	@Router			/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.UserRegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -59,16 +59,16 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 // Login handles user login
-// @Summary      Login user
-// @Description  Authenticate user and return JWT tokens
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        request  body      dto.UserLoginRequest  true  "Login credentials"
-// @Success      200      {object}  dto.TokenResponse
-// @Failure      400      {object}  dto.ErrorResponse
-// @Failure      401      {object}  dto.ErrorResponse
-// @Router       /login [post]
+//	@Summary		Login user
+//	@Description	Authenticate user and return JWT tokens
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		dto.UserLoginRequest	true	"Login credentials"
+//	@Success		200		{object}	dto.TokenResponse
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Router			/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.UserLoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -99,16 +99,16 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 // RefreshToken handles token refresh
-// @Summary      Refresh access token
-// @Description  Get a new access token using a refresh token
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        request  body      dto.RefreshTokenRequest  true  "Refresh token"
-// @Success      200      {object}  service.TokenPair
-// @Failure      400      {object}  dto.ErrorResponse
-// @Failure      401      {object}  dto.ErrorResponse
-// @Router       /refresh [post]
+//	@Summary		Refresh access token
+//	@Description	Get a new access token using a refresh token
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		dto.RefreshTokenRequest	true	"Refresh token"
+//	@Success		200		{object}	service.TokenPair
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Router			/refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

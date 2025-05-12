@@ -26,19 +26,19 @@ func NewMealEventHandler(mealService service.MealEventService) *MealEventHandler
 }
 
 // GetMealEventByID handles GET /api/meals/:id
-// @Summary      Get meal event by ID
-// @Description  Get a specific meal event by its ID
-// @Tags         meals
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Meal Event ID"
-// @Success      200  {object}  dto.MealEventResponse
-// @Failure      400  {object}  dto.ErrorResponse
-// @Failure      401  {object}  dto.ErrorResponse
-// @Failure      404  {object}  dto.ErrorResponse
-// @Failure      500  {object}  dto.ErrorResponse
-// @Router       /meals/{id} [get]
+//	@Summary		Get meal event by ID
+//	@Description	Get a specific meal event by its ID
+//	@Tags			meals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Meal Event ID"
+//	@Success		200	{object}	dto.MealEventResponse
+//	@Failure		400	{object}	dto.ErrorResponse
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Failure		404	{object}	dto.ErrorResponse
+//	@Failure		500	{object}	dto.ErrorResponse
+//	@Router			/meals/{id} [get]
 func (h *MealEventHandler) GetMealEventByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("meal_id"), 10, 32)
 	if err != nil {
@@ -63,22 +63,41 @@ func (h *MealEventHandler) GetMealEventByID(c *gin.Context) {
 }
 
 // CreateMealEvent handles POST /api/meals
-// @Summary      Create meal event
-// @Description  Create a new meal event
-// @Tags         meals
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        meal  body      dto.MealEventCreateRequest  true  "Meal Event Data"
-// @Success      201   {object}  dto.MealEventResponse
-// @Failure      400   {object}  dto.ErrorResponse
-// @Failure      401   {object}  dto.ErrorResponse
-// @Failure      500   {object}  dto.ErrorResponse
-// @Router       /meals [post]
+//	@Summary		Create meal event
+//	@Description	Create a new meal event
+//	@Tags			meals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			meal	body		dto.MealEventCreateRequest	true	"Meal Event Data"
+//	@Success		201		{object}	dto.MealEventResponse
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Failure		403		{object}	dto.ErrorResponse
+//	@Failure		500		{object}	dto.ErrorResponse
+//	@Router			/meals [post]
 func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
+	// Check if user is admin
+	if !utils.IsAdminFromContext(c) {
+		middleware.HandleAppError(c, apperrors.NewForbiddenError("Only admins can create meal events", nil))
+		return
+	}
+
 	var reqDTO dto.MealEventCreateRequest
 	if err := c.ShouldBindJSON(&reqDTO); err != nil {
 		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid request format", err))
+		return
+	}
+
+	// Validate event date is not more than 30 days in future
+	if reqDTO.EventDate.After(time.Now().AddDate(0, 0, 30)) {
+		middleware.HandleAppError(c, apperrors.NewValidationError("Event date cannot be more than 30 days in future", nil))
+		return
+	}
+
+	// Validate cutoff time is before event date
+	if reqDTO.CutoffTime.After(reqDTO.EventDate) {
+		middleware.HandleAppError(c, apperrors.NewValidationError("Cutoff time must be before event date", nil))
 		return
 	}
 
@@ -89,6 +108,7 @@ func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
 		EventDate:     reqDTO.EventDate,
 		EventDuration: reqDTO.EventDuration,
 		CutoffTime:    reqDTO.CutoffTime,
+		IsActive:      true,
 	}
 
 	// Convert MenuSetIDs to MealEventSets
@@ -127,22 +147,28 @@ func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
 }
 
 // UpdateMealEvent handles PUT /api/meals/:id
-// @Summary      Update meal event
-// @Description  Update an existing meal event
-// @Tags         meals
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id    path      int             true  "Meal Event ID"
-// @Param        meal  body      dto.MealEventUpdateRequest true  "Meal Event Data"
-// @Success      200   {object}  dto.MealEventResponse
-// @Failure      400   {object}  dto.ErrorResponse
-// @Failure      401   {object}  dto.ErrorResponse
-// @Failure      403   {object}  dto.ErrorResponse
-// @Failure      404   {object}  dto.ErrorResponse
-// @Failure      500   {object}  dto.ErrorResponse
-// @Router       /meals/{id} [put]
+//	@Summary		Update meal event
+//	@Description	Update an existing meal event
+//	@Tags			meals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		int							true	"Meal Event ID"
+//	@Param			meal	body		dto.MealEventUpdateRequest	true	"Meal Event Data"
+//	@Success		200		{object}	dto.MealEventResponse
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Failure		403		{object}	dto.ErrorResponse
+//	@Failure		404		{object}	dto.ErrorResponse
+//	@Failure		500		{object}	dto.ErrorResponse
+//	@Router			/meals/{id} [put]
 func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
+	// Check if user is admin
+	if !utils.IsAdminFromContext(c) {
+		middleware.HandleAppError(c, apperrors.NewForbiddenError("Only admins can update meal events", nil))
+		return
+	}
+
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal event ID", err))
@@ -162,7 +188,7 @@ func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
 	}
 
 	// First fetch existing meal
-	existingMeal, err := h.mealService.GetMealByID(c.Request.Context(), uint(id), userID, utils.IsAdminFromContext(c))
+	existingMeal, err := h.mealService.GetMealByID(c.Request.Context(), uint(id), userID, true)
 	if err != nil {
 		middleware.HandleAppError(c, err)
 		return
@@ -176,13 +202,45 @@ func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
 		existingMeal.Description = *reqDTO.Description
 	}
 	if reqDTO.EventDate != nil {
+		// Validate event date is not more than 30 days in future
+		if reqDTO.EventDate.After(time.Now().AddDate(0, 0, 30)) {
+			middleware.HandleAppError(c, apperrors.NewValidationError("Event date cannot be more than 30 days in future", nil))
+			return
+		}
 		existingMeal.EventDate = *reqDTO.EventDate
 	}
 	if reqDTO.EventDuration != nil {
 		existingMeal.EventDuration = *reqDTO.EventDuration
 	}
 	if reqDTO.CutoffTime != nil {
+		// Validate cutoff time is before event date
+		if reqDTO.CutoffTime.After(existingMeal.EventDate) {
+			middleware.HandleAppError(c, apperrors.NewValidationError("Cutoff time must be before event date", nil))
+			return
+		}
 		existingMeal.CutoffTime = *reqDTO.CutoffTime
+	}
+
+	// Update menu sets if provided
+	if reqDTO.MenuSetIDs != nil {
+		existingMeal.MenuSets = make([]model.MealEventSet, len(reqDTO.MenuSetIDs))
+		for i, menuSetID := range reqDTO.MenuSetIDs {
+			existingMeal.MenuSets[i] = model.MealEventSet{
+				MealEventID: existingMeal.ID,
+				MenuSetID:   menuSetID,
+			}
+		}
+	}
+
+	// Update addresses if provided
+	if reqDTO.AddressIDs != nil {
+		existingMeal.Addresses = make([]model.MealEventAddress, len(reqDTO.AddressIDs))
+		for i, addressID := range reqDTO.AddressIDs {
+			existingMeal.Addresses[i] = model.MealEventAddress{
+				MealEventID: existingMeal.ID,
+				AddressID:   addressID,
+			}
+		}
 	}
 
 	if err := h.mealService.UpdateMeal(c.Request.Context(), uint(id), existingMeal, userID); err != nil {
@@ -194,21 +252,27 @@ func (h *MealEventHandler) UpdateMealEvent(c *gin.Context) {
 }
 
 // DeleteMealEvent handles DELETE /api/meals/:id
-// @Summary      Delete meal event
-// @Description  Delete an existing meal event
-// @Tags         meals
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Meal Event ID"
-// @Success      200  {object}  SuccessResponse
-// @Failure      400   {object}  dto.ErrorResponse
-// @Failure      401   {object}  dto.ErrorResponse
-// @Failure      403   {object}  dto.ErrorResponse
-// @Failure      404   {object}  dto.ErrorResponse
-// @Failure      500   {object}  dto.ErrorResponse
-// @Router       /meals/{id} [delete]
+//	@Summary		Delete meal event
+//	@Description	Delete an existing meal event
+//	@Tags			meals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Meal Event ID"
+//	@Success		200	{object}	SuccessResponse
+//	@Failure		400	{object}	dto.ErrorResponse
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Failure		403	{object}	dto.ErrorResponse
+//	@Failure		404	{object}	dto.ErrorResponse
+//	@Failure		500	{object}	dto.ErrorResponse
+//	@Router			/meals/{id} [delete]
 func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
+	// Check if user is admin
+	if !utils.IsAdminFromContext(c) {
+		middleware.HandleAppError(c, apperrors.NewForbiddenError("Only admins can delete meal events", nil))
+		return
+	}
+
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal event ID", err))
@@ -230,19 +294,19 @@ func (h *MealEventHandler) DeleteMealEvent(c *gin.Context) {
 }
 
 // GetMeals handles GET /api/meals
-// @Summary      List meal events by date range
-// @Description  Get meal events within a date range
-// @Tags         meals
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        start_date  query     string  true  "Start Date (YYYY-MM-DD)"
-// @Param        end_date    query     string  true  "End Date (YYYY-MM-DD)"
-// @Success      200  {array}   dto.MealEventResponse
-// @Failure      400   {object}  dto.ErrorResponse
-// @Failure      401   {object}  dto.ErrorResponse
-// @Failure      500   {object}  dto.ErrorResponse
-// @Router       /meals [get]
+//	@Summary		List meal events by date range
+//	@Description	Get meal events within a date range
+//	@Tags			meals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			start_date	query		string	true	"Start Date (YYYY-MM-DD)"
+//	@Param			end_date	query		string	true	"End Date (YYYY-MM-DD)"
+//	@Success		200			{array}		dto.MealEventResponse
+//	@Failure		400			{object}	dto.ErrorResponse
+//	@Failure		401			{object}	dto.ErrorResponse
+//	@Failure		500			{object}	dto.ErrorResponse
+//	@Router			/meals [get]
 func (h *MealEventHandler) GetMeals(c *gin.Context) {
 	startDateStr := c.Query("start_date")
 	endDateStr := c.Query("end_date")

@@ -6,6 +6,7 @@
         "GORM",
         "hasan",
         "mealsync",
+        "notif",
         "plpgsql",
         "sslmode",
         "VARCHAR"

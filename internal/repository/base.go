@@ -84,3 +84,13 @@ func (r *baseRepository[T]) WithTransaction(ctx context.Context, fn func(tx *gor
 		return fn(tx)
 	})
 }
+
+// Exists checks if an entity exists by ID
+func (r *baseRepository[T]) Exists(ctx context.Context, id uint) (bool, error) {
+	var count int64
+	err := r.db.WithContext(ctx).Model(new(T)).Where("id = ?", id).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

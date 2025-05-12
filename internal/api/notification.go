@@ -33,16 +33,16 @@ func handleError(c *gin.Context, err error) {
 }
 
 // GetNotifications godoc
-// @Summary Get notifications for current user
-// @Description Retrieves all notifications for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {array} model.Notification
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications [get]
+//	@Summary		Get notifications for current user
+//	@Description	Retrieves all notifications for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Success		200	{array}		model.Notification
+//	@Failure		401	{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		500	{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications [get]
 func (h *NotificationHandler) GetNotifications(c *gin.Context) {
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
@@ -60,18 +60,18 @@ func (h *NotificationHandler) GetNotifications(c *gin.Context) {
 }
 
 // GetNotificationsByType godoc
-// @Summary Get notifications by type
-// @Description Retrieves notifications by type for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Param type path string true "Notification type" Enums(reminder, confirmation, admin-message, event-info)
-// @Success 200 {array} model.Notification
-// @Failure 400 {object} errors.ErrorResponse "Bad Request"
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications/type/{type} [get]
+//	@Summary		Get notifications by type
+//	@Description	Retrieves notifications by type for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Param			type	path		string	true	"Notification type"	Enums(reminder, confirmation, admin-message, event-info)
+//	@Success		200		{array}		model.Notification
+//	@Failure		400		{object}	errors.ErrorResponse	"Bad Request"
+//	@Failure		401		{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		500		{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications/type/{type} [get]
 func (h *NotificationHandler) GetNotificationsByType(c *gin.Context) {
 	notificationType := model.NotificationType(c.Param("type"))
 	if !isValidNotificationType(notificationType) {
@@ -95,16 +95,16 @@ func (h *NotificationHandler) GetNotificationsByType(c *gin.Context) {
 }
 
 // GetUnreadNotifications godoc
-// @Summary Get unread notifications
-// @Description Retrieves unread notifications for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {array} model.Notification
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications/unread [get]
+//	@Summary		Get unread notifications
+//	@Description	Retrieves unread notifications for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Success		200	{array}		model.Notification
+//	@Failure		401	{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		500	{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications/unread [get]
 func (h *NotificationHandler) GetUnreadNotifications(c *gin.Context) {
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
@@ -122,16 +122,16 @@ func (h *NotificationHandler) GetUnreadNotifications(c *gin.Context) {
 }
 
 // GetUnreadNotificationCount godoc
-// @Summary Get unread notification count
-// @Description Retrieves the count of unread notifications for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {object} map[string]int64
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications/unread/count [get]
+//	@Summary		Get unread notification count
+//	@Description	Retrieves the count of unread notifications for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Success		200	{object}	map[string]int64
+//	@Failure		401	{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		500	{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications/unread/count [get]
 func (h *NotificationHandler) GetUnreadNotificationCount(c *gin.Context) {
 	userID, err := utils.GetUserIDFromContext(c)
 	if err != nil {
@@ -149,19 +149,19 @@ func (h *NotificationHandler) GetUnreadNotificationCount(c *gin.Context) {
 }
 
 // MarkNotificationAsRead godoc
-// @Summary Mark notification as read
-// @Description Marks a notification as read for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Param notification_id path int true "Notification ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} errors.ErrorResponse "Bad Request"
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 404 {object} errors.ErrorResponse "Not Found"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications/{notification_id}/read [put]
+//	@Summary		Mark notification as read
+//	@Description	Marks a notification as read for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Param			notification_id	path		int	true	"Notification ID"
+//	@Success		200				{object}	map[string]string
+//	@Failure		400				{object}	errors.ErrorResponse	"Bad Request"
+//	@Failure		401				{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		404				{object}	errors.ErrorResponse	"Not Found"
+//	@Failure		500				{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications/{notification_id}/read [put]
 func (h *NotificationHandler) MarkNotificationAsRead(c *gin.Context) {
 	notificationIDStr := c.Param("notification_id")
 	notificationID, err := strconv.ParseUint(notificationIDStr, 10, 32)
@@ -186,19 +186,19 @@ func (h *NotificationHandler) MarkNotificationAsRead(c *gin.Context) {
 }
 
 // MarkNotificationAsDelivered godoc
-// @Summary Mark notification as delivered
-// @Description Marks a notification as delivered for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Param notification_id path int true "Notification ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} errors.ErrorResponse "Bad Request"
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 404 {object} errors.ErrorResponse "Not Found"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications/{notification_id}/delivered [put]
+//	@Summary		Mark notification as delivered
+//	@Description	Marks a notification as delivered for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Param			notification_id	path		int	true	"Notification ID"
+//	@Success		200				{object}	map[string]string
+//	@Failure		400				{object}	errors.ErrorResponse	"Bad Request"
+//	@Failure		401				{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		404				{object}	errors.ErrorResponse	"Not Found"
+//	@Failure		500				{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications/{notification_id}/delivered [put]
 func (h *NotificationHandler) MarkNotificationAsDelivered(c *gin.Context) {
 	notificationIDStr := c.Param("notification_id")
 	notificationID, err := strconv.ParseUint(notificationIDStr, 10, 32)
@@ -223,19 +223,19 @@ func (h *NotificationHandler) MarkNotificationAsDelivered(c *gin.Context) {
 }
 
 // DeleteNotification godoc
-// @Summary Delete notification
-// @Description Deletes a notification for the authenticated user
-// @Tags notifications
-// @Accept json
-// @Produce json
-// @Security ApiKeyAuth
-// @Param notification_id path int true "Notification ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} errors.ErrorResponse "Bad Request"
-// @Failure 401 {object} errors.ErrorResponse "Unauthorized"
-// @Failure 404 {object} errors.ErrorResponse "Not Found"
-// @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
-// @Router /notifications/{notification_id} [delete]
+//	@Summary		Delete notification
+//	@Description	Deletes a notification for the authenticated user
+//	@Tags			notifications
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Param			notification_id	path		int	true	"Notification ID"
+//	@Success		200				{object}	map[string]string
+//	@Failure		400				{object}	errors.ErrorResponse	"Bad Request"
+//	@Failure		401				{object}	errors.ErrorResponse	"Unauthorized"
+//	@Failure		404				{object}	errors.ErrorResponse	"Not Found"
+//	@Failure		500				{object}	errors.ErrorResponse	"Internal Server Error"
+//	@Router			/notifications/{notification_id} [delete]
 func (h *NotificationHandler) DeleteNotification(c *gin.Context) {
 	notificationIDStr := c.Param("notification_id")
 	notificationID, err := strconv.ParseUint(notificationIDStr, 10, 32)

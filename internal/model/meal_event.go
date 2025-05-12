@@ -10,6 +10,7 @@ type MealEvent struct {
 	EventDate        time.Time          `json:"event_date" gorm:"not null"`
 	EventDuration    int                `json:"event_duration" gorm:"not null"` // in minutes
 	CutoffTime       time.Time          `json:"cutoff_time" gorm:"not null"`
+	IsActive         bool               `json:"is_active" gorm:"default:true"`
 	ConfirmedAt      *time.Time         `json:"confirmed_at"`
 	MenuSets         []MealEventSet     `json:"menu_sets" gorm:"foreignKey:MealEventID"`
 	Addresses        []MealEventAddress `json:"addresses" gorm:"foreignKey:MealEventID"`
@@ -20,10 +21,10 @@ type MealEvent struct {
 // MealEventSet represents a junction table between meal events and menu sets
 type MealEventSet struct {
 	Base
-	MealEventID uint      `json:"meal_event_id" gorm:"primaryKey;not null"`
-	MenuSetID   uint      `json:"menu_set_id" gorm:"primaryKey;not null"`
-	Label       string    `json:"label"`
-	Note        string    `json:"note"`
+	MealEventID uint       `json:"meal_event_id" gorm:"primaryKey;not null"`
+	MenuSetID   uint       `json:"menu_set_id" gorm:"primaryKey;not null"`
+	Label       string     `json:"label"`
+	Note        string     `json:"note"`
 	MealEvent   *MealEvent `json:"meal_event" gorm:"foreignKey:MealEventID"`
 	MenuSet     *MenuSet   `json:"menu_set" gorm:"foreignKey:MenuSetID"`
 }

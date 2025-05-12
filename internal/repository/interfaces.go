@@ -16,6 +16,7 @@ type BaseRepository[T any] interface {
 	Update(ctx context.Context, entity *T) error
 	Delete(ctx context.Context, entity *T) error
 	HardDelete(ctx context.Context, entity *T) error
+	Exists(ctx context.Context, id uint) (bool, error)
 }
 
 // UserRepository defines user-specific operations
@@ -42,17 +43,12 @@ type MealEventRepository interface {
 	UpdateMenuSetInEvent(ctx context.Context, MealEventSet *model.MealEventSet) error
 	RemoveMenuSetFromEvent(ctx context.Context, mealEventID uint, menuSetID uint) error
 	FindMenuSetsByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventSet, error)
+	FindAddressesByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventAddress, error)
 }
 
 // EventAddressRepository defines the interface for event address repository
 type EventAddressRepository interface {
-	Create(ctx context.Context, address *model.MealEventAddress) error
-	FindByID(ctx context.Context, id uint) (*model.MealEventAddress, error)
-	FindAll(ctx context.Context) ([]model.MealEventAddress, error)
-	FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MealEventAddress, error)
-	Update(ctx context.Context, address *model.MealEventAddress) error
-	Delete(ctx context.Context, address *model.MealEventAddress) error
-	HardDelete(ctx context.Context, address *model.MealEventAddress) error
+	BaseRepository[model.MealEventAddress]
 	FindByMealEventID(ctx context.Context, mealEventID uint) ([]model.MealEventAddress, error)
 	CountByMealEventID(ctx context.Context, mealEventID uint) (int64, error)
 	FindAvailableAddresses(ctx context.Context, date time.Time) ([]model.MealEventAddress, error)
@@ -61,20 +57,16 @@ type EventAddressRepository interface {
 	FindByCapacity(ctx context.Context, minCapacity, maxCapacity int) ([]model.MealEventAddress, error)
 	FindByLocation(ctx context.Context, lat, lng, radius float64) ([]model.MealEventAddress, error)
 	FindWithEventDetails(ctx context.Context, mealEventID uint) (*model.MealEventAddress, error)
+	Exists(ctx context.Context, id uint) (bool, error)
 }
 
 // MenuSetRepository handles menu set related database operations
 type MenuSetRepository interface {
-	Create(ctx context.Context, menuSet *model.MenuSet) error
-	FindByID(ctx context.Context, id uint) (*model.MenuSet, error)
-	FindAll(ctx context.Context) ([]model.MenuSet, error)
-	FindActive(ctx context.Context, conditions map[string]interface{}) ([]model.MenuSet, error)
-	Update(ctx context.Context, menuSet *model.MenuSet) error
-	Delete(ctx context.Context, menuSet *model.MenuSet) error
-	HardDelete(ctx context.Context, menuSet *model.MenuSet) error
+	BaseRepository[model.MenuSet]
 	AddMenuItem(ctx context.Context, setItem *model.MenuSetItem) error
 	RemoveMenuItem(ctx context.Context, setItem *model.MenuSetItem) error
 	FindMenuItems(ctx context.Context, menuSetID uint) ([]model.MenuItem, error)
+	Exists(ctx context.Context, id uint) (bool, error)
 }
 
 // MenuItemRepository handles menu item related database operations

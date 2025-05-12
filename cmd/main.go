@@ -18,27 +18,27 @@ import (
 	"gorm.io/gorm"
 )
 
-// @title           MealSync API
-// @version         1.0
-// @description     A meal management system API for employees
-// @termsOfService  http://swagger.io/terms/
+//	@title			MealSync API
+//	@version		1.0
+//	@description	A meal management system API for employees
+//	@termsOfService	http://swagger.io/terms/
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8080
-// @BasePath  /api
+//	@host		localhost:8080
+//	@BasePath	/api
 
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and JWT token.
 
-// @security BearerAuth
+//	@security	BearerAuth
 func main() {
 	cfg, err := config.Load()
 	if err != nil {

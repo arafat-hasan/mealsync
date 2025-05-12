@@ -79,7 +79,38 @@ func (r *mealEventRepository) FindCommentsByMealEventID(ctx context.Context, mea
 
 // Create creates a new meal event
 func (r *mealEventRepository) Create(ctx context.Context, meal *model.MealEvent) error {
-	return r.baseRepository.Create(ctx, meal)
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Create the meal event first
+		if err := tx.Create(meal).Error; err != nil {
+			return err
+		}
+
+		// Create menu set associations if any
+		if len(meal.MenuSets) > 0 {
+			for i := range meal.MenuSets {
+				meal.MenuSets[i].MealEventID = meal.ID
+				meal.MenuSets[i].CreatedByID = meal.CreatedByID
+				meal.MenuSets[i].UpdatedByID = meal.UpdatedByID
+				if err := tx.Create(&meal.MenuSets[i]).Error; err != nil {
+					return err
+				}
+			}
+		}
+
+		// Create address associations if any
+		if len(meal.Addresses) > 0 {
+			for i := range meal.Addresses {
+				meal.Addresses[i].MealEventID = meal.ID
+				meal.Addresses[i].CreatedByID = meal.CreatedByID
+				meal.Addresses[i].UpdatedByID = meal.UpdatedByID
+				if err := tx.Create(&meal.Addresses[i]).Error; err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	})
 }
 
 // FindByID finds a meal event by ID with preloaded relationships
@@ -214,4 +245,17 @@ func (r *mealEventRepository) FindByDateRange(ctx context.Context, startDate, en
 		return nil, err
 	}
 	return meals, nil
+}
+
+// FindAddressesByEventID finds all addresses associated with a meal event
+func (r *mealEventRepository) FindAddressesByEventID(ctx context.Context, mealEventID uint) ([]model.MealEventAddress, error) {
+	var addresses []model.MealEventAddress
+	err := r.db.WithContext(ctx).
+		Preload("Address").
+		Where("meal_event_id = ?", mealEventID).
+		Find(&addresses).Error
+	if err != nil {
+		return nil, err
+	}
+	return addresses, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/arafat-hasan/mealsync/internal/errors"
 	"github.com/arafat-hasan/mealsync/internal/model"
 	"github.com/arafat-hasan/mealsync/internal/repository"
 )
@@ -201,9 +202,45 @@ func (s *mealEventService) GetMealByID(ctx context.Context, id uint, userID uint
 
 // CreateMeal creates a new meal event with the creator's user ID
 func (s *mealEventService) CreateMeal(ctx context.Context, meal *model.MealEvent, userID uint) error {
+	// Validate user is admin
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if user.Role != "admin" {
+		return errors.NewForbiddenError("only admins can create meal events", nil)
+	}
+
+	// Validate menu sets exist
+	if len(meal.MenuSets) > 0 {
+		for _, menuSet := range meal.MenuSets {
+			exists, err := s.menuRepo.Exists(ctx, menuSet.MenuSetID)
+			if err != nil {
+				return err
+			}
+			if !exists {
+				return errors.NewValidationError("menu set not found", nil)
+			}
+		}
+	}
+
+	// Validate addresses exist
+	if len(meal.Addresses) > 0 {
+		for _, addr := range meal.Addresses {
+			exists, err := s.addressRepo.Exists(ctx, addr.AddressID)
+			if err != nil {
+				return err
+			}
+			if !exists {
+				return errors.NewValidationError("address not found", nil)
+			}
+		}
+	}
 
 	meal.CreatedByID = userID
 	meal.UpdatedByID = userID
+	meal.IsActive = true
+
 	return s.Create(ctx, meal)
 }
 
@@ -231,7 +268,6 @@ func (s *mealEventService) DeleteMeal(ctx context.Context, id uint, userID uint)
 	if err != nil {
 		return err
 	}
-
 
 	meal.UpdatedByID = userID
 

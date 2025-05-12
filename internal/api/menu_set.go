@@ -21,16 +21,16 @@ func NewMenuSetHandler(menuSetService service.MenuSetService) *MenuSetHandler {
 }
 
 // GetMenuSets handles GET /api/menu-sets
-// @Summary      List menu sets
-// @Description  Get all menu sets for the authenticated user
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Success      200  {array}   model.MenuSet
-// @Failure      401  {object}  dto.ErrorResponse
-// @Failure      500  {object}  dto.ErrorResponse
-// @Router       /menu-sets [get]
+//	@Summary		List menu sets
+//	@Description	Get all menu sets for the authenticated user
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{array}		model.MenuSet
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Failure		500	{object}	dto.ErrorResponse
+//	@Router			/menu-sets [get]
 func (h *MenuSetHandler) GetMenuSets(c *gin.Context) {
 	menuSets, err := h.menuSetService.GetMenuSets(c.Request.Context())
 	if err != nil {
@@ -42,19 +42,19 @@ func (h *MenuSetHandler) GetMenuSets(c *gin.Context) {
 }
 
 // GetMenuSetByID handles GET /api/menu-sets/:id
-// @Summary      Get menu set by ID
-// @Description  Get a specific menu set by its ID
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Menu Set ID"
-// @Success      200  {object}  model.MenuSet
-// @Failure      400  {object}  dto.ErrorResponse
-// @Failure      401  {object}  dto.ErrorResponse
-// @Failure      404  {object}  dto.ErrorResponse
-// @Failure      500  {object}  dto.ErrorResponse
-// @Router       /menu-sets/{id} [get]
+//	@Summary		Get menu set by ID
+//	@Description	Get a specific menu set by its ID
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Menu Set ID"
+//	@Success		200	{object}	model.MenuSet
+//	@Failure		400	{object}	dto.ErrorResponse
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Failure		404	{object}	dto.ErrorResponse
+//	@Failure		500	{object}	dto.ErrorResponse
+//	@Router			/menu-sets/{id} [get]
 func (h *MenuSetHandler) GetMenuSetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -72,18 +72,18 @@ func (h *MenuSetHandler) GetMenuSetByID(c *gin.Context) {
 }
 
 // CreateMenuSet handles POST /api/menu-sets
-// @Summary      Create menu set
-// @Description  Create a new menu set
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        menuSet  body      model.MenuSet  true  "Menu Set Data"
-// @Success      201     {object}  model.MenuSet
-// @Failure      400     {object}  dto.ErrorResponse
-// @Failure      401     {object}  dto.ErrorResponse
-// @Failure      500     {object}  dto.ErrorResponse
-// @Router       /menu-sets [post]
+//	@Summary		Create menu set
+//	@Description	Create a new menu set
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			menuSet	body		model.MenuSet	true	"Menu Set Data"
+//	@Success		201		{object}	model.MenuSet
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Failure		500		{object}	dto.ErrorResponse
+//	@Router			/menu-sets [post]
 func (h *MenuSetHandler) CreateMenuSet(c *gin.Context) {
 	var menuSet model.MenuSet
 	if err := c.ShouldBindJSON(&menuSet); err != nil {
@@ -102,21 +102,21 @@ func (h *MenuSetHandler) CreateMenuSet(c *gin.Context) {
 }
 
 // UpdateMenuSet handles PUT /api/menu-sets/:id
-// @Summary      Update menu set
-// @Description  Update an existing menu set
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id       path      int          true  "Menu Set ID"
-// @Param        menuSet  body      model.MenuSet true  "Menu Set Data"
-// @Success      200     {object}  model.MenuSet
-// @Failure      400     {object}  dto.ErrorResponse
-// @Failure      401     {object}  dto.ErrorResponse
-// @Failure      403     {object}  dto.ErrorResponse
-// @Failure      404     {object}  dto.ErrorResponse
-// @Failure      500     {object}  dto.ErrorResponse
-// @Router       /menu-sets/{id} [put]
+//	@Summary		Update menu set
+//	@Description	Update an existing menu set
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		int				true	"Menu Set ID"
+//	@Param			menuSet	body		model.MenuSet	true	"Menu Set Data"
+//	@Success		200		{object}	model.MenuSet
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Failure		403		{object}	dto.ErrorResponse
+//	@Failure		404		{object}	dto.ErrorResponse
+//	@Failure		500		{object}	dto.ErrorResponse
+//	@Router			/menu-sets/{id} [put]
 func (h *MenuSetHandler) UpdateMenuSet(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -141,20 +141,20 @@ func (h *MenuSetHandler) UpdateMenuSet(c *gin.Context) {
 }
 
 // DeleteMenuSet handles DELETE /api/menu-sets/:id
-// @Summary      Delete menu set
-// @Description  Delete an existing menu set
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Menu Set ID"
-// @Success      200  {object}  SuccessResponse
-// @Failure      400  {object}  dto.ErrorResponse
-// @Failure      401  {object}  dto.ErrorResponse
-// @Failure      403  {object}  dto.ErrorResponse
-// @Failure      404  {object}  dto.ErrorResponse
-// @Failure      500  {object}  dto.ErrorResponse
-// @Router       /menu-sets/{id} [delete]
+//	@Summary		Delete menu set
+//	@Description	Delete an existing menu set
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Menu Set ID"
+//	@Success		200	{object}	SuccessResponse
+//	@Failure		400	{object}	dto.ErrorResponse
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Failure		403	{object}	dto.ErrorResponse
+//	@Failure		404	{object}	dto.ErrorResponse
+//	@Failure		500	{object}	dto.ErrorResponse
+//	@Router			/menu-sets/{id} [delete]
 func (h *MenuSetHandler) DeleteMenuSet(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -173,19 +173,19 @@ func (h *MenuSetHandler) DeleteMenuSet(c *gin.Context) {
 }
 
 // GetMenuSetItems handles GET /api/menus/:id/items
-// @Summary      List menu set items
-// @Description  Get all items in a specific menu set
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id   path      int  true  "Menu Set ID"
-// @Success      200  {array}   model.MenuItem
-// @Failure      400  {object}  dto.ErrorResponse
-// @Failure      401  {object}  dto.ErrorResponse
-// @Failure      404  {object}  dto.ErrorResponse
-// @Failure      500  {object}  dto.ErrorResponse
-// @Router       /menu-sets/{id}/items [get]
+//	@Summary		List menu set items
+//	@Description	Get all items in a specific menu set
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Menu Set ID"
+//	@Success		200	{array}		model.MenuItem
+//	@Failure		400	{object}	dto.ErrorResponse
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Failure		404	{object}	dto.ErrorResponse
+//	@Failure		500	{object}	dto.ErrorResponse
+//	@Router			/menu-sets/{id}/items [get]
 func (h *MenuSetHandler) GetMenuSetItems(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -203,21 +203,21 @@ func (h *MenuSetHandler) GetMenuSetItems(c *gin.Context) {
 }
 
 // AddMenuItemToMenuSet handles POST /api/menus/:id/items
-// @Summary      Add menu item to set
-// @Description  Add a menu item to an existing menu set
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id         path      int              true  "Menu Set ID"
-// @Param        menuItem   body      model.MenuSetItem true  "Menu Item Data"
-// @Success      201       {object}  model.MenuSetItem
-// @Failure      400       {object}  dto.ErrorResponse
-// @Failure      401       {object}  dto.ErrorResponse
-// @Failure      403       {object}  dto.ErrorResponse
-// @Failure      404       {object}  dto.ErrorResponse
-// @Failure      500       {object}  dto.ErrorResponse
-// @Router       /menu-sets/{id}/items [post]
+//	@Summary		Add menu item to set
+//	@Description	Add a menu item to an existing menu set
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id			path		int					true	"Menu Set ID"
+//	@Param			menuItem	body		model.MenuSetItem	true	"Menu Item Data"
+//	@Success		201			{object}	model.MenuSetItem
+//	@Failure		400			{object}	dto.ErrorResponse
+//	@Failure		401			{object}	dto.ErrorResponse
+//	@Failure		403			{object}	dto.ErrorResponse
+//	@Failure		404			{object}	dto.ErrorResponse
+//	@Failure		500			{object}	dto.ErrorResponse
+//	@Router			/menu-sets/{id}/items [post]
 func (h *MenuSetHandler) AddMenuItemToMenuSet(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -242,21 +242,21 @@ func (h *MenuSetHandler) AddMenuItemToMenuSet(c *gin.Context) {
 }
 
 // RemoveMenuItemFromMenuSet handles DELETE /api/menus/:id/items/:item_id
-// @Summary      Remove menu item from set
-// @Description  Remove a menu item from an existing menu set
-// @Tags         menu-sets
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        id       path      int  true  "Menu Set ID"
-// @Param        item_id  path      int  true  "Menu Item ID"
-// @Success      200     {object}  SuccessResponse
-// @Failure      400     {object}  dto.ErrorResponse
-// @Failure      401     {object}  dto.ErrorResponse
-// @Failure      403     {object}  dto.ErrorResponse
-// @Failure      404     {object}  dto.ErrorResponse
-// @Failure      500     {object}  dto.ErrorResponse
-// @Router       /menu-sets/{id}/items/{item_id} [delete]
+//	@Summary		Remove menu item from set
+//	@Description	Remove a menu item from an existing menu set
+//	@Tags			menu-sets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		int	true	"Menu Set ID"
+//	@Param			item_id	path		int	true	"Menu Item ID"
+//	@Success		200		{object}	SuccessResponse
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Failure		403		{object}	dto.ErrorResponse
+//	@Failure		404		{object}	dto.ErrorResponse
+//	@Failure		500		{object}	dto.ErrorResponse
+//	@Router			/menu-sets/{id}/items/{item_id} [delete]
 func (h *MenuSetHandler) RemoveMenuItemFromMenuSet(c *gin.Context) {
 	menuSetID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {

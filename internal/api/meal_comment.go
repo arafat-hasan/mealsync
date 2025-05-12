@@ -21,19 +21,19 @@ func NewMenuItemCommentHandler(menuItemCommentService service.MenuItemCommentSer
 }
 
 // GetComments handles GET /api/meals/:meal_event_id/comments
-// @Summary      List menu item comments
-// @Description  Get all comments for a specific meal event
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        meal_event_id  path      int  true  "Meal Event ID"
-// @Success      200           {array}   model.MenuItemComment
-// @Failure      400           {object}  dto.ErrorResponse
-// @Failure      401           {object}  dto.ErrorResponse
-// @Failure      404           {object}  dto.ErrorResponse
-// @Failure      500           {object}  dto.ErrorResponse
-// @Router       /meals/{meal_event_id}/comments [get]
+//	@Summary		List menu item comments
+//	@Description	Get all comments for a specific meal event
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			meal_event_id	path		int	true	"Meal Event ID"
+//	@Success		200				{array}		model.MenuItemComment
+//	@Failure		400				{object}	dto.ErrorResponse
+//	@Failure		401				{object}	dto.ErrorResponse
+//	@Failure		404				{object}	dto.ErrorResponse
+//	@Failure		500				{object}	dto.ErrorResponse
+//	@Router			/meals/{meal_event_id}/comments [get]
 func (h *MenuItemCommentHandler) GetComments(c *gin.Context) {
 	mealEventID, err := strconv.ParseUint(c.Param("meal_event_id"), 10, 32)
 	if err != nil {
@@ -51,20 +51,20 @@ func (h *MenuItemCommentHandler) GetComments(c *gin.Context) {
 }
 
 // GetCommentByID handles GET /api/meals/:meal_event_id/comments/:id
-// @Summary      Get comment by ID
-// @Description  Get a specific comment by its ID
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        meal_event_id  path      int  true  "Meal Event ID"
-// @Param        id            path      int  true  "Comment ID"
-// @Success      200          {object}  model.MenuItemComment
-// @Failure      400          {object}  dto.ErrorResponse
-// @Failure      401          {object}  dto.ErrorResponse
-// @Failure      404          {object}  dto.ErrorResponse
-// @Failure      500          {object}  dto.ErrorResponse
-// @Router       /meals/{meal_event_id}/comments/{id} [get]
+//	@Summary		Get comment by ID
+//	@Description	Get a specific comment by its ID
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			meal_event_id	path		int	true	"Meal Event ID"
+//	@Param			id				path		int	true	"Comment ID"
+//	@Success		200				{object}	model.MenuItemComment
+//	@Failure		400				{object}	dto.ErrorResponse
+//	@Failure		401				{object}	dto.ErrorResponse
+//	@Failure		404				{object}	dto.ErrorResponse
+//	@Failure		500				{object}	dto.ErrorResponse
+//	@Router			/meals/{meal_event_id}/comments/{id} [get]
 func (h *MenuItemCommentHandler) GetCommentByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -82,20 +82,20 @@ func (h *MenuItemCommentHandler) GetCommentByID(c *gin.Context) {
 }
 
 // CreateComment handles POST /api/meals/:meal_event_id/comments
-// @Summary      Create comment
-// @Description  Create a new comment for a meal event
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        meal_event_id  path           int             true  "Meal Event ID"
-// @Param        comment        body           model.MenuItemComment true  "Comment Data"
-// @Success      201           {object}       model.MenuItemComment
-// @Failure      400           {object}       dto.ErrorResponse
-// @Failure      401           {object}       dto.ErrorResponse
-// @Failure      404           {object}       dto.ErrorResponse
-// @Failure      500           {object}       dto.ErrorResponse
-// @Router       /meals/{meal_event_id}/comments [post]
+//	@Summary		Create comment
+//	@Description	Create a new comment for a meal event
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			meal_event_id	path		int						true	"Meal Event ID"
+//	@Param			comment			body		model.MenuItemComment	true	"Comment Data"
+//	@Success		201				{object}	model.MenuItemComment
+//	@Failure		400				{object}	dto.ErrorResponse
+//	@Failure		401				{object}	dto.ErrorResponse
+//	@Failure		404				{object}	dto.ErrorResponse
+//	@Failure		500				{object}	dto.ErrorResponse
+//	@Router			/meals/{meal_event_id}/comments [post]
 func (h *MenuItemCommentHandler) CreateComment(c *gin.Context) {
 	mealEventID, err := strconv.ParseUint(c.Param("meal_event_id"), 10, 32)
 	if err != nil {
@@ -122,22 +122,22 @@ func (h *MenuItemCommentHandler) CreateComment(c *gin.Context) {
 }
 
 // UpdateComment handles PUT /api/meals/:meal_event_id/comments/:id
-// @Summary      Update comment
-// @Description  Update an existing comment
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        meal_event_id  path           int             true  "Meal Event ID"
-// @Param        id            path           int             true  "Comment ID"
-// @Param        comment        body           model.MenuItemComment true  "Comment Data"
-// @Success      200          {object}       model.MenuItemComment
-// @Failure      400          {object}       dto.ErrorResponse
-// @Failure      401          {object}       dto.ErrorResponse
-// @Failure      403          {object}       dto.ErrorResponse
-// @Failure      404          {object}       dto.ErrorResponse
-// @Failure      500          {object}       dto.ErrorResponse
-// @Router       /meals/{meal_event_id}/comments/{id} [put]
+//	@Summary		Update comment
+//	@Description	Update an existing comment
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			meal_event_id	path		int						true	"Meal Event ID"
+//	@Param			id				path		int						true	"Comment ID"
+//	@Param			comment			body		model.MenuItemComment	true	"Comment Data"
+//	@Success		200				{object}	model.MenuItemComment
+//	@Failure		400				{object}	dto.ErrorResponse
+//	@Failure		401				{object}	dto.ErrorResponse
+//	@Failure		403				{object}	dto.ErrorResponse
+//	@Failure		404				{object}	dto.ErrorResponse
+//	@Failure		500				{object}	dto.ErrorResponse
+//	@Router			/meals/{meal_event_id}/comments/{id} [put]
 func (h *MenuItemCommentHandler) UpdateComment(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -162,21 +162,21 @@ func (h *MenuItemCommentHandler) UpdateComment(c *gin.Context) {
 }
 
 // DeleteComment handles DELETE /api/meals/:meal_event_id/comments/:id
-// @Summary      Delete comment
-// @Description  Delete an existing comment
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        meal_event_id  path      int  true  "Meal Event ID"
-// @Param        id            path      int  true  "Comment ID"
-// @Success      200          {object}  SuccessResponse
-// @Failure      400          {object}  dto.ErrorResponse
-// @Failure      401          {object}  dto.ErrorResponse
-// @Failure      403          {object}  dto.ErrorResponse
-// @Failure      404          {object}  dto.ErrorResponse
-// @Failure      500          {object}  dto.ErrorResponse
-// @Router       /meals/{meal_event_id}/comments/{id} [delete]
+//	@Summary		Delete comment
+//	@Description	Delete an existing comment
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			meal_event_id	path		int	true	"Meal Event ID"
+//	@Param			id				path		int	true	"Comment ID"
+//	@Success		200				{object}	SuccessResponse
+//	@Failure		400				{object}	dto.ErrorResponse
+//	@Failure		401				{object}	dto.ErrorResponse
+//	@Failure		403				{object}	dto.ErrorResponse
+//	@Failure		404				{object}	dto.ErrorResponse
+//	@Failure		500				{object}	dto.ErrorResponse
+//	@Router			/meals/{meal_event_id}/comments/{id} [delete]
 func (h *MenuItemCommentHandler) DeleteComment(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -195,19 +195,19 @@ func (h *MenuItemCommentHandler) DeleteComment(c *gin.Context) {
 }
 
 // GetUserComments handles GET /api/users/:user_id/comments
-// @Summary      List user comments
-// @Description  Get all comments made by a specific user
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        user_id  path      int  true  "User ID"
-// @Success      200     {array}   model.MenuItemComment
-// @Failure      400     {object}  dto.ErrorResponse
-// @Failure      401     {object}  dto.ErrorResponse
-// @Failure      404     {object}  dto.ErrorResponse
-// @Failure      500     {object}  dto.ErrorResponse
-// @Router       /users/{user_id}/comments [get]
+//	@Summary		List user comments
+//	@Description	Get all comments made by a specific user
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			user_id	path		int	true	"User ID"
+//	@Success		200		{array}		model.MenuItemComment
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Failure		404		{object}	dto.ErrorResponse
+//	@Failure		500		{object}	dto.ErrorResponse
+//	@Router			/users/{user_id}/comments [get]
 func (h *MenuItemCommentHandler) GetUserComments(c *gin.Context) {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
 	if err != nil {
@@ -225,19 +225,19 @@ func (h *MenuItemCommentHandler) GetUserComments(c *gin.Context) {
 }
 
 // GetMenuItemComments handles GET /api/menu-items/:menu_item_id/comments
-// @Summary      List menu item comments
-// @Description  Get all comments for a specific menu item
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        menu_item_id  path      int  true  "Menu Item ID"
-// @Success      200     {array}   model.MenuItemComment
-// @Failure      400     {object}  dto.ErrorResponse
-// @Failure      401     {object}  dto.ErrorResponse
-// @Failure      404     {object}  dto.ErrorResponse
-// @Failure      500     {object}  dto.ErrorResponse
-// @Router       /menu-items/{menu_item_id}/comments [get]
+//	@Summary		List menu item comments
+//	@Description	Get all comments for a specific menu item
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			menu_item_id	path		int	true	"Menu Item ID"
+//	@Success		200				{array}		model.MenuItemComment
+//	@Failure		400				{object}	dto.ErrorResponse
+//	@Failure		401				{object}	dto.ErrorResponse
+//	@Failure		404				{object}	dto.ErrorResponse
+//	@Failure		500				{object}	dto.ErrorResponse
+//	@Router			/menu-items/{menu_item_id}/comments [get]
 func (h *MenuItemCommentHandler) GetMenuItemComments(c *gin.Context) {
 	menuItemID, err := strconv.ParseUint(c.Param("menu_item_id"), 10, 32)
 	if err != nil {
@@ -255,19 +255,19 @@ func (h *MenuItemCommentHandler) GetMenuItemComments(c *gin.Context) {
 }
 
 // GetReplies handles GET /api/comments/:comment_id/replies
-// @Summary      Get comment replies
-// @Description  Get all replies to a specific comment
-// @Tags         menu-item-comments
-// @Accept       json
-// @Produce      json
-// @Security     BearerAuth
-// @Param        comment_id  path      int  true  "Comment ID"
-// @Success      200     {array}   model.MenuItemComment
-// @Failure      400     {object}  dto.ErrorResponse
-// @Failure      401     {object}  dto.ErrorResponse
-// @Failure      404     {object}  dto.ErrorResponse
-// @Failure      500     {object}  dto.ErrorResponse
-// @Router       /comments/{comment_id}/replies [get]
+//	@Summary		Get comment replies
+//	@Description	Get all replies to a specific comment
+//	@Tags			menu-item-comments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			comment_id	path		int	true	"Comment ID"
+//	@Success		200			{array}		model.MenuItemComment
+//	@Failure		400			{object}	dto.ErrorResponse
+//	@Failure		401			{object}	dto.ErrorResponse
+//	@Failure		404			{object}	dto.ErrorResponse
+//	@Failure		500			{object}	dto.ErrorResponse
+//	@Router			/comments/{comment_id}/replies [get]
 func (h *MenuItemCommentHandler) GetReplies(c *gin.Context) {
 	commentID, err := strconv.ParseUint(c.Param("comment_id"), 10, 32)
 	if err != nil {

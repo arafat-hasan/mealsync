@@ -190,6 +190,8 @@ definitions:
     type: object
   dto.MenuItemResponse:
     properties:
+      average_rating:
+        type: number
       created_at:
         type: string
       created_by:
@@ -202,10 +204,10 @@ definitions:
         type: string
       id:
         type: integer
+      image_url:
+        type: string
       name:
         type: string
-      price:
-        type: number
       updated_at:
         type: string
       updated_by:
@@ -1354,6 +1356,10 @@ paths:
             $ref: '#/definitions/dto.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
         "500":

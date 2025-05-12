@@ -84,6 +84,46 @@ func (s *mealRequestService) CreateMealRequest(ctx context.Context, request *mod
 		}
 	}
 
+	// Validate menu set exists and is associated with the meal event
+	if request.MenuSetID != 0 {
+		menuSets, err := s.mealRepo.FindMenuSetsByEventID(ctx, request.MealEventID)
+		if err != nil {
+			return err
+		}
+
+		menuSetFound := false
+		for _, menuSet := range menuSets {
+			if menuSet.MenuSetID == request.MenuSetID {
+				menuSetFound = true
+				break
+			}
+		}
+
+		if !menuSetFound {
+			return errors.NewValidationError("selected menu set is not available for this meal event", nil)
+		}
+	}
+
+	// Validate address exists and is associated with the meal event
+	if request.EventAddressID != 0 {
+		addresses, err := s.mealRepo.FindAddressesByEventID(ctx, request.MealEventID)
+		if err != nil {
+			return err
+		}
+
+		addressFound := false
+		for _, addr := range addresses {
+			if addr.AddressID == request.EventAddressID {
+				addressFound = true
+				break
+			}
+		}
+
+		if !addressFound {
+			return errors.NewValidationError("selected address is not available for this meal event", nil)
+		}
+	}
+
 	request.UserID = userID
 	request.CreatedByID = userID
 	request.UpdatedByID = userID

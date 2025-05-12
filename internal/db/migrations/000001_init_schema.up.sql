@@ -191,6 +191,7 @@ CREATE TABLE meal_event_sets (
   UNIQUE (meal_event_id, menu_set_id),
   label TEXT,
   note TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
