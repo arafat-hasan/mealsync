@@ -6,6 +6,8 @@
         "GORM",
         "hasan",
         "mealsync",
-        "sslmode"
+        "plpgsql",
+        "sslmode",
+        "VARCHAR"
     ]
 }

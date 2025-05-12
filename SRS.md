@@ -275,6 +275,7 @@ CREATE INDEX idx_users_deleted_at ON users(deleted_at);
 CREATE TABLE event_addresses (
   id SERIAL PRIMARY KEY,
   address TEXT NOT NULL,
+  label TEXT NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -316,9 +317,10 @@ CREATE TABLE menu_sets (
 CREATE INDEX idx_menu_sets_deleted_at ON menu_sets(deleted_at);
 
 CREATE TABLE menu_set_items (
+  id SERIAL PRIMARY KEY,
   menu_set_id INT REFERENCES menu_sets(id) ON DELETE CASCADE,
   menu_item_id INT REFERENCES menu_items(id) ON DELETE CASCADE,
-  PRIMARY KEY (menu_set_id, menu_item_id),
+  UNIQUE (menu_set_id, menu_item_id),
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
@@ -348,9 +350,10 @@ CREATE TABLE meal_events (
 CREATE INDEX idx_meal_events_deleted_at ON meal_events(deleted_at);
 
 CREATE TABLE meal_event_sets (
+  id SERIAL PRIMARY KEY,
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
   menu_set_id INT REFERENCES menu_sets(id) ON DELETE CASCADE,
-  PRIMARY KEY (meal_event_id, menu_set_id),
+  UNIQUE (meal_event_id, menu_set_id),
   label TEXT,
   note TEXT,
   deleted_at TIMESTAMP DEFAULT NULL,
@@ -365,9 +368,10 @@ CREATE INDEX idx_meal_event_sets_meal_event_id ON meal_event_sets(meal_event_id)
 CREATE INDEX idx_meal_event_sets_menu_set_id ON meal_event_sets(menu_set_id);
 
 CREATE TABLE meal_event_addresses (
+  id SERIAL PRIMARY KEY,
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
   address_id INT REFERENCES event_addresses(id) ON DELETE CASCADE,
-  PRIMARY KEY (meal_event_id, address_id),
+  UNIQUE (meal_event_id, address_id),
   deleted_at TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
@@ -380,9 +384,10 @@ CREATE INDEX idx_meal_event_addresses_meal_event_id ON meal_event_addresses(meal
 CREATE INDEX idx_meal_event_addresses_address_id ON meal_event_addresses(address_id);
 
 CREATE TABLE meal_requests (
+  id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
   meal_event_id INT REFERENCES meal_events(id) ON DELETE CASCADE,
-  PRIMARY KEY (user_id, meal_event_id),
+  UNIQUE (user_id, meal_event_id),
   menu_set_id INT REFERENCES menu_sets(id),
   event_address_id INT REFERENCES event_addresses(id),
   confirmed_at TIMESTAMP DEFAULT NULL,
@@ -407,10 +412,11 @@ CREATE UNIQUE INDEX idx_unique_meal_request ON meal_requests(user_id, meal_event
 
 -- Junction table for meal request items (many-to-many)
 CREATE TABLE user_requested_items (
+  id SERIAL PRIMARY KEY,
   user_id INT,
   meal_event_id INT,
   menu_item_id INT REFERENCES menu_items(id),
-  PRIMARY KEY (user_id, meal_event_id, menu_item_id),
+  UNIQUE (user_id, meal_event_id, menu_item_id),
   quantity INT DEFAULT 1 NOT NULL CHECK (quantity > 0),
   notes TEXT,
   deleted_at TIMESTAMP DEFAULT NULL,
@@ -469,6 +475,29 @@ CREATE INDEX idx_menu_item_comment_deleted_at ON menu_item_comments(deleted_at);
 CREATE INDEX idx_menu_item_comment_meal_event_id ON menu_item_comments(meal_event_id);
 CREATE INDEX idx_menu_item_comment_menu_item_id ON menu_item_comments(menu_item_id);
 CREATE INDEX idx_menu_item_comment_rating ON menu_item_comments(rating);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL CHECK (type IN ('reminder', 'confirmation', 'admin-message', 'event-info')),
+    payload JSONB,
+    message TEXT NOT NULL,
+    read BOOLEAN DEFAULT FALSE,
+    delivered BOOLEAN DEFAULT FALSE,
+    read_at TIMESTAMP DEFAULT NULL,
+    delivered_at TIMESTAMP DEFAULT NULL,
+    deleted_at TIMESTAMP DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    created_by INT REFERENCES users(id),
+    updated_by INT REFERENCES users(id)
+);
+
+CREATE INDEX idx_notifications_deleted_at ON notifications(deleted_at);
+CREATE INDEX idx_notifications_delivered ON notifications(delivered);
+CREATE INDEX idx_notifications_user_read ON notifications(user_id, read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at);
+CREATE INDEX idx_notifications_payload_gin ON notifications USING GIN (payload);
 ```
 
 ---

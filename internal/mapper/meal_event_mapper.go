@@ -212,7 +212,9 @@ func ToMenuItemResponse(item *model.MenuItem) *dto.MenuItemResponse {
 			UpdatedByID: item.UpdatedByID,
 			UpdatedBy:   ToUserResponse(item.UpdatedBy),
 		},
-		Name:        item.Name,
-		Description: item.Description,
+		Name:          item.Name,
+		Description:   item.Description,
+		ImageURL:      item.ImageURL,
+		AverageRating: item.AverageRating,
 	}
 }

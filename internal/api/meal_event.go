@@ -40,7 +40,7 @@ func NewMealEventHandler(mealService service.MealEventService) *MealEventHandler
 // @Failure      500  {object}  dto.ErrorResponse
 // @Router       /meals/{id} [get]
 func (h *MealEventHandler) GetMealEventByID(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := strconv.ParseUint(c.Param("meal_id"), 10, 32)
 	if err != nil {
 		middleware.HandleAppError(c, apperrors.NewValidationError("Invalid meal event ID", err))
 		return
@@ -89,6 +89,26 @@ func (h *MealEventHandler) CreateMealEvent(c *gin.Context) {
 		EventDate:     reqDTO.EventDate,
 		EventDuration: reqDTO.EventDuration,
 		CutoffTime:    reqDTO.CutoffTime,
+	}
+
+	// Convert MenuSetIDs to MealEventSets
+	if len(reqDTO.MenuSetIDs) > 0 {
+		meal.MenuSets = make([]model.MealEventSet, len(reqDTO.MenuSetIDs))
+		for i, menuSetID := range reqDTO.MenuSetIDs {
+			meal.MenuSets[i] = model.MealEventSet{
+				MenuSetID: menuSetID,
+			}
+		}
+	}
+
+	// Convert AddressIDs to MealEventAddresses
+	if len(reqDTO.AddressIDs) > 0 {
+		meal.Addresses = make([]model.MealEventAddress, len(reqDTO.AddressIDs))
+		for i, addressID := range reqDTO.AddressIDs {
+			meal.Addresses[i] = model.MealEventAddress{
+				AddressID: addressID,
+			}
+		}
 	}
 
 	userID, err := utils.GetUserIDFromContext(c)

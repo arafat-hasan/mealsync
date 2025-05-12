@@ -88,6 +88,8 @@ func (r *mealEventRepository) FindByID(ctx context.Context, id uint) (*model.Mea
 	err := r.db.WithContext(ctx).
 		Preload("MenuSets").
 		Preload("MenuSets.MenuSet").
+		Preload("MenuSets.MenuSet.MenuSetItems").
+		Preload("MenuSets.MenuSet.MenuSetItems.MenuItem").
 		Preload("Addresses").
 		Preload("Addresses.Address").
 		Preload("MealRequests").
@@ -105,10 +107,11 @@ func (r *mealEventRepository) FindAll(ctx context.Context) ([]model.MealEvent, e
 	err := r.db.WithContext(ctx).
 		Preload("MenuSets").
 		Preload("MenuSets.MenuSet").
+		Preload("MenuSets.MenuSet.MenuSetItems").
+		Preload("MenuSets.MenuSet.MenuSetItems.MenuItem").
 		Preload("Addresses").
 		Preload("Addresses.Address").
 		Preload("MealRequests").
-		Preload("MenuItemComments").
 		Find(&meals).Error
 	if err != nil {
 		return nil, err
@@ -142,10 +145,11 @@ func (r *mealEventRepository) FindUpcomingAndActive(ctx context.Context) ([]mode
 	err := r.db.WithContext(ctx).
 		Preload("MenuSets").
 		Preload("MenuSets.MenuSet").
+		Preload("MenuSets.MenuSet.MenuSetItems").
+		Preload("MenuSets.MenuSet.MenuSetItems.MenuItem").
 		Preload("Addresses").
 		Preload("Addresses.Address").
 		Preload("MealRequests").
-		Preload("MenuItemComments").
 		Where("is_active = ?", true).
 		Where("event_date >= ?", time.Now()).
 		Order("event_date ASC").
